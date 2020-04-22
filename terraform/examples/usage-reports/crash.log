@@ -1,0 +1,686 @@
+2020/04/20 16:54:56 [INFO] Terraform version: 0.12.24  
+2020/04/20 16:54:56 [INFO] Go runtime version: go1.12.13
+2020/04/20 16:54:56 [INFO] CLI args: []string{"/home/mark/code/bin/terraform", "apply"}
+2020/04/20 16:54:56 [DEBUG] Attempting to open CLI config file: /home/mark/.terraformrc
+2020/04/20 16:54:56 [DEBUG] File doesn't exist, but doesn't need to. Ignoring.
+2020/04/20 16:54:56 [DEBUG] checking for credentials in "/home/mark/.terraform.d/plugins"
+2020/04/20 16:54:56 [INFO] CLI command args: []string{"apply"}
+2020/04/20 16:54:56 [TRACE] Meta.Backend: no config given or present on disk, so returning nil config
+2020/04/20 16:54:56 [TRACE] Meta.Backend: backend has not previously been initialized in this working directory
+2020/04/20 16:54:56 [DEBUG] New state was assigned lineage "b2eb0480-6893-12f5-d15f-2fda6aed6a48"
+2020/04/20 16:54:56 [TRACE] Meta.Backend: using default local state only (no backend configuration, and no existing initialized backend)
+2020/04/20 16:54:56 [TRACE] Meta.Backend: instantiated backend of type <nil>
+2020/04/20 16:54:56 [DEBUG] checking for provider in "."
+2020/04/20 16:54:56 [DEBUG] checking for provider in "/home/mark/code/bin"
+2020/04/20 16:54:56 [DEBUG] checking for provider in ".terraform/plugins/linux_amd64"
+2020/04/20 16:54:56 [DEBUG] checking for provider in "/home/mark/.terraform.d/plugins"
+2020/04/20 16:54:56 [DEBUG] found provider "terraform-provider-quake_v0.0.1"
+2020/04/20 16:54:56 [DEBUG] found valid plugin: "quake", "0.0.1", "/home/mark/.terraform.d/plugins/terraform-provider-quake_v0.0.1"
+2020/04/20 16:54:56 [DEBUG] checking for provisioner in "."
+2020/04/20 16:54:56 [DEBUG] checking for provisioner in "/home/mark/code/bin"
+2020/04/20 16:54:56 [DEBUG] checking for provisioner in ".terraform/plugins/linux_amd64"
+2020/04/20 16:54:56 [DEBUG] checking for provisioner in "/home/mark/.terraform.d/plugins"
+2020/04/20 16:54:56 [TRACE] Meta.Backend: backend <nil> does not support operations, so wrapping it in a local backend
+2020/04/20 16:54:56 [INFO] backend/local: starting Apply operation
+2020/04/20 16:54:56 [TRACE] backend/local: requesting state manager for workspace "default"
+2020/04/20 16:54:56 [TRACE] backend/local: state manager for workspace "default" will:
+ - read initial snapshot from terraform.tfstate
+ - write new snapshots to terraform.tfstate
+ - create any backup at terraform.tfstate.backup
+2020/04/20 16:54:56 [TRACE] backend/local: requesting state lock for workspace "default"
+2020/04/20 16:54:56 [TRACE] statemgr.Filesystem: preparing to manage state snapshots at terraform.tfstate
+2020/04/20 16:54:56 [TRACE] statemgr.Filesystem: no previously-stored snapshot exists
+2020/04/20 16:54:56 [TRACE] statemgr.Filesystem: locking terraform.tfstate using fcntl flock
+2020/04/20 16:54:56 [TRACE] statemgr.Filesystem: writing lock metadata to .terraform.tfstate.lock.info
+2020/04/20 16:54:56 [TRACE] backend/local: reading remote state for workspace "default"
+2020/04/20 16:54:56 [TRACE] statemgr.Filesystem: reading latest snapshot from terraform.tfstate
+2020/04/20 16:54:56 [TRACE] statemgr.Filesystem: snapshot file has nil snapshot, but that's okay
+2020/04/20 16:54:56 [TRACE] statemgr.Filesystem: read nil snapshot
+2020/04/20 16:54:56 [TRACE] backend/local: retrieving local state snapshot for workspace "default"
+2020/04/20 16:54:56 [TRACE] backend/local: building context for current working directory
+2020/04/20 16:54:56 [TRACE] terraform.NewContext: starting
+2020/04/20 16:54:56 [TRACE] terraform.NewContext: resolving provider version selections
+2020/04/20 16:54:56 [TRACE] terraform.NewContext: loading provider schemas
+2020/04/20 16:54:56 [TRACE] LoadSchemas: retrieving schema for provider type "quake"
+2020-04-20T16:54:56.312Z [INFO]  plugin: configuring client automatic mTLS
+2020-04-20T16:54:56.378Z [DEBUG] plugin: starting plugin: path=/home/mark/.terraform.d/plugins/terraform-provider-quake_v0.0.1 args=[/home/mark/.terraform.d/plugins/terraform-provider-quake_v0.0.1]
+2020-04-20T16:54:56.379Z [DEBUG] plugin: plugin started: path=/home/mark/.terraform.d/plugins/terraform-provider-quake_v0.0.1 pid=25113
+2020-04-20T16:54:56.379Z [DEBUG] plugin: waiting for RPC address: path=/home/mark/.terraform.d/plugins/terraform-provider-quake_v0.0.1
+2020-04-20T16:54:56.398Z [INFO]  plugin.terraform-provider-quake_v0.0.1: configuring server automatic mTLS: timestamp=2020-04-20T16:54:56.398Z
+2020-04-20T16:54:56.459Z [DEBUG] plugin: using plugin: version=5
+2020-04-20T16:54:56.459Z [DEBUG] plugin.terraform-provider-quake_v0.0.1: plugin address: network=unix address=/tmp/plugin568274916 timestamp=2020-04-20T16:54:56.459Z
+2020/04/20 16:54:56 [TRACE] GRPCProvider: GetSchema
+2020/04/20 16:54:56 [TRACE] GRPCProvider: Close
+2020-04-20T16:54:56.594Z [DEBUG] plugin: plugin process exited: path=/home/mark/.terraform.d/plugins/terraform-provider-quake_v0.0.1 pid=25113
+2020-04-20T16:54:56.594Z [DEBUG] plugin: plugin exited
+2020/04/20 16:54:56 [TRACE] terraform.NewContext: complete
+2020/04/20 16:54:56 [TRACE] backend/local: finished building terraform.Context
+2020/04/20 16:54:56 [TRACE] backend/local: requesting interactive input, if necessary
+2020/04/20 16:54:56 [TRACE] Context.Input: Prompting for provider arguments
+2020/04/20 16:54:56 [TRACE] Context.Input: Provider provider.quake declared at main.tf:1,1-17
+2020/04/20 16:54:56 [TRACE] Context.Input: Input for provider.quake: map[string]cty.Value{}
+2020/04/20 16:54:56 [TRACE] backend/local: running validation operation
+2020/04/20 16:54:56 [INFO] terraform: building graph: GraphTypeValidate
+2020/04/20 16:54:56 [TRACE] Executing graph transform *terraform.ConfigTransformer
+2020/04/20 16:54:56 [TRACE] ConfigTransformer: Starting for path: 
+2020/04/20 16:54:56 [TRACE] Completed graph transform *terraform.ConfigTransformer with new graph:
+  data.quake_usage.used - *terraform.NodeValidatableResource
+  ------
+2020/04/20 16:54:56 [TRACE] Executing graph transform *terraform.LocalTransformer
+2020/04/20 16:54:56 [TRACE] Completed graph transform *terraform.LocalTransformer (no changes)
+2020/04/20 16:54:56 [TRACE] Executing graph transform *terraform.OutputTransformer
+2020/04/20 16:54:56 [TRACE] Completed graph transform *terraform.OutputTransformer with new graph:
+  data.quake_usage.used - *terraform.NodeValidatableResource
+  output.compute_consumption - *terraform.NodeApplyableOutput
+  output.volume_consumption - *terraform.NodeApplyableOutput
+  ------
+2020/04/20 16:54:56 [TRACE] Executing graph transform *terraform.OrphanResourceInstanceTransformer
+2020/04/20 16:54:56 [TRACE] Completed graph transform *terraform.OrphanResourceInstanceTransformer (no changes)
+2020/04/20 16:54:56 [TRACE] Executing graph transform *terraform.StateTransformer
+2020/04/20 16:54:56 [TRACE] StateTransformer: state is empty, so nothing to do
+2020/04/20 16:54:56 [TRACE] Completed graph transform *terraform.StateTransformer (no changes)
+2020/04/20 16:54:56 [TRACE] Executing graph transform *terraform.OrphanOutputTransformer
+2020/04/20 16:54:56 [TRACE] Completed graph transform *terraform.OrphanOutputTransformer (no changes)
+2020/04/20 16:54:56 [TRACE] Executing graph transform *terraform.AttachResourceConfigTransformer
+2020/04/20 16:54:56 [TRACE] AttachResourceConfigTransformer: attaching to "data.quake_usage.used" (*terraform.NodeValidatableResource) config from hcl.Range{Filename:"main.tf", Start:hcl.Pos{Line:5, Column:1, Byte:23}, End:hcl.Pos{Line:5, Column:26, Byte:48}}
+2020/04/20 16:54:56 [TRACE] Completed graph transform *terraform.AttachResourceConfigTransformer (no changes)
+2020/04/20 16:54:56 [TRACE] Executing graph transform *terraform.AttachStateTransformer
+2020/04/20 16:54:56 [TRACE] Completed graph transform *terraform.AttachStateTransformer (no changes)
+2020/04/20 16:54:56 [TRACE] Executing graph transform *terraform.RootVariableTransformer
+2020/04/20 16:54:56 [TRACE] Completed graph transform *terraform.RootVariableTransformer with new graph:
+  data.quake_usage.used - *terraform.NodeValidatableResource
+  output.compute_consumption - *terraform.NodeApplyableOutput
+  output.volume_consumption - *terraform.NodeApplyableOutput
+  var.end - *terraform.NodeRootVariable
+  var.start - *terraform.NodeRootVariable
+  ------
+2020/04/20 16:54:56 [TRACE] Executing graph transform *terraform.MissingProvisionerTransformer
+2020/04/20 16:54:56 [TRACE] Completed graph transform *terraform.MissingProvisionerTransformer (no changes)
+2020/04/20 16:54:56 [TRACE] Executing graph transform *terraform.ProvisionerTransformer
+2020/04/20 16:54:56 [TRACE] Completed graph transform *terraform.ProvisionerTransformer (no changes)
+2020/04/20 16:54:56 [TRACE] Executing graph transform *terraform.ModuleVariableTransformer
+2020/04/20 16:54:56 [TRACE] Completed graph transform *terraform.ModuleVariableTransformer (no changes)
+2020/04/20 16:54:56 [TRACE] Executing graph transform *terraform.graphTransformerMulti
+2020/04/20 16:54:56 [TRACE] (graphTransformerMulti) Executing graph transform *terraform.ProviderConfigTransformer
+2020/04/20 16:54:56 [TRACE] ProviderConfigTransformer: attaching to "provider.quake" provider configuration from main.tf:1,1-17
+2020/04/20 16:54:56 [TRACE] (graphTransformerMulti) Completed graph transform *terraform.ProviderConfigTransformer with new graph:
+  data.quake_usage.used - *terraform.NodeValidatableResource
+  output.compute_consumption - *terraform.NodeApplyableOutput
+  output.volume_consumption - *terraform.NodeApplyableOutput
+  provider.quake - *terraform.NodeApplyableProvider
+  var.end - *terraform.NodeRootVariable
+  var.start - *terraform.NodeRootVariable
+  ------
+2020/04/20 16:54:56 [TRACE] (graphTransformerMulti) Executing graph transform *terraform.MissingProviderTransformer
+2020/04/20 16:54:56 [TRACE] (graphTransformerMulti) Completed graph transform *terraform.MissingProviderTransformer (no changes)
+2020/04/20 16:54:56 [TRACE] (graphTransformerMulti) Executing graph transform *terraform.ProviderTransformer
+2020/04/20 16:54:56 [TRACE] ProviderTransformer: data.quake_usage.used is provided by provider.quake or inherited equivalent
+2020/04/20 16:54:56 [TRACE] ProviderTransformer: exact match for provider.quake serving data.quake_usage.used
+2020/04/20 16:54:56 [DEBUG] ProviderTransformer: "data.quake_usage.used" (*terraform.NodeValidatableResource) needs provider.quake
+2020/04/20 16:54:56 [TRACE] (graphTransformerMulti) Completed graph transform *terraform.ProviderTransformer with new graph:
+  data.quake_usage.used - *terraform.NodeValidatableResource
+    provider.quake - *terraform.NodeApplyableProvider
+  output.compute_consumption - *terraform.NodeApplyableOutput
+  output.volume_consumption - *terraform.NodeApplyableOutput
+  provider.quake - *terraform.NodeApplyableProvider
+  var.end - *terraform.NodeRootVariable
+  var.start - *terraform.NodeRootVariable
+  ------
+2020/04/20 16:54:56 [TRACE] (graphTransformerMulti) Executing graph transform *terraform.PruneProviderTransformer
+2020/04/20 16:54:56 [TRACE] (graphTransformerMulti) Completed graph transform *terraform.PruneProviderTransformer (no changes)
+2020/04/20 16:54:56 [TRACE] (graphTransformerMulti) Executing graph transform *terraform.ParentProviderTransformer
+2020/04/20 16:54:56 [TRACE] (graphTransformerMulti) Completed graph transform *terraform.ParentProviderTransformer (no changes)
+2020/04/20 16:54:56 [TRACE] Completed graph transform *terraform.graphTransformerMulti with new graph:
+  data.quake_usage.used - *terraform.NodeValidatableResource
+    provider.quake - *terraform.NodeApplyableProvider
+  output.compute_consumption - *terraform.NodeApplyableOutput
+  output.volume_consumption - *terraform.NodeApplyableOutput
+  provider.quake - *terraform.NodeApplyableProvider
+  var.end - *terraform.NodeRootVariable
+  var.start - *terraform.NodeRootVariable
+  ------
+2020/04/20 16:54:56 [TRACE] Executing graph transform *terraform.RemovedModuleTransformer
+2020/04/20 16:54:56 [TRACE] Completed graph transform *terraform.RemovedModuleTransformer (no changes)
+2020/04/20 16:54:56 [TRACE] Executing graph transform *terraform.AttachSchemaTransformer
+2020/04/20 16:54:56 [TRACE] AttachSchemaTransformer: attaching resource schema to data.quake_usage.used
+2020/04/20 16:54:56 [TRACE] AttachSchemaTransformer: attaching provider config schema to provider.quake
+2020/04/20 16:54:56 [TRACE] Completed graph transform *terraform.AttachSchemaTransformer (no changes)
+2020/04/20 16:54:56 [TRACE] Executing graph transform *terraform.ReferenceTransformer
+2020/04/20 16:54:56 [DEBUG] ReferenceTransformer: "var.end" references: []
+2020/04/20 16:54:56 [DEBUG] ReferenceTransformer: "provider.quake" references: []
+2020/04/20 16:54:56 [DEBUG] ReferenceTransformer: "data.quake_usage.used" references: [var.end var.start]
+2020/04/20 16:54:56 [DEBUG] ReferenceTransformer: "output.compute_consumption" references: [data.quake_usage.used]
+2020/04/20 16:54:56 [DEBUG] ReferenceTransformer: "output.volume_consumption" references: [data.quake_usage.used]
+2020/04/20 16:54:56 [DEBUG] ReferenceTransformer: "var.start" references: []
+2020/04/20 16:54:56 [TRACE] Completed graph transform *terraform.ReferenceTransformer with new graph:
+  data.quake_usage.used - *terraform.NodeValidatableResource
+    provider.quake - *terraform.NodeApplyableProvider
+    var.end - *terraform.NodeRootVariable
+    var.start - *terraform.NodeRootVariable
+  output.compute_consumption - *terraform.NodeApplyableOutput
+    data.quake_usage.used - *terraform.NodeValidatableResource
+  output.volume_consumption - *terraform.NodeApplyableOutput
+    data.quake_usage.used - *terraform.NodeValidatableResource
+  provider.quake - *terraform.NodeApplyableProvider
+  var.end - *terraform.NodeRootVariable
+  var.start - *terraform.NodeRootVariable
+  ------
+2020/04/20 16:54:56 [TRACE] Executing graph transform *terraform.CountBoundaryTransformer
+2020/04/20 16:54:56 [TRACE] Completed graph transform *terraform.CountBoundaryTransformer with new graph:
+  data.quake_usage.used - *terraform.NodeValidatableResource
+    provider.quake - *terraform.NodeApplyableProvider
+    var.end - *terraform.NodeRootVariable
+    var.start - *terraform.NodeRootVariable
+  meta.count-boundary (EachMode fixup) - *terraform.NodeCountBoundary
+    data.quake_usage.used - *terraform.NodeValidatableResource
+    output.compute_consumption - *terraform.NodeApplyableOutput
+    output.volume_consumption - *terraform.NodeApplyableOutput
+    provider.quake - *terraform.NodeApplyableProvider
+    var.end - *terraform.NodeRootVariable
+    var.start - *terraform.NodeRootVariable
+  output.compute_consumption - *terraform.NodeApplyableOutput
+    data.quake_usage.used - *terraform.NodeValidatableResource
+  output.volume_consumption - *terraform.NodeApplyableOutput
+    data.quake_usage.used - *terraform.NodeValidatableResource
+  provider.quake - *terraform.NodeApplyableProvider
+  var.end - *terraform.NodeRootVariable
+  var.start - *terraform.NodeRootVariable
+  ------
+2020/04/20 16:54:56 [TRACE] Executing graph transform *terraform.TargetsTransformer
+2020/04/20 16:54:56 [TRACE] Completed graph transform *terraform.TargetsTransformer (no changes)
+2020/04/20 16:54:56 [TRACE] Executing graph transform *terraform.ForcedCBDTransformer
+2020/04/20 16:54:56 [TRACE] Completed graph transform *terraform.ForcedCBDTransformer (no changes)
+2020/04/20 16:54:56 [TRACE] Executing graph transform *terraform.CloseProviderTransformer
+2020/04/20 16:54:56 [TRACE] Completed graph transform *terraform.CloseProviderTransformer with new graph:
+  data.quake_usage.used - *terraform.NodeValidatableResource
+    provider.quake - *terraform.NodeApplyableProvider
+    var.end - *terraform.NodeRootVariable
+    var.start - *terraform.NodeRootVariable
+  meta.count-boundary (EachMode fixup) - *terraform.NodeCountBoundary
+    data.quake_usage.used - *terraform.NodeValidatableResource
+    output.compute_consumption - *terraform.NodeApplyableOutput
+    output.volume_consumption - *terraform.NodeApplyableOutput
+    provider.quake - *terraform.NodeApplyableProvider
+    var.end - *terraform.NodeRootVariable
+    var.start - *terraform.NodeRootVariable
+  output.compute_consumption - *terraform.NodeApplyableOutput
+    data.quake_usage.used - *terraform.NodeValidatableResource
+  output.volume_consumption - *terraform.NodeApplyableOutput
+    data.quake_usage.used - *terraform.NodeValidatableResource
+  provider.quake - *terraform.NodeApplyableProvider
+  provider.quake (close) - *terraform.graphNodeCloseProvider
+    data.quake_usage.used - *terraform.NodeValidatableResource
+    provider.quake - *terraform.NodeApplyableProvider
+  var.end - *terraform.NodeRootVariable
+  var.start - *terraform.NodeRootVariable
+  ------
+2020/04/20 16:54:56 [TRACE] Executing graph transform *terraform.CloseProvisionerTransformer
+2020/04/20 16:54:56 [TRACE] Completed graph transform *terraform.CloseProvisionerTransformer (no changes)
+2020/04/20 16:54:56 [TRACE] Executing graph transform *terraform.RootTransformer
+2020/04/20 16:54:56 [TRACE] Completed graph transform *terraform.RootTransformer with new graph:
+  data.quake_usage.used - *terraform.NodeValidatableResource
+    provider.quake - *terraform.NodeApplyableProvider
+    var.end - *terraform.NodeRootVariable
+    var.start - *terraform.NodeRootVariable
+  meta.count-boundary (EachMode fixup) - *terraform.NodeCountBoundary
+    data.quake_usage.used - *terraform.NodeValidatableResource
+    output.compute_consumption - *terraform.NodeApplyableOutput
+    output.volume_consumption - *terraform.NodeApplyableOutput
+    provider.quake - *terraform.NodeApplyableProvider
+    var.end - *terraform.NodeRootVariable
+    var.start - *terraform.NodeRootVariable
+  output.compute_consumption - *terraform.NodeApplyableOutput
+    data.quake_usage.used - *terraform.NodeValidatableResource
+  output.volume_consumption - *terraform.NodeApplyableOutput
+    data.quake_usage.used - *terraform.NodeValidatableResource
+  provider.quake - *terraform.NodeApplyableProvider
+  provider.quake (close) - *terraform.graphNodeCloseProvider
+    data.quake_usage.used - *terraform.NodeValidatableResource
+    provider.quake - *terraform.NodeApplyableProvider
+  root - terraform.graphNodeRoot
+    meta.count-boundary (EachMode fixup) - *terraform.NodeCountBoundary
+    provider.quake (close) - *terraform.graphNodeCloseProvider
+  var.end - *terraform.NodeRootVariable
+  var.start - *terraform.NodeRootVariable
+  ------
+2020/04/20 16:54:56 [TRACE] Executing graph transform *terraform.TransitiveReductionTransformer
+2020/04/20 16:54:56 [TRACE] Completed graph transform *terraform.TransitiveReductionTransformer with new graph:
+  data.quake_usage.used - *terraform.NodeValidatableResource
+    provider.quake - *terraform.NodeApplyableProvider
+    var.end - *terraform.NodeRootVariable
+    var.start - *terraform.NodeRootVariable
+  meta.count-boundary (EachMode fixup) - *terraform.NodeCountBoundary
+    output.compute_consumption - *terraform.NodeApplyableOutput
+    output.volume_consumption - *terraform.NodeApplyableOutput
+  output.compute_consumption - *terraform.NodeApplyableOutput
+    data.quake_usage.used - *terraform.NodeValidatableResource
+  output.volume_consumption - *terraform.NodeApplyableOutput
+    data.quake_usage.used - *terraform.NodeValidatableResource
+  provider.quake - *terraform.NodeApplyableProvider
+  provider.quake (close) - *terraform.graphNodeCloseProvider
+    data.quake_usage.used - *terraform.NodeValidatableResource
+  root - terraform.graphNodeRoot
+    meta.count-boundary (EachMode fixup) - *terraform.NodeCountBoundary
+    provider.quake (close) - *terraform.graphNodeCloseProvider
+  var.end - *terraform.NodeRootVariable
+  var.start - *terraform.NodeRootVariable
+  ------
+2020/04/20 16:54:56 [DEBUG] Starting graph walk: walkValidate
+2020/04/20 16:54:56 [TRACE] dag/walk: updating graph
+2020/04/20 16:54:56 [TRACE] dag/walk: added new vertex: "var.start"
+2020/04/20 16:54:56 [TRACE] dag/walk: added new vertex: "provider.quake"
+2020/04/20 16:54:56 [TRACE] dag/walk: added new vertex: "data.quake_usage.used"
+2020/04/20 16:54:56 [TRACE] dag/walk: added new vertex: "meta.count-boundary (EachMode fixup)"
+2020/04/20 16:54:56 [TRACE] dag/walk: added new vertex: "provider.quake (close)"
+2020/04/20 16:54:56 [TRACE] dag/walk: added new vertex: "output.volume_consumption"
+2020/04/20 16:54:56 [TRACE] dag/walk: added new vertex: "output.compute_consumption"
+2020/04/20 16:54:56 [TRACE] dag/walk: added new vertex: "var.end"
+2020/04/20 16:54:56 [TRACE] dag/walk: added new vertex: "root"
+2020/04/20 16:54:56 [TRACE] dag/walk: added edge: "output.compute_consumption" waiting on "data.quake_usage.used"
+2020/04/20 16:54:56 [TRACE] dag/walk: added edge: "meta.count-boundary (EachMode fixup)" waiting on "output.compute_consumption"
+2020/04/20 16:54:56 [TRACE] dag/walk: added edge: "data.quake_usage.used" waiting on "var.end"
+2020/04/20 16:54:56 [TRACE] dag/walk: added edge: "provider.quake (close)" waiting on "data.quake_usage.used"
+2020/04/20 16:54:56 [TRACE] dag/walk: added edge: "data.quake_usage.used" waiting on "provider.quake"
+2020/04/20 16:54:56 [TRACE] dag/walk: added edge: "meta.count-boundary (EachMode fixup)" waiting on "output.volume_consumption"
+2020/04/20 16:54:56 [TRACE] dag/walk: added edge: "data.quake_usage.used" waiting on "var.start"
+2020/04/20 16:54:56 [TRACE] dag/walk: added edge: "root" waiting on "meta.count-boundary (EachMode fixup)"
+2020/04/20 16:54:56 [TRACE] dag/walk: added edge: "output.volume_consumption" waiting on "data.quake_usage.used"
+2020/04/20 16:54:56 [TRACE] dag/walk: added edge: "root" waiting on "provider.quake (close)"
+2020/04/20 16:54:56 [TRACE] dag/walk: dependencies changed for "data.quake_usage.used", sending new deps
+2020/04/20 16:54:56 [TRACE] dag/walk: dependencies changed for "provider.quake (close)", sending new deps
+2020/04/20 16:54:56 [TRACE] dag/walk: dependencies changed for "root", sending new deps
+2020/04/20 16:54:56 [TRACE] dag/walk: dependencies changed for "output.volume_consumption", sending new deps
+2020/04/20 16:54:56 [TRACE] dag/walk: dependencies changed for "output.compute_consumption", sending new deps
+2020/04/20 16:54:56 [TRACE] dag/walk: dependencies changed for "meta.count-boundary (EachMode fixup)", sending new deps
+2020/04/20 16:54:56 [TRACE] dag/walk: visiting "provider.quake"
+2020/04/20 16:54:56 [TRACE] vertex "provider.quake": starting visit (*terraform.NodeApplyableProvider)
+2020/04/20 16:54:56 [TRACE] vertex "provider.quake": evaluating
+2020/04/20 16:54:56 [TRACE] dag/walk: visiting "var.end"
+2020/04/20 16:54:56 [TRACE] vertex "var.end": starting visit (*terraform.NodeRootVariable)
+2020/04/20 16:54:56 [TRACE] vertex "var.end": evaluating
+2020/04/20 16:54:56 [TRACE] dag/walk: visiting "var.start"
+2020/04/20 16:54:56 [TRACE] vertex "var.start": starting visit (*terraform.NodeRootVariable)
+2020/04/20 16:54:56 [TRACE] vertex "var.start": evaluating
+2020/04/20 16:54:56 [TRACE] [walkValidate] Entering eval tree: var.start
+2020/04/20 16:54:56 [TRACE] <root>: eval: *terraform.EvalSequence
+2020/04/20 16:54:56 [TRACE] [walkValidate] Exiting eval tree: var.start
+2020/04/20 16:54:56 [TRACE] vertex "var.start": visit complete
+2020/04/20 16:54:56 [TRACE] [walkValidate] Entering eval tree: var.end
+2020/04/20 16:54:56 [TRACE] <root>: eval: *terraform.EvalSequence
+2020/04/20 16:54:56 [TRACE] [walkValidate] Exiting eval tree: var.end
+2020/04/20 16:54:56 [TRACE] vertex "var.end": visit complete
+2020/04/20 16:54:56 [TRACE] [walkValidate] Entering eval tree: provider.quake
+2020/04/20 16:54:56 [TRACE] <root>: eval: *terraform.EvalSequence
+2020/04/20 16:54:56 [TRACE] <root>: eval: *terraform.EvalInitProvider
+2020-04-20T16:54:56.598Z [INFO]  plugin: configuring client automatic mTLS
+2020-04-20T16:54:56.664Z [DEBUG] plugin: starting plugin: path=/home/mark/.terraform.d/plugins/terraform-provider-quake_v0.0.1 args=[/home/mark/.terraform.d/plugins/terraform-provider-quake_v0.0.1]
+2020-04-20T16:54:56.664Z [DEBUG] plugin: plugin started: path=/home/mark/.terraform.d/plugins/terraform-provider-quake_v0.0.1 pid=25149
+2020-04-20T16:54:56.664Z [DEBUG] plugin: waiting for RPC address: path=/home/mark/.terraform.d/plugins/terraform-provider-quake_v0.0.1
+2020-04-20T16:54:56.682Z [INFO]  plugin.terraform-provider-quake_v0.0.1: configuring server automatic mTLS: timestamp=2020-04-20T16:54:56.682Z
+2020-04-20T16:54:56.745Z [DEBUG] plugin: using plugin: version=5
+2020-04-20T16:54:56.745Z [DEBUG] plugin.terraform-provider-quake_v0.0.1: plugin address: address=/tmp/plugin251346619 network=unix timestamp=2020-04-20T16:54:56.745Z
+2020/04/20 16:54:56 [TRACE] BuiltinEvalContext: Initialized "quake" provider for provider.quake
+2020/04/20 16:54:56 [TRACE] <root>: eval: terraform.EvalNoop
+2020/04/20 16:54:56 [TRACE] <root>: eval: *terraform.EvalOpFilter
+2020/04/20 16:54:56 [TRACE] <root>: eval: *terraform.EvalSequence
+2020/04/20 16:54:56 [TRACE] <root>: eval: *terraform.EvalGetProvider
+2020/04/20 16:54:56 [TRACE] <root>: eval: *terraform.EvalValidateProvider
+2020/04/20 16:54:56 [TRACE] buildProviderConfig for provider.quake: using explicit config only
+2020/04/20 16:54:56 [TRACE] GRPCProvider: GetSchema
+2020/04/20 16:54:56 [TRACE] GRPCProvider: PrepareProviderConfig
+2020/04/20 16:54:56 [TRACE] <root>: eval: terraform.EvalNoop
+2020/04/20 16:54:56 [TRACE] <root>: eval: terraform.EvalNoop
+2020/04/20 16:54:56 [TRACE] [walkValidate] Exiting eval tree: provider.quake
+2020/04/20 16:54:56 [TRACE] vertex "provider.quake": visit complete
+2020/04/20 16:54:56 [TRACE] dag/walk: visiting "data.quake_usage.used"
+2020/04/20 16:54:56 [TRACE] vertex "data.quake_usage.used": starting visit (*terraform.NodeValidatableResource)
+2020/04/20 16:54:56 [TRACE] vertex "data.quake_usage.used": evaluating
+2020/04/20 16:54:56 [TRACE] [walkValidate] Entering eval tree: data.quake_usage.used
+2020/04/20 16:54:56 [TRACE] <root>: eval: *terraform.EvalSequence
+2020/04/20 16:54:56 [TRACE] <root>: eval: *terraform.EvalGetProvider
+2020/04/20 16:54:56 [TRACE] <root>: eval: *terraform.EvalValidateResource
+2020/04/20 16:54:56 [TRACE] GRPCProvider: ValidateDataSourceConfig
+2020/04/20 16:54:56 [TRACE] [walkValidate] Exiting eval tree: data.quake_usage.used
+2020/04/20 16:54:56 [TRACE] vertex "data.quake_usage.used": visit complete
+2020/04/20 16:54:56 [TRACE] dag/walk: visiting "provider.quake (close)"
+2020/04/20 16:54:56 [TRACE] dag/walk: visiting "output.volume_consumption"
+2020/04/20 16:54:56 [TRACE] vertex "output.volume_consumption": starting visit (*terraform.NodeApplyableOutput)
+2020/04/20 16:54:56 [TRACE] dag/walk: visiting "output.compute_consumption"
+2020/04/20 16:54:56 [TRACE] vertex "output.compute_consumption": starting visit (*terraform.NodeApplyableOutput)
+2020/04/20 16:54:56 [TRACE] vertex "output.volume_consumption": evaluating
+2020/04/20 16:54:56 [TRACE] vertex "provider.quake (close)": starting visit (*terraform.graphNodeCloseProvider)
+2020/04/20 16:54:56 [TRACE] [walkValidate] Entering eval tree: output.volume_consumption
+2020/04/20 16:54:56 [TRACE] <root>: eval: *terraform.EvalSequence
+2020/04/20 16:54:56 [TRACE] vertex "provider.quake (close)": evaluating
+2020/04/20 16:54:56 [TRACE] [walkValidate] Entering eval tree: provider.quake (close)
+2020/04/20 16:54:56 [TRACE] <root>: eval: *terraform.EvalCloseProvider
+2020/04/20 16:54:56 [TRACE] GRPCProvider: Close
+2020/04/20 16:54:56 [TRACE] vertex "output.compute_consumption": evaluating
+2020/04/20 16:54:56 [TRACE] [walkValidate] Entering eval tree: output.compute_consumption
+2020/04/20 16:54:56 [TRACE] <root>: eval: *terraform.EvalOpFilter
+2020/04/20 16:54:56 [TRACE] <root>: eval: *terraform.EvalWriteOutput
+2020/04/20 16:54:56 [TRACE] <root>: eval: *terraform.EvalSequence
+2020/04/20 16:54:56 [TRACE] <root>: eval: *terraform.EvalOpFilter
+2020/04/20 16:54:56 [TRACE] <root>: eval: *terraform.EvalWriteOutput
+2020/04/20 16:54:56 [TRACE] EvalWriteOutput: Removing output.volume_consumption from state (it is now null)
+2020/04/20 16:54:56 [TRACE] EvalWriteOutput: Removing output.compute_consumption from state (it is now null)
+2020/04/20 16:54:56 [TRACE] EvalWriteOutput: Saving Create change for output.volume_consumption in changeset
+2020/04/20 16:54:56 [TRACE] EvalWriteOutput: Saving Create change for output.compute_consumption in changeset
+2020/04/20 16:54:56 [TRACE] [walkValidate] Exiting eval tree: output.volume_consumption
+2020/04/20 16:54:56 [TRACE] vertex "output.volume_consumption": visit complete
+2020/04/20 16:54:56 [TRACE] [walkValidate] Exiting eval tree: output.compute_consumption
+2020/04/20 16:54:56 [TRACE] vertex "output.compute_consumption": visit complete
+2020/04/20 16:54:56 [TRACE] dag/walk: visiting "meta.count-boundary (EachMode fixup)"
+2020/04/20 16:54:56 [TRACE] vertex "meta.count-boundary (EachMode fixup)": starting visit (*terraform.NodeCountBoundary)
+2020/04/20 16:54:56 [TRACE] vertex "meta.count-boundary (EachMode fixup)": evaluating
+2020/04/20 16:54:56 [TRACE] [walkValidate] Entering eval tree: meta.count-boundary (EachMode fixup)
+2020/04/20 16:54:56 [TRACE] <root>: eval: *terraform.EvalCountFixZeroOneBoundaryGlobal
+2020/04/20 16:54:56 [TRACE] [walkValidate] Exiting eval tree: meta.count-boundary (EachMode fixup)
+2020/04/20 16:54:56 [TRACE] vertex "meta.count-boundary (EachMode fixup)": visit complete
+2020-04-20T16:54:56.877Z [DEBUG] plugin: plugin process exited: path=/home/mark/.terraform.d/plugins/terraform-provider-quake_v0.0.1 pid=25149
+2020-04-20T16:54:56.877Z [DEBUG] plugin: plugin exited
+2020/04/20 16:54:56 [TRACE] [walkValidate] Exiting eval tree: provider.quake (close)
+2020/04/20 16:54:56 [TRACE] vertex "provider.quake (close)": visit complete
+2020/04/20 16:54:56 [TRACE] dag/walk: visiting "root"
+2020/04/20 16:54:56 [TRACE] vertex "root": starting visit (terraform.graphNodeRoot)
+2020/04/20 16:54:56 [TRACE] vertex "root": visit complete
+2020/04/20 16:54:56 [INFO] backend/local: apply calling Refresh
+2020/04/20 16:54:56 [INFO] terraform: building graph: GraphTypeRefresh
+2020/04/20 16:54:56 [TRACE] No managed resources in state during refresh; skipping managed resource transformer
+2020/04/20 16:54:56 [TRACE] Executing graph transform *terraform.ConfigTransformer
+2020/04/20 16:54:56 [TRACE] ConfigTransformer: Starting for path: 
+2020/04/20 16:54:56 [TRACE] Completed graph transform *terraform.ConfigTransformer with new graph:
+  data.quake_usage.used - *terraform.NodeRefreshableDataResource
+  ------
+2020/04/20 16:54:56 [TRACE] Executing graph transform *terraform.OrphanResourceInstanceTransformer
+2020/04/20 16:54:56 [TRACE] Completed graph transform *terraform.OrphanResourceInstanceTransformer (no changes)
+2020/04/20 16:54:56 [TRACE] Executing graph transform *terraform.StateTransformer
+2020/04/20 16:54:56 [TRACE] StateTransformer: state is empty, so nothing to do
+2020/04/20 16:54:56 [TRACE] Completed graph transform *terraform.StateTransformer (no changes)
+2020/04/20 16:54:56 [TRACE] Executing graph transform *terraform.AttachStateTransformer
+2020/04/20 16:54:56 [TRACE] Completed graph transform *terraform.AttachStateTransformer (no changes)
+2020/04/20 16:54:56 [TRACE] Executing graph transform *terraform.AttachResourceConfigTransformer
+2020/04/20 16:54:56 [TRACE] AttachResourceConfigTransformer: attaching to "data.quake_usage.used" (*terraform.NodeRefreshableDataResource) config from hcl.Range{Filename:"main.tf", Start:hcl.Pos{Line:5, Column:1, Byte:23}, End:hcl.Pos{Line:5, Column:26, Byte:48}}
+2020/04/20 16:54:56 [TRACE] Completed graph transform *terraform.AttachResourceConfigTransformer (no changes)
+2020/04/20 16:54:56 [TRACE] Executing graph transform *terraform.RootVariableTransformer
+2020/04/20 16:54:56 [TRACE] Completed graph transform *terraform.RootVariableTransformer with new graph:
+  data.quake_usage.used - *terraform.NodeRefreshableDataResource
+  var.end - *terraform.NodeRootVariable
+  var.start - *terraform.NodeRootVariable
+  ------
+2020/04/20 16:54:56 [TRACE] Executing graph transform *terraform.LocalTransformer
+2020/04/20 16:54:56 [TRACE] Completed graph transform *terraform.LocalTransformer (no changes)
+2020/04/20 16:54:56 [TRACE] Executing graph transform *terraform.OutputTransformer
+2020/04/20 16:54:56 [TRACE] Completed graph transform *terraform.OutputTransformer with new graph:
+  data.quake_usage.used - *terraform.NodeRefreshableDataResource
+  output.compute_consumption - *terraform.NodeApplyableOutput
+  output.volume_consumption - *terraform.NodeApplyableOutput
+  var.end - *terraform.NodeRootVariable
+  var.start - *terraform.NodeRootVariable
+  ------
+2020/04/20 16:54:56 [TRACE] Executing graph transform *terraform.ModuleVariableTransformer
+2020/04/20 16:54:56 [TRACE] Completed graph transform *terraform.ModuleVariableTransformer (no changes)
+2020/04/20 16:54:56 [TRACE] Executing graph transform *terraform.graphTransformerMulti
+2020/04/20 16:54:56 [TRACE] (graphTransformerMulti) Executing graph transform *terraform.ProviderConfigTransformer
+2020/04/20 16:54:56 [TRACE] ProviderConfigTransformer: attaching to "provider.quake" provider configuration from main.tf:1,1-17
+2020/04/20 16:54:56 [TRACE] (graphTransformerMulti) Completed graph transform *terraform.ProviderConfigTransformer with new graph:
+  data.quake_usage.used - *terraform.NodeRefreshableDataResource
+  output.compute_consumption - *terraform.NodeApplyableOutput
+  output.volume_consumption - *terraform.NodeApplyableOutput
+  provider.quake - *terraform.NodeApplyableProvider
+  var.end - *terraform.NodeRootVariable
+  var.start - *terraform.NodeRootVariable
+  ------
+2020/04/20 16:54:56 [TRACE] (graphTransformerMulti) Executing graph transform *terraform.MissingProviderTransformer
+2020/04/20 16:54:56 [TRACE] (graphTransformerMulti) Completed graph transform *terraform.MissingProviderTransformer (no changes)
+2020/04/20 16:54:56 [TRACE] (graphTransformerMulti) Executing graph transform *terraform.ProviderTransformer
+2020/04/20 16:54:56 [TRACE] ProviderTransformer: data.quake_usage.used is provided by provider.quake or inherited equivalent
+2020/04/20 16:54:56 [TRACE] ProviderTransformer: exact match for provider.quake serving data.quake_usage.used
+2020/04/20 16:54:56 [DEBUG] ProviderTransformer: "data.quake_usage.used" (*terraform.NodeRefreshableDataResource) needs provider.quake
+2020/04/20 16:54:56 [TRACE] (graphTransformerMulti) Completed graph transform *terraform.ProviderTransformer with new graph:
+  data.quake_usage.used - *terraform.NodeRefreshableDataResource
+    provider.quake - *terraform.NodeApplyableProvider
+  output.compute_consumption - *terraform.NodeApplyableOutput
+  output.volume_consumption - *terraform.NodeApplyableOutput
+  provider.quake - *terraform.NodeApplyableProvider
+  var.end - *terraform.NodeRootVariable
+  var.start - *terraform.NodeRootVariable
+  ------
+2020/04/20 16:54:56 [TRACE] (graphTransformerMulti) Executing graph transform *terraform.PruneProviderTransformer
+2020/04/20 16:54:56 [TRACE] (graphTransformerMulti) Completed graph transform *terraform.PruneProviderTransformer (no changes)
+2020/04/20 16:54:56 [TRACE] (graphTransformerMulti) Executing graph transform *terraform.ParentProviderTransformer
+2020/04/20 16:54:56 [TRACE] (graphTransformerMulti) Completed graph transform *terraform.ParentProviderTransformer (no changes)
+2020/04/20 16:54:56 [TRACE] Completed graph transform *terraform.graphTransformerMulti with new graph:
+  data.quake_usage.used - *terraform.NodeRefreshableDataResource
+    provider.quake - *terraform.NodeApplyableProvider
+  output.compute_consumption - *terraform.NodeApplyableOutput
+  output.volume_consumption - *terraform.NodeApplyableOutput
+  provider.quake - *terraform.NodeApplyableProvider
+  var.end - *terraform.NodeRootVariable
+  var.start - *terraform.NodeRootVariable
+  ------
+2020/04/20 16:54:56 [TRACE] Executing graph transform *terraform.AttachSchemaTransformer
+2020/04/20 16:54:56 [TRACE] AttachSchemaTransformer: attaching provider config schema to provider.quake
+2020/04/20 16:54:56 [TRACE] AttachSchemaTransformer: attaching resource schema to data.quake_usage.used
+2020/04/20 16:54:56 [TRACE] Completed graph transform *terraform.AttachSchemaTransformer (no changes)
+2020/04/20 16:54:56 [TRACE] Executing graph transform *terraform.ReferenceTransformer
+2020/04/20 16:54:56 [DEBUG] ReferenceTransformer: "data.quake_usage.used" references: [var.end var.start]
+2020/04/20 16:54:56 [DEBUG] ReferenceTransformer: "var.start" references: []
+2020/04/20 16:54:56 [DEBUG] ReferenceTransformer: "var.end" references: []
+2020/04/20 16:54:56 [DEBUG] ReferenceTransformer: "output.compute_consumption" references: [data.quake_usage.used]
+2020/04/20 16:54:56 [DEBUG] ReferenceTransformer: "output.volume_consumption" references: [data.quake_usage.used]
+2020/04/20 16:54:56 [DEBUG] ReferenceTransformer: "provider.quake" references: []
+2020/04/20 16:54:56 [TRACE] Completed graph transform *terraform.ReferenceTransformer with new graph:
+  data.quake_usage.used - *terraform.NodeRefreshableDataResource
+    provider.quake - *terraform.NodeApplyableProvider
+    var.end - *terraform.NodeRootVariable
+    var.start - *terraform.NodeRootVariable
+  output.compute_consumption - *terraform.NodeApplyableOutput
+    data.quake_usage.used - *terraform.NodeRefreshableDataResource
+  output.volume_consumption - *terraform.NodeApplyableOutput
+    data.quake_usage.used - *terraform.NodeRefreshableDataResource
+  provider.quake - *terraform.NodeApplyableProvider
+  var.end - *terraform.NodeRootVariable
+  var.start - *terraform.NodeRootVariable
+  ------
+2020/04/20 16:54:56 [TRACE] Executing graph transform *terraform.AttachDependenciesTransformer
+2020/04/20 16:54:56 [TRACE] Completed graph transform *terraform.AttachDependenciesTransformer (no changes)
+2020/04/20 16:54:56 [TRACE] Executing graph transform *terraform.TargetsTransformer
+2020/04/20 16:54:56 [TRACE] Completed graph transform *terraform.TargetsTransformer (no changes)
+2020/04/20 16:54:56 [TRACE] Executing graph transform *terraform.CloseProviderTransformer
+2020/04/20 16:54:56 [TRACE] Completed graph transform *terraform.CloseProviderTransformer with new graph:
+  data.quake_usage.used - *terraform.NodeRefreshableDataResource
+    provider.quake - *terraform.NodeApplyableProvider
+    var.end - *terraform.NodeRootVariable
+    var.start - *terraform.NodeRootVariable
+  output.compute_consumption - *terraform.NodeApplyableOutput
+    data.quake_usage.used - *terraform.NodeRefreshableDataResource
+  output.volume_consumption - *terraform.NodeApplyableOutput
+    data.quake_usage.used - *terraform.NodeRefreshableDataResource
+  provider.quake - *terraform.NodeApplyableProvider
+  provider.quake (close) - *terraform.graphNodeCloseProvider
+    data.quake_usage.used - *terraform.NodeRefreshableDataResource
+    provider.quake - *terraform.NodeApplyableProvider
+  var.end - *terraform.NodeRootVariable
+  var.start - *terraform.NodeRootVariable
+  ------
+2020/04/20 16:54:56 [TRACE] Executing graph transform *terraform.RootTransformer
+2020/04/20 16:54:56 [TRACE] Completed graph transform *terraform.RootTransformer with new graph:
+  data.quake_usage.used - *terraform.NodeRefreshableDataResource
+    provider.quake - *terraform.NodeApplyableProvider
+    var.end - *terraform.NodeRootVariable
+    var.start - *terraform.NodeRootVariable
+  output.compute_consumption - *terraform.NodeApplyableOutput
+    data.quake_usage.used - *terraform.NodeRefreshableDataResource
+  output.volume_consumption - *terraform.NodeApplyableOutput
+    data.quake_usage.used - *terraform.NodeRefreshableDataResource
+  provider.quake - *terraform.NodeApplyableProvider
+  provider.quake (close) - *terraform.graphNodeCloseProvider
+    data.quake_usage.used - *terraform.NodeRefreshableDataResource
+    provider.quake - *terraform.NodeApplyableProvider
+  root - terraform.graphNodeRoot
+    output.compute_consumption - *terraform.NodeApplyableOutput
+    output.volume_consumption - *terraform.NodeApplyableOutput
+    provider.quake (close) - *terraform.graphNodeCloseProvider
+  var.end - *terraform.NodeRootVariable
+  var.start - *terraform.NodeRootVariable
+  ------
+2020/04/20 16:54:56 [TRACE] Executing graph transform *terraform.TransitiveReductionTransformer
+2020/04/20 16:54:56 [TRACE] Completed graph transform *terraform.TransitiveReductionTransformer with new graph:
+  data.quake_usage.used - *terraform.NodeRefreshableDataResource
+    provider.quake - *terraform.NodeApplyableProvider
+    var.end - *terraform.NodeRootVariable
+    var.start - *terraform.NodeRootVariable
+  output.compute_consumption - *terraform.NodeApplyableOutput
+    data.quake_usage.used - *terraform.NodeRefreshableDataResource
+  output.volume_consumption - *terraform.NodeApplyableOutput
+    data.quake_usage.used - *terraform.NodeRefreshableDataResource
+  provider.quake - *terraform.NodeApplyableProvider
+  provider.quake (close) - *terraform.graphNodeCloseProvider
+    data.quake_usage.used - *terraform.NodeRefreshableDataResource
+  root - terraform.graphNodeRoot
+    output.compute_consumption - *terraform.NodeApplyableOutput
+    output.volume_consumption - *terraform.NodeApplyableOutput
+    provider.quake (close) - *terraform.graphNodeCloseProvider
+  var.end - *terraform.NodeRootVariable
+  var.start - *terraform.NodeRootVariable
+  ------
+2020/04/20 16:54:56 [DEBUG] Starting graph walk: walkRefresh
+2020/04/20 16:54:56 [TRACE] dag/walk: updating graph
+2020/04/20 16:54:56 [TRACE] dag/walk: added new vertex: "var.end"
+2020/04/20 16:54:56 [TRACE] dag/walk: added new vertex: "output.compute_consumption"
+2020/04/20 16:54:56 [TRACE] dag/walk: added new vertex: "output.volume_consumption"
+2020/04/20 16:54:56 [TRACE] dag/walk: added new vertex: "provider.quake"
+2020/04/20 16:54:56 [TRACE] dag/walk: added new vertex: "provider.quake (close)"
+2020/04/20 16:54:56 [TRACE] dag/walk: added new vertex: "root"
+2020/04/20 16:54:56 [TRACE] dag/walk: added new vertex: "data.quake_usage.used"
+2020/04/20 16:54:56 [TRACE] dag/walk: added new vertex: "var.start"
+2020/04/20 16:54:56 [TRACE] dag/walk: added edge: "provider.quake (close)" waiting on "data.quake_usage.used"
+2020/04/20 16:54:56 [TRACE] dag/walk: added edge: "root" waiting on "output.volume_consumption"
+2020/04/20 16:54:56 [TRACE] dag/walk: added edge: "data.quake_usage.used" waiting on "var.start"
+2020/04/20 16:54:56 [TRACE] dag/walk: added edge: "root" waiting on "provider.quake (close)"
+2020/04/20 16:54:56 [TRACE] dag/walk: added edge: "data.quake_usage.used" waiting on "var.end"
+2020/04/20 16:54:56 [TRACE] dag/walk: added edge: "root" waiting on "output.compute_consumption"
+2020/04/20 16:54:56 [TRACE] dag/walk: added edge: "data.quake_usage.used" waiting on "provider.quake"
+2020/04/20 16:54:56 [TRACE] dag/walk: added edge: "output.volume_consumption" waiting on "data.quake_usage.used"
+2020/04/20 16:54:56 [TRACE] dag/walk: added edge: "output.compute_consumption" waiting on "data.quake_usage.used"
+2020/04/20 16:54:56 [TRACE] dag/walk: dependencies changed for "root", sending new deps
+2020/04/20 16:54:56 [TRACE] dag/walk: dependencies changed for "data.quake_usage.used", sending new deps
+2020/04/20 16:54:56 [TRACE] dag/walk: dependencies changed for "output.volume_consumption", sending new deps
+2020/04/20 16:54:56 [TRACE] dag/walk: dependencies changed for "output.compute_consumption", sending new deps
+2020/04/20 16:54:56 [TRACE] dag/walk: dependencies changed for "provider.quake (close)", sending new deps
+2020/04/20 16:54:56 [TRACE] dag/walk: visiting "var.start"
+2020/04/20 16:54:56 [TRACE] vertex "var.start": starting visit (*terraform.NodeRootVariable)
+2020/04/20 16:54:56 [TRACE] vertex "var.start": evaluating
+2020/04/20 16:54:56 [TRACE] [walkRefresh] Entering eval tree: var.start
+2020/04/20 16:54:56 [TRACE] <root>: eval: *terraform.EvalSequence
+2020/04/20 16:54:56 [TRACE] [walkRefresh] Exiting eval tree: var.start
+2020/04/20 16:54:56 [TRACE] dag/walk: visiting "var.end"
+2020/04/20 16:54:56 [TRACE] dag/walk: visiting "provider.quake"
+2020/04/20 16:54:56 [TRACE] vertex "provider.quake": starting visit (*terraform.NodeApplyableProvider)
+2020/04/20 16:54:56 [TRACE] vertex "provider.quake": evaluating
+2020/04/20 16:54:56 [TRACE] [walkRefresh] Entering eval tree: provider.quake
+2020/04/20 16:54:56 [TRACE] <root>: eval: *terraform.EvalSequence
+2020/04/20 16:54:56 [TRACE] <root>: eval: *terraform.EvalInitProvider
+2020/04/20 16:54:56 [TRACE] vertex "var.end": starting visit (*terraform.NodeRootVariable)
+2020/04/20 16:54:56 [TRACE] vertex "var.end": evaluating
+2020/04/20 16:54:56 [TRACE] [walkRefresh] Entering eval tree: var.end
+2020/04/20 16:54:56 [TRACE] <root>: eval: *terraform.EvalSequence
+2020/04/20 16:54:56 [TRACE] [walkRefresh] Exiting eval tree: var.end
+2020/04/20 16:54:56 [TRACE] vertex "var.end": visit complete
+2020/04/20 16:54:56 [TRACE] vertex "var.start": visit complete
+2020-04-20T16:54:56.879Z [INFO]  plugin: configuring client automatic mTLS
+2020-04-20T16:54:56.941Z [DEBUG] plugin: starting plugin: path=/home/mark/.terraform.d/plugins/terraform-provider-quake_v0.0.1 args=[/home/mark/.terraform.d/plugins/terraform-provider-quake_v0.0.1]
+2020-04-20T16:54:56.941Z [DEBUG] plugin: plugin started: path=/home/mark/.terraform.d/plugins/terraform-provider-quake_v0.0.1 pid=25179
+2020-04-20T16:54:56.941Z [DEBUG] plugin: waiting for RPC address: path=/home/mark/.terraform.d/plugins/terraform-provider-quake_v0.0.1
+2020-04-20T16:54:56.957Z [INFO]  plugin.terraform-provider-quake_v0.0.1: configuring server automatic mTLS: timestamp=2020-04-20T16:54:56.956Z
+2020-04-20T16:54:57.026Z [DEBUG] plugin: using plugin: version=5
+2020-04-20T16:54:57.027Z [DEBUG] plugin.terraform-provider-quake_v0.0.1: plugin address: network=unix address=/tmp/plugin227859247 timestamp=2020-04-20T16:54:57.026Z
+2020/04/20 16:54:57 [TRACE] BuiltinEvalContext: Initialized "quake" provider for provider.quake
+2020/04/20 16:54:57 [TRACE] <root>: eval: terraform.EvalNoop
+2020/04/20 16:54:57 [TRACE] <root>: eval: terraform.EvalNoop
+2020/04/20 16:54:57 [TRACE] <root>: eval: *terraform.EvalOpFilter
+2020/04/20 16:54:57 [TRACE] <root>: eval: *terraform.EvalSequence
+2020/04/20 16:54:57 [TRACE] <root>: eval: *terraform.EvalGetProvider
+2020/04/20 16:54:57 [TRACE] <root>: eval: *terraform.EvalOpFilter
+2020/04/20 16:54:57 [TRACE] <root>: eval: *terraform.EvalSequence
+2020/04/20 16:54:57 [TRACE] <root>: eval: *terraform.EvalConfigProvider
+2020/04/20 16:54:57 [TRACE] buildProviderConfig for provider.quake: using explicit config only
+2020/04/20 16:54:57 [TRACE] GRPCProvider: GetSchema
+2020/04/20 16:54:57 [TRACE] GRPCProvider: Configure
+2020/04/20 16:54:57 [TRACE] [walkRefresh] Exiting eval tree: provider.quake
+2020/04/20 16:54:57 [TRACE] vertex "provider.quake": visit complete
+2020/04/20 16:54:57 [TRACE] dag/walk: visiting "data.quake_usage.used"
+2020/04/20 16:54:57 [TRACE] vertex "data.quake_usage.used": starting visit (*terraform.NodeRefreshableDataResource)
+2020/04/20 16:54:57 [TRACE] vertex "data.quake_usage.used": expanding dynamic subgraph
+2020/04/20 16:54:57 [TRACE] Executing graph transform *terraform.ResourceCountTransformer
+2020/04/20 16:54:57 [TRACE] Completed graph transform *terraform.ResourceCountTransformer with new graph:
+  data.quake_usage.used - *terraform.NodeRefreshableDataResourceInstance
+  ------
+2020/04/20 16:54:57 [TRACE] Executing graph transform *terraform.OrphanResourceCountTransformer
+2020/04/20 16:54:57 [TRACE] Completed graph transform *terraform.OrphanResourceCountTransformer (no changes)
+2020/04/20 16:54:57 [TRACE] Executing graph transform *terraform.AttachStateTransformer
+2020/04/20 16:54:57 [DEBUG] Resource state not found for node "data.quake_usage.used", instance data.quake_usage.used
+2020/04/20 16:54:57 [TRACE] Completed graph transform *terraform.AttachStateTransformer (no changes)
+2020/04/20 16:54:57 [TRACE] Executing graph transform *terraform.TargetsTransformer
+2020/04/20 16:54:57 [TRACE] Completed graph transform *terraform.TargetsTransformer (no changes)
+2020/04/20 16:54:57 [TRACE] Executing graph transform *terraform.ReferenceTransformer
+2020/04/20 16:54:57 [DEBUG] ReferenceTransformer: "data.quake_usage.used" references: []
+2020/04/20 16:54:57 [TRACE] Completed graph transform *terraform.ReferenceTransformer (no changes)
+2020/04/20 16:54:57 [TRACE] Executing graph transform *terraform.RootTransformer
+2020/04/20 16:54:57 [TRACE] Completed graph transform *terraform.RootTransformer (no changes)
+2020/04/20 16:54:57 [TRACE] vertex "data.quake_usage.used": entering dynamic subgraph
+2020/04/20 16:54:57 [TRACE] dag/walk: updating graph
+2020/04/20 16:54:57 [TRACE] dag/walk: added new vertex: "data.quake_usage.used"
+2020/04/20 16:54:57 [TRACE] dag/walk: visiting "data.quake_usage.used"
+2020/04/20 16:54:57 [TRACE] vertex "data.quake_usage.used": starting visit (*terraform.NodeRefreshableDataResourceInstance)
+2020/04/20 16:54:57 [TRACE] vertex "data.quake_usage.used": evaluating
+2020/04/20 16:54:57 [TRACE] [walkRefresh] Entering eval tree: data.quake_usage.used
+2020/04/20 16:54:57 [TRACE] <root>: eval: *terraform.EvalSequence
+2020/04/20 16:54:57 [TRACE] <root>: eval: *terraform.EvalGetProvider
+2020/04/20 16:54:57 [TRACE] <root>: eval: *terraform.EvalWriteState
+2020/04/20 16:54:57 [TRACE] EvalWriteState: removing state object for data.quake_usage.used
+2020/04/20 16:54:57 [TRACE] <root>: eval: *terraform.EvalReadData
+2020/04/20 16:54:57 [TRACE] EvalReadData: working on data.quake_usage.used
+2020/04/20 16:54:57 [TRACE] Re-validating config for data.quake_usage.used
+2020/04/20 16:54:57 [TRACE] GRPCProvider: ValidateDataSourceConfig
+2020/04/20 16:54:57 [TRACE] EvalReadData: data.quake_usage.used configuration is complete, so reading from provider
+2020/04/20 16:54:57 [TRACE] GRPCProvider: ReadDataSource
+2020-04-20T16:54:57.182Z [DEBUG] plugin.terraform-provider-quake_v0.0.1: panic: "{\"Data\": \"empty\"}"
+2020-04-20T16:54:57.182Z [DEBUG] plugin.terraform-provider-quake_v0.0.1: 
+2020-04-20T16:54:57.182Z [DEBUG] plugin.terraform-provider-quake_v0.0.1: 
+2020-04-20T16:54:57.182Z [DEBUG] plugin.terraform-provider-quake_v0.0.1: goroutine 84 [running]:
+2020-04-20T16:54:57.182Z [DEBUG] plugin.terraform-provider-quake_v0.0.1: github.com/quattronetworks/quake-client/v1/go-client.(*UsageApiService).Get(0xc00055b1d8, 0x13b0120, 0xc000174f00, 0x0, 0xed5ae16c0, 0x0, 0x0, 0xed6260f40, 0x0, 0x0, ...)
+2020-04-20T16:54:57.182Z [DEBUG] plugin.terraform-provider-quake_v0.0.1: 	/home/mark/code/src/github.com/quattronetworks/quake-client/v1/go-client/api_usage.go:103 +0xb95
+2020-04-20T16:54:57.182Z [DEBUG] plugin.terraform-provider-quake_v0.0.1: github.com/quattronetworks/quake-client/terraform/quake.resourceQuakeUsageRead(0xc0001948c0, 0xee3760, 0xc0004a9300, 0xc0001948c0, 0x0)
+2020-04-20T16:54:57.182Z [DEBUG] plugin.terraform-provider-quake_v0.0.1: 	/home/mark/code/src/github.com/quattronetworks/quake-client/terraform/quake/datasource_usage.go:236 +0x290
+2020-04-20T16:54:57.182Z [DEBUG] plugin.terraform-provider-quake_v0.0.1: github.com/hashicorp/terraform/helper/schema.(*Resource).ReadDataApply(0xc00014d480, 0xc00017e660, 0xee3760, 0xc0004a9300, 0xc0004a6648, 0x1, 0x0)
+2020-04-20T16:54:57.182Z [DEBUG] plugin.terraform-provider-quake_v0.0.1: 	/home/mark/code/src/github.com/quattronetworks/quake-client/vendor/github.com/hashicorp/terraform/helper/schema/resource.go:398 +0x88
+2020-04-20T16:54:57.182Z [DEBUG] plugin.terraform-provider-quake_v0.0.1: github.com/hashicorp/terraform/helper/schema.(*Provider).ReadDataApply(0xc00014d500, 0xc0000efaf0, 0xc00017e660, 0xc00017e660, 0x0, 0x0)
+2020-04-20T16:54:57.182Z [DEBUG] plugin.terraform-provider-quake_v0.0.1: 	/home/mark/code/src/github.com/quattronetworks/quake-client/vendor/github.com/hashicorp/terraform/helper/schema/provider.go:446 +0x17f
+2020-04-20T16:54:57.182Z [DEBUG] plugin.terraform-provider-quake_v0.0.1: github.com/hashicorp/terraform/helper/plugin.(*GRPCProviderServer).ReadDataSource(0xc00000ea50, 0x13b0120, 0xc000623260, 0xc0002e29c0, 0xc00000ea50, 0xc000623260, 0xc000289ba8)
+2020-04-20T16:54:57.182Z [DEBUG] plugin.terraform-provider-quake_v0.0.1: 	/home/mark/code/src/github.com/quattronetworks/quake-client/vendor/github.com/hashicorp/terraform/helper/plugin/grpc_provider.go:1036 +0x45f
+2020-04-20T16:54:57.182Z [DEBUG] plugin.terraform-provider-quake_v0.0.1: github.com/hashicorp/terraform/internal/tfplugin5._Provider_ReadDataSource_Handler(0x1099760, 0xc00000ea50, 0x13b0120, 0xc000623260, 0xc0004929b0, 0x0, 0x13b0120, 0xc000623260, 0xc00001a1c0, 0x64)
+2020-04-20T16:54:57.182Z [DEBUG] plugin.terraform-provider-quake_v0.0.1: 	/home/mark/code/src/github.com/quattronetworks/quake-client/vendor/github.com/hashicorp/terraform/internal/tfplugin5/tfplugin5.pb.go:3225 +0x23e
+2020-04-20T16:54:57.182Z [DEBUG] plugin.terraform-provider-quake_v0.0.1: google.golang.org/grpc.(*Server).processUnaryRPC(0xc0005cec00, 0x13bc4e0, 0xc0005cf380, 0xc0006c8100, 0xc00015a3f0, 0x1bce7f0, 0x0, 0x0, 0x0)
+2020-04-20T16:54:57.182Z [DEBUG] plugin.terraform-provider-quake_v0.0.1: 	/home/mark/code/src/github.com/quattronetworks/quake-client/vendor/google.golang.org/grpc/server.go:998 +0x470
+2020-04-20T16:54:57.182Z [DEBUG] plugin.terraform-provider-quake_v0.0.1: google.golang.org/grpc.(*Server).handleStream(0xc0005cec00, 0x13bc4e0, 0xc0005cf380, 0xc0006c8100, 0x0)
+2020-04-20T16:54:57.182Z [DEBUG] plugin.terraform-provider-quake_v0.0.1: 	/home/mark/code/src/github.com/quattronetworks/quake-client/vendor/google.golang.org/grpc/server.go:1278 +0xda6
+2020-04-20T16:54:57.182Z [DEBUG] plugin.terraform-provider-quake_v0.0.1: google.golang.org/grpc.(*Server).serveStreams.func1.1(0xc00003a090, 0xc0005cec00, 0x13bc4e0, 0xc0005cf380, 0xc0006c8100)
+2020-04-20T16:54:57.182Z [DEBUG] plugin.terraform-provider-quake_v0.0.1: 	/home/mark/code/src/github.com/quattronetworks/quake-client/vendor/google.golang.org/grpc/server.go:717 +0x9f
+2020-04-20T16:54:57.182Z [DEBUG] plugin.terraform-provider-quake_v0.0.1: created by google.golang.org/grpc.(*Server).serveStreams.func1
+2020-04-20T16:54:57.182Z [DEBUG] plugin.terraform-provider-quake_v0.0.1: 	/home/mark/code/src/github.com/quattronetworks/quake-client/vendor/google.golang.org/grpc/server.go:715 +0xa1
+2020-04-20T16:54:57.185Z [DEBUG] plugin: plugin process exited: path=/home/mark/.terraform.d/plugins/terraform-provider-quake_v0.0.1 pid=25179 error="exit status 2"
+2020/04/20 16:54:57 [ERROR] <root>: eval: *terraform.EvalReadData, err: rpc error: code = Unavailable desc = transport is closing
+2020/04/20 16:54:57 [ERROR] <root>: eval: *terraform.EvalSequence, err: rpc error: code = Unavailable desc = transport is closing
+2020/04/20 16:54:57 [TRACE] [walkRefresh] Exiting eval tree: data.quake_usage.used
+2020/04/20 16:54:57 [TRACE] vertex "data.quake_usage.used": visit complete
+2020/04/20 16:54:57 [TRACE] vertex "data.quake_usage.used": dynamic subgraph encountered errors
+2020/04/20 16:54:57 [TRACE] vertex "data.quake_usage.used": visit complete
+2020/04/20 16:54:57 [TRACE] dag/walk: upstream of "output.volume_consumption" errored, so skipping
+2020/04/20 16:54:57 [TRACE] dag/walk: upstream of "output.compute_consumption" errored, so skipping
+2020/04/20 16:54:57 [TRACE] dag/walk: upstream of "provider.quake (close)" errored, so skipping
+2020/04/20 16:54:57 [TRACE] dag/walk: upstream of "root" errored, so skipping
+2020/04/20 16:54:57 [TRACE] statemgr.Filesystem: removing lock metadata file .terraform.tfstate.lock.info
+2020/04/20 16:54:57 [TRACE] statemgr.Filesystem: unlocking terraform.tfstate using fcntl flock
+2020-04-20T16:54:57.185Z [DEBUG] plugin: plugin exited
