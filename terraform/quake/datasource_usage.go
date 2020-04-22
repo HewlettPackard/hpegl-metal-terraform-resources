@@ -26,6 +26,7 @@ const (
 	uLocationID = "location_id"
 	uAllocated  = "allocated"
 	uFreed      = "freed"
+	uReady      = "ready"
 	uUsageStart = "start"
 	uUsageEnd   = "end"
 	uUsageHours = "usage_hours"
@@ -54,7 +55,7 @@ func usageSchema() map[string]*schema.Schema {
 		},
 		uUsageEnd: {
 			Type:        schema.TypeString,
-			Required:    true,
+			Optional:    true,
 			Description: "End time for usage calculation, format is RFC 3339 e.g. 2018-05-13T07:44:12Z",
 		},
 		hUsage: {
@@ -109,6 +110,11 @@ func usageSchema() map[string]*schema.Schema {
 						Computed:    true,
 						Description: "Timestamp of when resource machine was freed",
 					},
+					uReady: {
+						Type:        schema.TypeString,
+						Computed:    true,
+						Description: "Timestamp of when resource machine was ready",
+					},
 					uAllocated: {
 						Type:        schema.TypeString,
 						Computed:    true,
@@ -127,6 +133,11 @@ func usageSchema() map[string]*schema.Schema {
 					uLocationID: {
 						Type:     schema.TypeString,
 						Computed: true,
+					},
+					uError: {
+						Type:        schema.TypeString,
+						Computed:    true,
+						Description: "Any error message",
 					},
 				},
 			},
@@ -183,6 +194,11 @@ func usageSchema() map[string]*schema.Schema {
 						Computed:    true,
 						Description: "Timestamp of when the volume was freed",
 					},
+					uReady: {
+						Type:        schema.TypeString,
+						Computed:    true,
+						Description: "Timestamp of when resource machine was ready",
+					},
 					uAllocated: {
 						Type:        schema.TypeString,
 						Computed:    true,
@@ -201,6 +217,11 @@ func usageSchema() map[string]*schema.Schema {
 					uLocationID: {
 						Type:     schema.TypeString,
 						Computed: true,
+					},
+					uError: {
+						Type:        schema.TypeString,
+						Computed:    true,
+						Description: "Any error message",
 					},
 				},
 			},
@@ -252,11 +273,19 @@ func resourceQuakeUsageRead(d *schema.ResourceData, meta interface{}) error {
 			uUsageHours: use.UsageHours,
 			uProjectID:  use.ProjectID,
 			uLocationID: use.LocationID,
-			uUsageStart: use.UsageStart,
-			uUsageEnd:   use.UsageEnd,
-			uAllocated:  use.Allocated.String(),
-			uFreed:      use.Freed.String(),
+			uUsageStart: use.UsageStart.Format(time.RFC3339),
+			uUsageEnd:   use.UsageEnd.Format(time.RFC3339),
+			uAllocated:  use.Allocated.Format(time.RFC3339),
+			uFreed:      use.Freed.Format(time.RFC3339),
+			uReady:      use.Ready.Format(time.RFC3339),
 			uError:      use.Error,
+		}
+		// Patch up zero times to be emptry strings
+		if use.Freed.IsZero() {
+			uData[uFreed] = ""
+		}
+		if use.Ready.IsZero() {
+			uData[uReady] = uData[uAllocated]
 		}
 		used = append(used, uData)
 	}
@@ -267,22 +296,30 @@ func resourceQuakeUsageRead(d *schema.ResourceData, meta interface{}) error {
 	var volUsed = make([]map[string]interface{}, 0, len(usage.Volumes))
 	for _, use := range usage.Volumes {
 		uData := map[string]interface{}{
-			"id":      use.VolumeID,
-			vName:     use.VolumeName,
-			vSize:     use.Capacity,
-			vFlavor:   use.FlavorID,
-			vFlavorID: use.FlavorID,
+			"id":        use.VolumeID,
+			vName:       use.VolumeName,
+			uCapacity:   use.Capacity,
+			uFlavorID:   use.FlavorID,
+			uFlavorName: use.FlavorName,
 			//uRateHourly:     use.RateHourly,
 			//uRateMonthly:    use.RateMonthly,
 			//uCost:       use.Cost,
 			uUsageHours: use.UsageHours,
 			uProjectID:  use.ProjectID,
 			uLocationID: use.LocationID,
-			uUsageStart: use.UsageStart,
-			uUsageEnd:   use.UsageEnd,
-			uAllocated:  use.Allocated.String(),
-			uFreed:      use.Freed.String(),
+			uUsageStart: use.UsageStart.Format(time.RFC3339),
+			uUsageEnd:   use.UsageEnd.Format(time.RFC3339),
+			uAllocated:  use.Allocated.Format(time.RFC3339),
+			uFreed:      use.Freed.Format(time.RFC3339),
+			uReady:      use.Ready.Format(time.RFC3339),
 			uError:      use.Error,
+		}
+		// Patch up zero times to be emptry strings
+		if use.Freed.IsZero() {
+			uData[uFreed] = ""
+		}
+		if use.Ready.IsZero() {
+			uData[uReady] = uData[uAllocated]
 		}
 		volUsed = append(volUsed, uData)
 	}

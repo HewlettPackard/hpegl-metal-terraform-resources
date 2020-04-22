@@ -142,12 +142,12 @@ func machineSizesResource() *schema.Resource {
 			sLocationID: {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "Textual representation of the location country:region:center",
+				Description: "The location ID",
 			},
 			sLocation: {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The PodID of the network",
+				Description: "Textual representation of the location country:region:center",
 			},
 			sQuantity: {
 				Type:        schema.TypeInt,
@@ -261,10 +261,7 @@ func dataSourceAvailableResources() *schema.Resource {
 
 func dataSourceAvailableResourcesRead(d *schema.ResourceData, meta interface{}) (err error) {
 	p := meta.(*Config)
-	available, _, err := p.client.AvailableResourcesApi.List(p.context)
-	if err != nil {
-		return err
-	}
+	available := p.availableResources
 
 	var locations = make([]map[string]interface{}, 0, len(available.Locations))
 	for _, loc := range available.Locations {
@@ -317,12 +314,8 @@ func dataSourceAvailableResourcesRead(d *schema.ResourceData, meta interface{}) 
 			nHostUse:    net.HostUse,
 			nLocationID: net.LocationID,
 		}
-		for _, loc := range available.Locations {
-			if net.LocationID == loc.ID {
-				iData[nLocation] = fmt.Sprintf("%s:%s:%s", loc.Country, loc.Region, loc.DataCenter)
-				break
-			}
-		}
+		l, _ := getLocationName(p, net.LocationID)
+		iData[nLocation] = l
 		networks = append(networks, iData)
 	}
 	if err := d.Set(avNetworks, networks); err != nil {
@@ -339,24 +332,21 @@ func dataSourceAvailableResourcesRead(d *schema.ResourceData, meta interface{}) 
 			if machines.SizeID == size.ID {
 				total = int(machines.Number)
 				locationID = machines.LocationID
-				for _, loc := range available.Locations {
-					if locationID == loc.ID {
-						location = fmt.Sprintf("%s:%s:%s", loc.Country, loc.Region, loc.DataCenter)
-						break
-					}
-				}
+				location, _ = getLocationName(p, locationID)
 				break
 			}
 		}
-		iData := map[string]interface{}{
-			"id":         size.ID,
-			sName:        size.Name,
-			sDescription: size.Details.Banner1,
-			sLocationID:  locationID,
-			sLocation:    location,
-			sQuantity:    total,
+		if total > 0 {
+			iData := map[string]interface{}{
+				"id":         size.ID,
+				sName:        size.Name,
+				sDescription: size.Details.Banner1,
+				sLocationID:  locationID,
+				sLocation:    location,
+				sQuantity:    total,
+			}
+			sizes = append(sizes, iData)
 		}
-		sizes = append(sizes, iData)
 	}
 	if err := d.Set(avMachinesSizes, sizes); err != nil {
 		return err
@@ -385,18 +375,8 @@ func dataSourceAvailableResourcesRead(d *schema.ResourceData, meta interface{}) 
 			vLocationID:  vol.LocationID,
 			vFlavorID:    vol.FlavorID,
 		}
-		for _, loc := range available.Locations {
-			if vol.LocationID == loc.ID {
-				iData[sLocation] = fmt.Sprintf("%s:%s:%s", loc.Country, loc.Region, loc.DataCenter)
-				break
-			}
-		}
-		for _, vf := range available.VolumeFlavors {
-			if vol.FlavorID == vf.ID {
-				iData[vFlavor] = vf.Name
-				break
-			}
-		}
+		iData[sLocation], _ = getLocationName(p, vol.LocationID)
+		iData[vFlavor], _ = getVolumeFlavorName(p, vol.FlavorID)
 		existingVols = append(existingVols, iData)
 	}
 	if err := d.Set(avVolumes, existingVols); err != nil {

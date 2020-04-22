@@ -104,7 +104,7 @@ func Provider() terraform.ResourceProvider {
 		}
 
 		cfg := rest.NewConfiguration()
-		// t@TODO this 'rest/vi' and 'Membership' is all black-magic and needs something better.
+		// @TODO this 'rest/vi' and 'Membership' is all black-magic and needs something better.
 		cfg.BasePath = qjwt.RestURL + "/rest/v1"
 		cfg.AddDefaultHeader("Membership", qjwt.MemberID)
 		client := rest.NewAPIClient(cfg)
