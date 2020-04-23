@@ -6,9 +6,12 @@ import (
 	"fmt"
 
 	"github.com/hashicorp/terraform/helper/schema"
+	rest "github.com/quattronetworks/quake-client/v1/go-client"
 )
 
 const (
+	// The name are the top level arrays that are available in a terraform block
+	// for each time.
 	avImages        = "images"
 	avSSHKeys       = "ssh_keys"
 	avNetworks      = "networks"
@@ -17,28 +20,35 @@ const (
 	avVolumeFlavors = "volume_flavors"
 	avLocations     = "locations"
 
+	// For avImages each terraform block has these attributes.
 	iCategory = "category"
 	iFlavor   = "flavor"
 	iVersion  = "version"
 
+	// For avNetworks each terraform block has these attributes.
 	nName       = "name"
 	nKind       = "kind"
 	nHostUse    = "host_use"
 	nLocation   = "location"
 	nLocationID = "location_id"
 
+	// For avMachineSizes each terraform block has these attributes.
 	sName        = "name"
 	sQuantity    = "quantity"
 	sLocation    = "location"
 	sLocationID  = "location_id"
 	sDescription = "description"
 
+	// For avVolumeFlavors each terraform block has these attributes.
 	fName        = "name"
 	fDescription = "description"
 
+	// For avLocations each terraform block has these attributes.
 	lCountry = "country"
 	lRegion  = "region"
 	lCenter  = "data_center"
+
+	// Not avVolumes and avSSHKeys share the schema with the corresponding data sources.
 )
 
 func locationResources() *schema.Resource {
@@ -263,7 +273,30 @@ func dataSourceAvailableResourcesRead(d *schema.ResourceData, meta interface{}) 
 	p := meta.(*Config)
 	available := p.availableResources
 
-	var locations = make([]map[string]interface{}, 0, len(available.Locations))
+	if err = addLocations(d, available); err != nil {
+		return err
+	}
+	if err = addImages(d, available); err != nil {
+		return err
+	}
+	if err = addSSHKeys(d, available); err != nil {
+		return err
+	}
+	if err = addNetworks(p, d, available); err != nil {
+		return err
+	}
+	if err = addMachineSizes(p, d, available); err != nil {
+		return err
+	}
+	if err = addVolmeFlavors(p, d, available); err != nil {
+		return err
+	}
+	d.SetId("resources")
+	return nil
+}
+
+func addLocations(d *schema.ResourceData, available rest.AvailableResources) error {
+	locations := make([]map[string]interface{}, 0, len(available.Locations))
 	for _, loc := range available.Locations {
 		iData := map[string]interface{}{
 			"id":      loc.ID,
@@ -277,8 +310,11 @@ func dataSourceAvailableResourcesRead(d *schema.ResourceData, meta interface{}) 
 	if err := d.Set(avLocations, locations); err != nil {
 		return err
 	}
+	return nil
+}
 
-	var images = make([]map[string]interface{}, 0, len(available.Images))
+func addImages(d *schema.ResourceData, available rest.AvailableResources) error {
+	images := make([]map[string]interface{}, 0, len(available.Images))
 	for _, image := range available.Images {
 		iData := map[string]interface{}{
 			iFlavor:   image.Flavor,
@@ -291,8 +327,11 @@ func dataSourceAvailableResourcesRead(d *schema.ResourceData, meta interface{}) 
 	if err := d.Set(avImages, images); err != nil {
 		return err
 	}
+	return nil
+}
 
-	var keys = make([]map[string]interface{}, 0, len(available.SSHKeys))
+func addSSHKeys(d *schema.ResourceData, available rest.AvailableResources) error {
+	keys := make([]map[string]interface{}, 0, len(available.SSHKeys))
 	for _, key := range available.SSHKeys {
 		iData := map[string]interface{}{
 			"id":       key.ID,
@@ -304,8 +343,11 @@ func dataSourceAvailableResourcesRead(d *schema.ResourceData, meta interface{}) 
 	if err := d.Set(avSSHKeys, keys); err != nil {
 		return err
 	}
+	return nil
+}
 
-	var networks = make([]map[string]interface{}, 0, len(available.Networks))
+func addNetworks(p *Config, d *schema.ResourceData, available rest.AvailableResources) error {
+	networks := make([]map[string]interface{}, 0, len(available.Networks))
 	for _, net := range available.Networks {
 		iData := map[string]interface{}{
 			"id":        net.ID,
@@ -321,8 +363,11 @@ func dataSourceAvailableResourcesRead(d *schema.ResourceData, meta interface{}) 
 	if err := d.Set(avNetworks, networks); err != nil {
 		return err
 	}
+	return nil
+}
 
-	var sizes = make([]map[string]interface{}, 0, len(available.MachineSizes))
+func addMachineSizes(p *Config, d *schema.ResourceData, available rest.AvailableResources) error {
+	sizes := make([]map[string]interface{}, 0, len(available.MachineSizes))
 	for _, size := range available.MachineSizes {
 		var (
 			total                int
@@ -351,8 +396,11 @@ func dataSourceAvailableResourcesRead(d *schema.ResourceData, meta interface{}) 
 	if err := d.Set(avMachinesSizes, sizes); err != nil {
 		return err
 	}
+	return nil
+}
 
-	var volFalvors = make([]map[string]interface{}, 0, len(available.VolumeFlavors))
+func addVolmeFlavors(p *Config, d *schema.ResourceData, available rest.AvailableResources) error {
+	volFalvors := make([]map[string]interface{}, 0, len(available.VolumeFlavors))
 	for _, flavor := range available.VolumeFlavors {
 		iData := map[string]interface{}{
 			"id":         flavor.ID,
@@ -365,7 +413,7 @@ func dataSourceAvailableResourcesRead(d *schema.ResourceData, meta interface{}) 
 		return err
 	}
 
-	var existingVols = make([]map[string]interface{}, 0, len(available.Volumes))
+	existingVols := make([]map[string]interface{}, 0, len(available.Volumes))
 	for _, vol := range available.Volumes {
 		iData := map[string]interface{}{
 			"id":         vol.ID,
@@ -382,7 +430,5 @@ func dataSourceAvailableResourcesRead(d *schema.ResourceData, meta interface{}) 
 	if err := d.Set(avVolumes, existingVols); err != nil {
 		return err
 	}
-
-	d.SetId("resources")
 	return nil
 }

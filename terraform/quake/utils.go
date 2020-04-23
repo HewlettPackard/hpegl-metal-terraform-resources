@@ -53,27 +53,31 @@ func (f filter) match(name string, value interface{}) bool {
 }
 
 func getFilters(d *schema.ResourceData) (filters []filter, err error) {
-	if fSet, ok := d.GetOk(dsFilter); ok {
-		if flts, ok := fSet.(*schema.Set); ok {
-			var values []*regexp.Regexp
-			for _, f := range flts.List() {
-				m := f.(map[string]interface{})
-				if name, ok := m["name"].(string); ok {
-					for _, v := range m["values"].([]interface{}) {
-						if value, ok := v.(string); ok {
-							r, err := regexp.Compile(value)
-							if err != nil {
-								return nil, fmt.Errorf("%s for %q", err.Error(), name)
-							}
-							values = append(values, r)
-						}
+	fSet, ok := d.GetOk(dsFilter)
+	if !ok {
+		return
+	}
+	flts, ok := fSet.(*schema.Set)
+	if !ok {
+		return
+	}
+	values := []*regexp.Regexp{}
+	for _, f := range flts.List() {
+		m := f.(map[string]interface{})
+		if name, ok := m["name"].(string); ok {
+			for _, v := range m["values"].([]interface{}) {
+				if value, ok := v.(string); ok {
+					r, err := regexp.Compile(value)
+					if err != nil {
+						return nil, fmt.Errorf("%s for %q", err.Error(), name)
 					}
-					filters = append(filters, filter{
-						name:   name,
-						values: values,
-					})
+					values = append(values, r)
 				}
 			}
+			filters = append(filters, filter{
+				name:   name,
+				values: values,
+			})
 		}
 	}
 	return

@@ -260,7 +260,7 @@ func resourceQuakeUsageRead(d *schema.ResourceData, meta interface{}) error {
 	if err != nil {
 		return err
 	}
-	var used = make([]map[string]interface{}, 0, len(usage.Hosts))
+	used := make([]map[string]interface{}, 0, len(usage.Hosts))
 	for _, use := range usage.Hosts {
 		uData := map[string]interface{}{
 			uHostID:          use.HostID,
@@ -293,7 +293,7 @@ func resourceQuakeUsageRead(d *schema.ResourceData, meta interface{}) error {
 		return err
 	}
 
-	var volUsed = make([]map[string]interface{}, 0, len(usage.Volumes))
+	volUsed := make([]map[string]interface{}, 0, len(usage.Volumes))
 	for _, use := range usage.Volumes {
 		uData := map[string]interface{}{
 			"id":        use.VolumeID,
