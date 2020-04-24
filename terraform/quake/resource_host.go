@@ -4,7 +4,6 @@ package quake
 
 import (
 	"fmt"
-	"strings"
 	"time"
 
 	"github.com/hashicorp/terraform/helper/schema"
@@ -246,24 +245,11 @@ func resourceQuattroHostCreate(d *schema.ResourceData, meta interface{}) (err er
 	host.SSHKeyIDs = keyIDs
 
 	// 4) parse location, verify it exists, and get id
-	targetLocation := d.Get(hLocation).(string)
-	locations := []string{}
-	pieces := strings.Split(targetLocation, ":")
-
-	found := false
-	for _, loc := range resources.Locations {
-		if len(pieces) == 3 {
-			if string(loc.Country) == pieces[0] && loc.Region == pieces[1] && loc.DataCenter == pieces[2] {
-				host.LocationID = loc.ID
-				found = true
-				break
-			}
-		}
-		locations = append(locations, fmt.Sprintf("%s:%s:%s", loc.Country, loc.Region, loc.DataCenter))
+	locationID, err := p.getLocationID(d.Get(hLocation).(string))
+	if err != nil {
+		return err
 	}
-	if !found {
-		return fmt.Errorf("location %q not found in %q", targetLocation, locations)
-	}
+	host.LocationID = locationID
 
 	// Add networks
 	processedNetworks := []string{}
@@ -363,7 +349,7 @@ func resourceQuattroHostRead(d *schema.ResourceData, meta interface{}) error {
 	d.Set(hSizeID, host.MachineSizeID)
 	d.Set(hSize, host.MachineSizeName)
 	d.Set(hUserData, host.UserData)
-	loc, _ := getLocationName(p, host.LocationID)
+	loc, _ := p.getLocationName(host.LocationID)
 	d.Set(hLocation, loc)
 	d.Set(hLocationID, host.LocationID)
 	d.Set(hNetworkIDs, host.NetworkIDs)

@@ -22,7 +22,7 @@ func init() {
 }
 
 func testAccPreCheck(t *testing.T) {
-	// this fails c is a nil innterface....
+	// this fails c is a nil interface....
 	// c := testAccProvider.Meta().(*Config)
 	// if c.member.GetHosterID() == "" {
 	// 	t.Fatalf("Acceptance tests must be run with hoster-scope %+v", c.member)

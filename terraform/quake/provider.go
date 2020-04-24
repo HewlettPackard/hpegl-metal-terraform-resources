@@ -6,6 +6,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/hashicorp/terraform/helper/schema"
@@ -26,6 +27,7 @@ const (
 	qHost    = Quake + "_host"
 	qVolume  = Quake + "_volume"
 	qSSHKey  = Quake + "_ssh_key"
+	qNetwork = Quake + "_network"
 
 	// For data sources
 	qAvailableResource = Quake + "_available_resources"
@@ -77,6 +79,7 @@ func Provider() terraform.ResourceProvider {
 			//qVolumeAttach: volumeAttachmentResource(),
 			qSSHKey:  sshKeyResource(),
 			qProject: projectResource(),
+			qNetwork: projectNetworkResource(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
 			qAvailableResource: dataSourceAvailableResources(),
@@ -126,35 +129,57 @@ func Provider() terraform.ResourceProvider {
 			terraformVersion = "0.11+compatible"
 		}
 
-		resources, _, err := client.AvailableResourcesApi.List(ctx)
-		if err != nil {
-			return nil, err
-		}
 		c := &Config{
-			client:             client,
-			terraformVersion:   terraformVersion,
-			context:            ctx,
-			availableResources: resources,
+			client:           client,
+			terraformVersion: terraformVersion,
+			context:          ctx,
+		}
+		if err = c.refreshAvailableResources(); err != nil {
+			return nil, err
 		}
 		return c, nil
 	}
 	return provider
 }
 
-func getLocationName(c *Config, id string) (string, error) {
+func (c *Config) refreshAvailableResources() error {
+	resources, _, err := c.client.AvailableResourcesApi.List(c.context)
+	if err != nil {
+		return err
+	}
+	c.availableResources = resources
+	return nil
+}
+
+func (c *Config) getLocationName(locationID string) (string, error) {
 	for _, loc := range c.availableResources.Locations {
-		if loc.ID == id {
+		if loc.ID == locationID {
 			return fmt.Sprintf("%s:%s:%s", loc.Country, loc.Region, loc.DataCenter), nil
 		}
 	}
-	return "", fmt.Errorf("LocationID %s not found", id)
+	return "", fmt.Errorf("LocationID %s not found", locationID)
 }
 
-func getVolumeFlavorName(c *Config, id string) (string, error) {
+func (c *Config) getLocationID(locationName string) (locationID string, err error) {
+	locations := []string{}
+	pieces := strings.Split(locationName, ":")
+
+	for _, loc := range c.availableResources.Locations {
+		if len(pieces) == 3 {
+			if string(loc.Country) == pieces[0] && loc.Region == pieces[1] && loc.DataCenter == pieces[2] {
+				return loc.ID, nil
+			}
+		}
+		locations = append(locations, fmt.Sprintf("%s:%s:%s", loc.Country, loc.Region, loc.DataCenter))
+	}
+	return "", fmt.Errorf("location %q not found in %q", locationName, locations)
+}
+
+func (c *Config) getVolumeFlavorName(flavorID string) (string, error) {
 	for _, vf := range c.availableResources.VolumeFlavors {
-		if id == vf.ID {
+		if flavorID == vf.ID {
 			return vf.Name, nil
 		}
 	}
-	return "", fmt.Errorf("VolumeFalvorID %s not found", id)
+	return "", fmt.Errorf("VolumeFalvorID %s not found", flavorID)
 }

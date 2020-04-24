@@ -26,11 +26,12 @@ const (
 	iVersion  = "version"
 
 	// For avNetworks each terraform block has these attributes.
-	nName       = "name"
-	nKind       = "kind"
-	nHostUse    = "host_use"
-	nLocation   = "location"
-	nLocationID = "location_id"
+	nName        = "name"
+	nDescription = "description"
+	nKind        = "kind"
+	nHostUse     = "host_use"
+	nLocation    = "location"
+	nLocationID  = "location_id"
 
 	// For avMachineSizes each terraform block has these attributes.
 	sName        = "name"
@@ -168,39 +169,15 @@ func machineSizesResource() *schema.Resource {
 	}
 }
 
-func networkResource() *schema.Resource {
-	return &schema.Resource{
-		Schema: map[string]*schema.Schema{
-			"id": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			nName: {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			nLocationID: {
-				Type:        schema.TypeString,
-				Computed:    true,
-				Description: "The PodID of the network",
-			},
-			nLocation: {
-				Type:        schema.TypeString,
-				Computed:    true,
-				Description: "Textual representation of the location country:region:enter",
-			},
-			nKind: {
-				Type:        schema.TypeString,
-				Computed:    true,
-				Description: "Shared, Private or Custom",
-			},
-			nHostUse: {
-				Type:        schema.TypeString,
-				Computed:    true,
-				Description: "Required, Optional or Default",
-			},
-		},
+func existingNetworkResource() *schema.Resource {
+	r := &schema.Resource{
+		Schema: networkSchema(),
 	}
+	r.Schema["id"] = &schema.Schema{
+		Type:     schema.TypeString,
+		Computed: true,
+	}
+	return r
 }
 
 func existingVolumeResource() *schema.Resource {
@@ -248,7 +225,7 @@ func dataSourceAvailableResources() *schema.Resource {
 			avNetworks: {
 				Type:     schema.TypeList,
 				Computed: true,
-				Elem:     networkResource(),
+				Elem:     existingNetworkResource(),
 			},
 			avMachinesSizes: {
 				Type:     schema.TypeList,
@@ -350,13 +327,15 @@ func addNetworks(p *Config, d *schema.ResourceData, available rest.AvailableReso
 	networks := make([]map[string]interface{}, 0, len(available.Networks))
 	for _, net := range available.Networks {
 		iData := map[string]interface{}{
-			"id":        net.ID,
-			nName:       net.Name,
+			"id":  net.ID,
+			nName: net.Name,
+			// Why is this not returned???
+			// nDescription: net.Description,
 			nKind:       net.Kind,
 			nHostUse:    net.HostUse,
 			nLocationID: net.LocationID,
 		}
-		l, _ := getLocationName(p, net.LocationID)
+		l, _ := p.getLocationName(net.LocationID)
 		iData[nLocation] = l
 		networks = append(networks, iData)
 	}
@@ -377,7 +356,7 @@ func addMachineSizes(p *Config, d *schema.ResourceData, available rest.Available
 			if machines.SizeID == size.ID {
 				total = int(machines.Number)
 				locationID = machines.LocationID
-				location, _ = getLocationName(p, locationID)
+				location, _ = p.getLocationName(locationID)
 				break
 			}
 		}
@@ -423,8 +402,8 @@ func addVolmeFlavors(p *Config, d *schema.ResourceData, available rest.Available
 			vLocationID:  vol.LocationID,
 			vFlavorID:    vol.FlavorID,
 		}
-		iData[sLocation], _ = getLocationName(p, vol.LocationID)
-		iData[vFlavor], _ = getVolumeFlavorName(p, vol.FlavorID)
+		iData[sLocation], _ = p.getLocationName(vol.LocationID)
+		iData[vFlavor], _ = p.getVolumeFlavorName(vol.FlavorID)
 		existingVols = append(existingVols, iData)
 	}
 	if err := d.Set(avVolumes, existingVols); err != nil {

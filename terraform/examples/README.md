@@ -117,4 +117,6 @@ output "tfhost" {
 1. [SSH key creation](./ssh-key-creation/README.md): Create new SSH keys for host image injection.
 1. [Host creation](./host-creation/README.md): Create one or more hosts.
 1. [Volume creation](./volume-creation/README.md): Create iSCSI volumes for host attachments.
+1. [Network creation](./network-creation/README.md): Create custom new metworks for project intra-communication.
 1. [Usage information](./usage/README.md): Extract resource usage information.
+1. [Project](./project/README.md): Create and manipulate projects.
