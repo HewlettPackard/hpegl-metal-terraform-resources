@@ -22,25 +22,26 @@ const (
 	//       networks          = ["Private", "Public"]
 	//       location          = "Demo Pod" //"USA:Austin:Demo1"
 	//    }
-	hName          = "name"
-	hDescription   = "description"
-	hFlavor        = "image_flavor"
-	hImageVersion  = "image_version"
-	hLocation      = "location"
-	hLocationID    = "location_id"
-	hNetworks      = "networks"
-	hNetworkIDs    = "network_ids"
-	hSSHKeys       = "ssh"
-	hSSHKeyIDs     = "ssh_ids"
-	hSize          = "machine_size"
-	hSizeID        = "machine_size_id"
-	hConnections   = "connections"
-	hUserData      = "user_data"
-	hCHAPUser      = "chap_user"
-	hCHAPSecret    = "chap_secret"
-	hInitiatorName = "initiator_name"
-	hVolumes       = "volumes"
-	hState         = "state"
+	hName              = "name"
+	hDescription       = "description"
+	hFlavor            = "image_flavor"
+	hImageVersion      = "image_version"
+	hLocation          = "location"
+	hLocationID        = "location_id"
+	hNetworks          = "networks"
+	hNetworkIDs        = "network_ids"
+	hSSHKeys           = "ssh"
+	hSSHKeyIDs         = "ssh_ids"
+	hSize              = "machine_size"
+	hSizeID            = "machine_size_id"
+	hConnections       = "connections"
+	hUserData          = "user_data"
+	hCHAPUser          = "chap_user"
+	hCHAPSecret        = "chap_secret"
+	hInitiatorName     = "initiator_name"
+	hVolumes           = "volumes"
+	hVolumeAttachments = "volume_attachments"
+	hState             = "state"
 )
 
 func hostSchema() map[string]*schema.Schema {
@@ -157,6 +158,14 @@ func hostSchema() map[string]*schema.Schema {
 				Schema: volumeSchema(),
 			},
 		},
+		hVolumeAttachments: {
+			Type:     schema.TypeList,
+			Optional: true,
+			Elem: &schema.Schema{
+				Type: schema.TypeString,
+			},
+			Description: "List of existing volume IDs",
+		},
 		hState: {
 			Type:        schema.TypeString,
 			Computed:    true,
@@ -216,7 +225,8 @@ func resourceQuattroHostCreate(d *schema.ResourceData, meta interface{}) (err er
 	sizes := []string{}
 	targetSize := d.Get(hSize).(string)
 	for _, mSize := range resources.MachineSizes {
-		if mSize.Name == targetSize {
+		// Name match or an ID was used.
+		if mSize.Name == targetSize || mSize.ID == targetSize {
 			host.MachineSizeID = mSize.ID
 			break
 		}
@@ -231,7 +241,8 @@ func resourceQuattroHostCreate(d *schema.ResourceData, meta interface{}) (err er
 	for _, name := range convertStringArr(d.Get(hSSHKeys).([]interface{})) {
 		found := false
 		for _, sshKey := range resources.SSHKeys {
-			if sshKey.Name == name {
+			// Name match or an ID was used
+			if sshKey.Name == name || sshKey.ID == name {
 				found = true
 				keyIDs = append(keyIDs, sshKey.ID)
 				break
@@ -267,6 +278,7 @@ func resourceQuattroHostCreate(d *schema.ResourceData, meta interface{}) (err er
 	}
 	for _, network := range convertStringArr(d.Get(hNetworks).([]interface{})) {
 		if _, ok := podNetIDMap[network]; ok {
+			// used direct network ID rather than a name
 			processedNetworks = append(processedNetworks, network)
 			continue
 		}
@@ -287,23 +299,15 @@ func resourceQuattroHostCreate(d *schema.ResourceData, meta interface{}) (err er
 	// 6 add any new volumes
 	if vols, vOK := d.Get(hVolumes).(*schema.Set); vOK {
 		for _, element := range vols.List() {
-			var vID, vfID string
-			vID = ""
+			var vfID string
 			vol := element.(map[string]interface{})
-			// Determine if this volume is an existing volume
-			if vName, ok := vol[vName].(string); ok && vName != "" {
-				for _, volume := range resources.Volumes {
-					if vName == volume.Name {
-						vID = volume.ID
-					}
-				}
-			}
 			vfID, ok := vol[vFlavorID].(string)
 			if !ok || vfID == "" {
 				flavorName, ok := vol[vFlavor]
 				if ok && flavorName != "" {
 					for _, flavor := range resources.VolumeFlavors {
-						if flavor.Name == flavorName {
+						// Name or ID match
+						if flavor.Name == flavorName || flavor.ID == flavorName {
 							vfID = flavor.ID
 							break
 						}
@@ -312,15 +316,20 @@ func resourceQuattroHostCreate(d *schema.ResourceData, meta interface{}) (err er
 					return fmt.Errorf("volume %q needs %q or a %q to be set", vol[vName], vFlavorID, vFlavor)
 				}
 			}
-			if vID != "" {
-				host.VolumeIDs = append(host.VolumeIDs, vID)
-			} else {
-				host.NewVolumes = append(host.NewVolumes, rest.AddVolume{
-					Name:        vol[vName].(string),
-					Description: vol[vDescription].(string),
-					Capacity:    uint64(vol[vSize].(float64)),
-					FlavorID:    vfID,
-				})
+			host.NewVolumes = append(host.NewVolumes, rest.AddVolume{
+				Name:        vol[vName].(string),
+				Description: vol[vDescription].(string),
+				Capacity:    uint64(vol[vSize].(float64)),
+				FlavorID:    vfID,
+			})
+		}
+	}
+	// Existing volumes
+	for _, vID := range convertStringArr(d.Get(hVolumeAttachments).([]interface{})) {
+		for _, volume := range resources.Volumes {
+			if vID == volume.ID || vID == volume.Name {
+				host.VolumeIDs = append(host.VolumeIDs, volume.ID)
+				continue
 			}
 		}
 	}
@@ -330,8 +339,8 @@ func resourceQuattroHostCreate(d *schema.ResourceData, meta interface{}) (err er
 	if err != nil {
 		return fmt.Errorf("failed to create host %+v: %v", host, err)
 	}
-
 	d.SetId(h.ID)
+
 	return resourceQuattroHostRead(d, meta)
 }
 
@@ -373,10 +382,13 @@ func resourceQuattroHostUpdate(d *schema.ResourceData, meta interface{}) error {
 
 func resourceQuattroHostDelete(d *schema.ResourceData, meta interface{}) (err error) {
 	p := meta.(*Config)
-
 	defer func() {
 		if err == nil {
+			// Host was successfully deleted so the ID can be cleared
+			// and terraform can release the state.
 			d.SetId("")
+			// Update resource pool and propagate any error
+			err = p.refreshAvailableResources()
 		}
 	}()
 	host, _, err := p.client.HostsApi.GetByID(p.context, d.Id())

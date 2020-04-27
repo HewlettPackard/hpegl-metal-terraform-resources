@@ -81,6 +81,9 @@ func resourceQuattroNetworkCreate(d *schema.ResourceData, meta interface{}) (err
 		return err
 	}
 	d.SetId(n.ID)
+	if err = p.refreshAvailableResources(); err != nil {
+		return err
+	}
 	return resourceQuattroNetworkRead(d, meta)
 
 }
@@ -123,5 +126,5 @@ func resourceQuattroNetworkDelete(d *schema.ResourceData, meta interface{}) (err
 		return err
 	}
 	d.SetId("")
-	return nil
+	return p.refreshAvailableResources()
 }

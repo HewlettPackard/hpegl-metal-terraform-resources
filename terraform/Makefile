@@ -17,5 +17,5 @@ acceptance:
 		TF_ACC=true xargs -t -n4 go test -v $(TESTGARHS) -timeout=60s -cover
 
 install: build	
-	mkdir -p ~/.terraform/plugins
-	cp cmd/terraform-provider-quake* ~/.terraform/plugins
+	mkdir -p ~/.terraform.d/plugins
+	cp cmd/terraform-provider-quake* ~/.terraform.d/plugins

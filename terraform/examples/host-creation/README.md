@@ -29,18 +29,19 @@ The following arguments are supported:
 
 - `name` - The name of the host, this will become the hostname if the operating system is a Linux flavor.
 - `description` - (Optional) Some descriptive text that helps describe the host and purpose.
-- `image_flavor` - The base operating system disribtion, e.g. "ubuntu"
+- `image_flavor` - The base operating system distribtion, e.g. "ubuntu"
 - `image_version` - A specifc version of the image_flavor.
 - `location` - Where the host is to be created in country:region:data-center style.
-- `ssh` - A list of ssh key names that will be placed into the host image.
+- `ssh` - A list of ssh key names or IDs that will be placed into the host image.
 - `size` - The machine size to use for this host.
-- `networks` - A list of networks on which this host will be connected and be allocated an IP address.
+- `networks` - A list of network names or IDs on which this host will be connected and be allocated an IP address.
 - `volumes` - Code blocks describing any iSCSI volumes to be created and attached to the host.
-  - `name` - The name of the volume, if existing the volume is attached
+  - `name` - The name of the volume.
   - `description` - (Optional) Some descriptive text that helps describe the volume and purpose.
   - `size` - The size of the volume (GiB).
   - `flavor` - The flavor of volume to create.
-- `user_data` - Cloud init yaml imformation for host injection.
+- `volume_attachments` - A list of existing volumeIDs or volume-names to attach to the host.
+- `user_data` - Cloud init yaml information for host injection.
 
 ### Attribute Reference
 

@@ -185,6 +185,9 @@ func resourceQuatrroVolumeCreate(d *schema.ResourceData, meta interface{}) (err 
 			break
 		}
 	}
+	if err = p.refreshAvailableResources(); err != nil {
+		return err
+	}
 	// Now populate additional volume fields.
 	return resourceQuatrroVolumeRead(d, meta)
 }
@@ -220,7 +223,9 @@ func resourceQuatrroVolumeUpdate(d *schema.ResourceData, meta interface{}) error
 func resourceQuatrroVolumeDelete(d *schema.ResourceData, meta interface{}) (err error) {
 	var volume rest.Volume
 	p := meta.(*Config)
-
+	defer func() {
+		err = p.refreshAvailableResources()
+	}()
 	defer func() {
 		if err == nil {
 			// Volume deletes are async so wait here

@@ -51,6 +51,9 @@ func resourceQuakeSSHKeyCreate(d *schema.ResourceData, meta interface{}) error {
 		return err
 	}
 	d.SetId(key.ID)
+	if err = p.refreshAvailableResources(); err != nil {
+		return err
+	}
 	return resourceQuakeSSHKeyRead(d, meta)
 }
 
@@ -94,5 +97,5 @@ func resourceQuakeSSHKeyDelete(d *schema.ResourceData, meta interface{}) error {
 		return err
 	}
 	d.SetId("")
-	return nil
+	return p.refreshAvailableResources()
 }

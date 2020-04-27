@@ -47,4 +47,4 @@ The available_resources block takes the following arguments.
 
 ### Attribute Reference
 
-There are not additional attributes.
+There are no additional attributes.
