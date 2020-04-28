@@ -224,24 +224,44 @@ func resourceQuatrroVolumeDelete(d *schema.ResourceData, meta interface{}) (err 
 	var volume rest.Volume
 	p := meta.(*Config)
 	defer func() {
-		err = p.refreshAvailableResources()
-	}()
-	defer func() {
+		// This is the last in the deferred chain to fire. If there has been no
+		// preceding error we will refresh the available resources and return
+		// any possible error that may have caused.
 		if err == nil {
-			// Volume deletes are async so wait here
+			err = p.refreshAvailableResources()
+		}
+	}()
+
+	defer func() {
+		// Volume deletes are asynchronous in Quake and we can not delete terraform's
+		// reference to the volume until it has really gone from Quake. If we delete the
+		// reference too early, or in the presence of errors, we will never be able to retry
+		// the delete operation from Terraform (since it has no reference to the resource).
+		if err == nil {
+			// Volume deletes are async so wait here until Quake reports that the volume has really gone.
 			for {
 				time.Sleep(pollInterval)
 				volume, _, err = p.client.VolumesApi.GetByID(p.context, d.Id())
 				if err != nil {
 					return
 				}
-				if volume.State == rest.VOLUMESTATE_DELETED || volume.State == rest.VOLUMESTATE_FAILED {
+				switch volume.State {
+				case rest.VOLUMESTATE_DELETED:
+					// Success; delete terraform reference.
 					d.SetId("")
+					return
+
+				case rest.VOLUMESTATE_FAILED:
+					// Quake has finished a delete attempts but failed. Retain the reference to
+					// the volume since it technically still exists so that terraform can attempt
+					// another delete at a later time.
+					err = fmt.Errorf("unable to delete volume")
 					return
 				}
 			}
 		}
 	}()
+
 	volume, _, err = p.client.VolumesApi.GetByID(p.context, d.Id())
 	if err != nil {
 		return err
@@ -250,6 +270,7 @@ func resourceQuatrroVolumeDelete(d *schema.ResourceData, meta interface{}) (err 
 		d.SetId("")
 		return nil
 	}
+
 	_, err = p.client.VolumesApi.Delete(p.context, d.Id())
 	return err
 }

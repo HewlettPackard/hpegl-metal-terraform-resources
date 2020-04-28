@@ -8,11 +8,11 @@ import (
 )
 
 const (
-// field names for a Quattro host. These are referenceable from some terraform source
+// field names for a Quattro network. These are referenceable from some terraform source
 //    resource "quattro_network" "test_net" {
-//       name              = "net_test"
-//       description      = "Terraform netowkr"
-//       location          = "Demo Pod" //"USA:Austin:Demo1"
+//       name         = "net_test"
+//       description  = "Terraform network"
+//       location     = "USA:Austin:Demo1"
 //    }
 )
 
@@ -97,6 +97,8 @@ func resourceQuattroNetworkRead(d *schema.ResourceData, meta interface{}) (err e
 	d.Set(nName, n.Name)
 	d.Set(n.Description, n.Description)
 	d.Set(n.LocationID, n.LocationID)
+	// Attempt best-effort to convert the locationID into huma readbale form. Not fatal
+	// if we can't
 	l, _ := p.getLocationName(n.LocationID)
 	d.Set(nLocation, l)
 	d.Set(nKind, n.Kind)
@@ -106,25 +108,30 @@ func resourceQuattroNetworkRead(d *schema.ResourceData, meta interface{}) (err e
 
 func resourceQuattroNetworkUpdate(d *schema.ResourceData, meta interface{}) (err error) {
 	p := meta.(*Config)
+
 	n, _, err := p.client.NetworksApi.GetByID(p.context, d.Id())
 	if err != nil {
 		return err
 	}
 	n.Name = d.Get(nName).(string)
 	n.Description = d.Get(nDescription).(string)
+
 	_, _, err = p.client.NetworksApi.Update(p.context, n.ID, n)
 	if err != nil {
 		return err
 	}
+
 	return resourceQuattroNetworkRead(d, meta)
 }
 
 func resourceQuattroNetworkDelete(d *schema.ResourceData, meta interface{}) (err error) {
 	p := meta.(*Config)
+
 	_, err = p.client.NetworksApi.Delete(p.context, d.Id())
 	if err != nil {
 		return err
 	}
 	d.SetId("")
+
 	return p.refreshAvailableResources()
 }

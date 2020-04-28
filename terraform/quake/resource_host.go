@@ -299,7 +299,6 @@ func resourceQuattroHostCreate(d *schema.ResourceData, meta interface{}) (err er
 	// 6 add any new volumes
 	if vols, vOK := d.Get(hVolumes).(*schema.Set); vOK {
 		for _, element := range vols.List() {
-			var vfID string
 			vol := element.(map[string]interface{})
 			vfID, ok := vol[vFlavorID].(string)
 			if !ok || vfID == "" {
@@ -382,16 +381,49 @@ func resourceQuattroHostUpdate(d *schema.ResourceData, meta interface{}) error {
 
 func resourceQuattroHostDelete(d *schema.ResourceData, meta interface{}) (err error) {
 	p := meta.(*Config)
+	var host rest.Host
+
 	defer func() {
+		// This is the last in the deferred chain to fire. If there has been no
+		// preceding error we will refresh the available resources and return
+		// any possible error that may have caused.
 		if err == nil {
-			// Host was successfully deleted so the ID can be cleared
-			// and terraform can release the state.
-			d.SetId("")
 			// Update resource pool and propagate any error
 			err = p.refreshAvailableResources()
 		}
 	}()
-	host, _, err := p.client.HostsApi.GetByID(p.context, d.Id())
+
+	defer func() {
+		// host deletes are asynchronous in Quake and we can not delete terraform's
+		// reference to the host until it has really gone from Quake. If we delete the
+		// reference too early, or in the presence of errors, we will never be able to retry
+		// the delete operation from Terraform (since it has no reference to the resource).
+		if err == nil {
+			// Host deletes are async so wait here until Quake reports that the host has really gone.
+			for {
+				time.Sleep(pollInterval)
+				host, _, err = p.client.HostsApi.GetByID(p.context, d.Id())
+				if err != nil {
+					return
+				}
+				switch host.State {
+				case rest.HOSTSTATE_DELETED:
+					// Success; delete terraform reference.
+					d.SetId("")
+					return
+
+				case rest.HOSTSTATE_FAILED:
+					// Quake has finished a delete attempts but failed. Retain the reference to
+					// the host since it technically still exists so that terraform can attempt
+					// another delete at a later time.
+					err = fmt.Errorf("unable to delete host")
+					return
+				}
+			}
+		}
+	}()
+
+	host, _, err = p.client.HostsApi.GetByID(p.context, d.Id())
 	if err != nil {
 		return err
 	}
@@ -402,11 +434,14 @@ func resourceQuattroHostDelete(d *schema.ResourceData, meta interface{}) (err er
 		_, err = p.client.HostsApi.Delete(p.context, d.Id())
 		return err
 	}
+
+	// Hosts that are powered-on can not be deleted directly, so flip the power.
 	if host.PowerStatus == rest.HOSTPOWERSTATE_ON {
 		_, _, err = p.client.HostsApi.PowerOff(p.context, d.Id())
 		if err != nil {
 			return err
 		}
+		// The call is asynchronous so wait for Quake to complete the request.
 		for host.PowerStatus != rest.HOSTPOWERSTATE_OFF {
 			time.Sleep(pollInterval)
 			host, _, err = p.client.HostsApi.GetByID(p.context, d.Id())
@@ -415,14 +450,7 @@ func resourceQuattroHostDelete(d *schema.ResourceData, meta interface{}) (err er
 			}
 		}
 	}
+
 	_, err = p.client.HostsApi.Delete(p.context, d.Id())
-	if err == nil {
-		for host.State != rest.HOSTSTATE_DELETED {
-			time.Sleep(pollInterval)
-			if host, _, err = p.client.HostsApi.GetByID(p.context, d.Id()); err != nil {
-				return err
-			}
-		}
-	}
 	return err
 }
