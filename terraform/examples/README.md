@@ -120,3 +120,4 @@ output "tfhost" {
 1. [Network creation](./network-creation/README.md): Create custom new metworks for project intra-communication.
 1. [Usage information](./usage/README.md): Extract resource usage information.
 1. [Project](./project/README.md): Create and manipulate projects.
+1. [Advanced](./advanced/README.md): Advanced Terraform operations.
