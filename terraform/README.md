@@ -14,12 +14,14 @@ make install
 
  Running Terraform acceptance level tesing requires that there's a valid token and login to a portal (or the simulator). The tests also asusume the availablility of some specific image names etc.
 
- ```
+```
  make acceptance
- ```
+```
 
  with example output like
- ```
+
+```
+
  go test -v -i $(go list ./quake | grep -v vendor) 
 echo $(go list ./quake | grep -v vendor) | \
 	TF_ACC=true xargs -t -n4 go test -v  -timeout=60s -cover
@@ -44,4 +46,5 @@ PASS
 coverage: 67.2% of statements
 ok  	github.com/quattronetworks/quake-client/terraform/quake	7.600s	coverage: 67.2% of statements
 ```
+
 
