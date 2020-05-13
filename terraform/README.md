@@ -21,6 +21,7 @@ make install
  with example output like
 
 ```
+
  go test -v -i $(go list ./quake | grep -v vendor) 
 echo $(go list ./quake | grep -v vendor) | \
 	TF_ACC=true xargs -t -n4 go test -v  -timeout=60s -cover
