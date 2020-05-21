@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/hashicorp/terraform/helper/schema"
-	rest "github.com/quattronetworks/quake-client/v1/go-client"
+	rest "github.com/quattronetworks/quake-client/v1/pkg/client"
 )
 
 const (

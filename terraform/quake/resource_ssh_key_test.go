@@ -8,7 +8,7 @@ import (
 
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/terraform"
-	rest "github.com/quattronetworks/quake-client/v1/go-client"
+	rest "github.com/quattronetworks/quake-client/v1/pkg/client"
 )
 
 func quatrroSSHKeyConfigBasic(name, publicSSHKey string) string {
