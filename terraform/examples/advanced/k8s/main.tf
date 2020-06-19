@@ -139,7 +139,7 @@ resource "quake_host" "master" {
   location      = var.location
   description   = "Master k3s"
   ## Note there are cases where a double $$ is used in this cloud-config text. By defult Terrafrom will interpret a $ as the start
-  # of variable substitution using terraform values. Since we generating a shell script $ is also used to reference shell 
+  # of variable substitution using terraform values. Since we are generating a shell script $ is also used to reference shell 
   # or environment variables. We use the $$ as way to escape the usual terraform variable substitution process.
   user_data     = <<EOF
 #cloud-config
@@ -204,7 +204,7 @@ EOF
 }
 
 # Worker nodes need access to the master over the private network; they also need acess to the Public network 
-# to be bable to download the k3s install from http://get.k3s.io 
+# to be able to download the k3s install from http://get.k3s.io 
 #
 # A bespoke image could be created that holds the default bits of the install script but it's hard to guarantee
 # that the script won't make calls to the outside world as it runs.
