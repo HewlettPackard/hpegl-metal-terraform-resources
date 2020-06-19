@@ -256,7 +256,7 @@ func resourceQuakeUsageRead(d *schema.ResourceData, meta interface{}) error {
 			End: optional.NewString(end.String()),
 		}
 	}
-	usage, _, err := p.client.UsageApi.Get(p.context, start.Format(time.RFC3339), gOps)
+	usage, _, err := p.client.UsageReportsApi.Get(p.context, start.Format(time.RFC3339), gOps)
 	if err != nil {
 		return err
 	}
