@@ -18,13 +18,14 @@
 #    terraform apply
 #
 # Cluster customization is possible by overriding default variable
-# values used in the script.data
+# values used in the script
 #
-#  location: specifies the geographic location of the cluster
-#  ssk_keys: specifies a list of ssh-keynames to insert into the master and workers.data
+#  location: specifies the geographic location of the cluster.
+#  ssk_keys: specifies a list of ssh-key-names to insert into the master and workers.
+#  msize: specifies the machine=size to provsion.
 #  workers: the number of initial worker machines.
 #
-#  terraform apply -var='location:USA:Texas:AUSL2' -var='workers: 4'
+#  terraform apply -var='location=USA:Texas:AUSL2' -var='workers=4'
 # 
 #
 # To later change the size of the cluster
@@ -33,6 +34,14 @@
 
 provider "quake" {
 
+}
+
+# Defines the machine-size to use when provisioning the cluster. This can
+# be overridden on the command line like
+#
+#     terraform apply -var='msize=Large'
+variable "msize" {
+  default = "Any"
 }
 
 # Defines the location where the custer will be deployed. This can
@@ -47,7 +56,7 @@ variable "location" {
 # Defines the ssh-key names the custer will be deployed with. This can
 # be overridden on the command line like
 #
-#     terraform apply -var="'ssh_keys=["my-key", "another-key"]'
+#     terraform apply -var='ssh_keys=["my-key", "another-key"]'
 variable "ssh_keys" {
   default = ["MarkW"]#["User1 - Linux"] #["MarkW"]
 }
@@ -102,20 +111,19 @@ data "quake_available_images" "ubuntu" {
 
 #
 # A note on the user_data field for host creation. This value can be any valid cloud-config
-# information. It can be a generic script if the first line is #!bash otherwise it
-# defaults to expecting cloud-init formatted yaml.
+# information. It must be cloud-init formatted yaml.
 #
-# In the examply below we are using yaml and the runcmd tag. This takes a list
+# In the example below we are using yaml and the runcmd tag. This takes a list
 # of commands and executes them pretty much as though they were run once by
-# the ssytem at the same system sate and runlevel as /etc/rc.local.
+# the system at the same system state and runlevel as /etc/rc.local.
 #
-# We need to perform a wide-area curl operation and for this to succeed we require
+# We need to perform a wide-area curl operations and for this to succeed we require
 #   - configured network (IP address, routing information, etc)
 #   - name resolution services active
-#   - (proxy configurtaion if Quake racks are behind a firewall)
+#   - (proxy configuration if Quake racks are behind a firewall)
 #
 # Although the system will most likely have this information defined such
-# information is obtained via environment variables typcally written to files
+# information is obtained via environment variables typically written to files
 # in /etc. These are picked up by shells when they start. In the case of cloud-init, however,
 # these files are being written by the init process and therefore the process itself
 # doesn't have the luxury of having these 'standard' environment variables defined.
@@ -125,11 +133,14 @@ resource "quake_host" "master" {
   name          = "master"
   image_flavor  = data.quake_available_images.ubuntu.images[0].flavor
   image_version = data.quake_available_images.ubuntu.images[0].version
-  machine_size  = "Any"
+  machine_size  = var.msize
   ssh           = var.ssh_keys
   networks      = distinct(concat(["Private", "Public"], [for net in data.quake_available_resources.physical.networks : net.name if net.host_use == "Required" && net.location == var.location]))
   location      = var.location
   description   = "Master k3s"
+  ## Note there are cases where a double $$ is used in this cloud-config text. By defult Terrafrom will interpret a $ as the start
+  # of variable substitution using terraform values. Since we are generating a shell script $ is also used to reference shell 
+  # or environment variables. We use the $$ as way to escape the usual terraform variable substitution process.
   user_data     = <<EOF
 #cloud-config
 # We need mutiple write files with existing Quake write-files
@@ -193,7 +204,7 @@ EOF
 }
 
 # Worker nodes need access to the master over the private network; they also need acess to the Public network 
-# to be bale to download the k3s install from http://get.k3s.io 
+# to be able to download the k3s install from http://get.k3s.io 
 #
 # A bespoke image could be created that holds the default bits of the install script but it's hard to guarantee
 # that the script won't make calls to the outside world as it runs.
@@ -202,7 +213,7 @@ resource "quake_host" "workers" {
   name          = "worker-${count.index}"
   image_flavor  = data.quake_available_images.ubuntu.images[0].flavor
   image_version = data.quake_available_images.ubuntu.images[0].version
-  machine_size  = "Any"
+  machine_size  = var.msize
   ssh           = var.ssh_keys
   networks      = distinct(concat(["Private", "Public"], [for net in data.quake_available_resources.physical.networks : net.name if net.host_use == "Required"  && net.location == var.location]))
   location      = var.location
