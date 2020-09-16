@@ -1,10 +1,13 @@
 TEST?=$$(go list ./quake | grep -v vendor)
 TF_VERSION:=$(shell cat ./version)
 
+GOOSALT ?= 'linux'
+GOOS='$(GOOSALT)'
+
 default: build
 
 build: 
-	(cd cmd; CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -mod=vendor -o terraform-provider-quake_$(TF_VERSION))
+	(cd cmd; CGO_ENABLED=0 GOOS=$(GOOS) GOARCH=amd64 go build -mod=vendor -o terraform-provider-quake_$(TF_VERSION))
 
 test:
 	go test -v -i $(TEST) 
