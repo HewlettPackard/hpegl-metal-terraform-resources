@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hashicorp/terraform/helper/schema"
-	"github.com/hashicorp/terraform/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+
 	rest "github.com/quattronetworks/quake-client/v1/pkg/client"
 )
 
@@ -59,7 +59,7 @@ func init() {
 }
 
 // Provider returns the QuattroLabs terrform rovider.
-func Provider() terraform.ResourceProvider {
+func Provider() *schema.Provider {
 	provider := &schema.Provider{
 		Schema: map[string]*schema.Schema{
 			qProject: {

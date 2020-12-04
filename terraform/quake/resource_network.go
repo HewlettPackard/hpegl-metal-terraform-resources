@@ -3,7 +3,7 @@
 package quake
 
 import (
-	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	rest "github.com/quattronetworks/quake-client/v1/pkg/client"
 )
 
@@ -95,8 +95,8 @@ func resourceQuattroNetworkRead(d *schema.ResourceData, meta interface{}) (err e
 		return err
 	}
 	d.Set(nName, n.Name)
-	d.Set(n.Description, n.Description)
-	d.Set(n.LocationID, n.LocationID)
+	d.Set(nDescription, n.Description)
+	d.Set(nLocationID, n.LocationID)
 	// Attempt best-effort to convert the locationID into huma readbale form. Not fatal
 	// if we can't
 	l, _ := p.getLocationName(n.LocationID)

@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/antihax/optional"
-	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	rest "github.com/quattronetworks/quake-client/v1/pkg/client"
 )
 

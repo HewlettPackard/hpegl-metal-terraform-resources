@@ -3,7 +3,7 @@
 package quake
 
 import (
-	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 	rest "github.com/quattronetworks/quake-client/v1/pkg/client"
 )
@@ -101,7 +101,12 @@ func projectSchema() map[string]*schema.Schema {
 		},
 
 		pProfile: {
-			Type:        schema.TypeMap,
+			// TODO the V2 SDK doesn't (yet) support TypeMap with Elem *Resource
+			// This is the currently recommended work-around. See
+			// https://github.com/hashicorp/terraform-plugin-sdk/issues/155
+			// https://github.com/hashicorp/terraform-plugin-sdk/issues/616
+			Type:        schema.TypeList,
+			MaxItems:    1,
 			Optional:    true,
 			Description: "Team profile.",
 			Elem: &schema.Resource{
@@ -109,7 +114,12 @@ func projectSchema() map[string]*schema.Schema {
 			},
 		},
 		pLimits: {
-			Type:        schema.TypeMap,
+			// TODO the V2 SDK doesn't (yet) support TypeMap with Elem *Resource
+			// This is the currently recommended work-around. See
+			// https://github.com/hashicorp/terraform-plugin-sdk/issues/155
+			// https://github.com/hashicorp/terraform-plugin-sdk/issues/616
+			Type:        schema.TypeList,
+			MaxItems:    1,
 			Optional:    true,
 			Description: "Resource limits applied to this team.",
 			Elem: &schema.Resource{
