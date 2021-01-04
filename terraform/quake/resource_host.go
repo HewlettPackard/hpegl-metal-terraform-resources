@@ -174,7 +174,7 @@ func hostSchema() map[string]*schema.Schema {
 	}
 }
 
-func hostResource() *schema.Resource {
+func HostResource() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceQuattroHostCreate,
 		Read:   resourceQuattroHostRead,

@@ -191,7 +191,7 @@ func existingVolumeResource() *schema.Resource {
 	return r
 }
 
-func dataSourceAvailableResources() *schema.Resource {
+func DataSourceAvailableResources() *schema.Resource {
 	return &schema.Resource{
 		Read: dataSourceAvailableResourcesRead,
 		Schema: map[string]*schema.Schema{

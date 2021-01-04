@@ -229,7 +229,7 @@ func usageSchema() map[string]*schema.Schema {
 	}
 }
 
-func dataSourceUsage() *schema.Resource {
+func DataSourceUsage() *schema.Resource {
 	return &schema.Resource{
 		Read: resourceQuakeUsageRead,
 		Importer: &schema.ResourceImporter{

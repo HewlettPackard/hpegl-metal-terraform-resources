@@ -49,7 +49,7 @@ func networkSchema() map[string]*schema.Schema {
 	}
 }
 
-func projectNetworkResource() *schema.Resource {
+func ProjectNetworkResource() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceQuattroNetworkCreate,
 		Read:   resourceQuattroNetworkRead,

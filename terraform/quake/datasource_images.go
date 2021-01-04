@@ -6,7 +6,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func dataSourceImage() *schema.Resource {
+func DataSourceImage() *schema.Resource {
 	return &schema.Resource{
 		Read: dataSourceImageRead,
 		Schema: map[string]*schema.Schema{
