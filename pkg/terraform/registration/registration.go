@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	Quake = "hpegl_quake"
+	Quake = "hpegl_bmaas"
 
 	qProject = Quake + "_project"
 	qHost    = Quake + "_host"
@@ -20,13 +20,12 @@ const (
 	qAvailableResource = Quake + "_available_resources"
 	qAvailableImages   = Quake + "_available_images"
 	qUsage             = Quake + "_usage"
-
 )
 
 type Registration struct{}
 
 func (r Registration) Name() string {
-	return "Quake Service"
+	return "BMaaS Service"
 }
 
 func (r Registration) SupportedDataSources() map[string]*schema.Resource {
