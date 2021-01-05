@@ -97,7 +97,7 @@ func volumeSchema() map[string]*schema.Schema {
 	}
 }
 
-func volumeResource() *schema.Resource {
+func VolumeResource() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceQuatrroVolumeCreate,
 		Read:   resourceQuatrroVolumeRead,

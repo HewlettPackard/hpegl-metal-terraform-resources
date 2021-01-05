@@ -74,17 +74,17 @@ func Provider() *schema.Provider {
 			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
-			qHost:   hostResource(),
-			qVolume: volumeResource(),
+			qHost:   HostResource(),
+			qVolume: VolumeResource(),
 			//qVolumeAttach: volumeAttachmentResource(),
-			qSSHKey:  sshKeyResource(),
-			qProject: projectResource(),
-			qNetwork: projectNetworkResource(),
+			qSSHKey:  SshKeyResource(),
+			qProject: ProjectResource(),
+			qNetwork: ProjectNetworkResource(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
-			qAvailableResource: dataSourceAvailableResources(),
-			qAvailableImages:   dataSourceImage(),
-			qUsage:             dataSourceUsage(),
+			qAvailableResource: DataSourceAvailableResources(),
+			qAvailableImages:   DataSourceImage(),
+			qUsage:             DataSourceUsage(),
 		},
 	}
 

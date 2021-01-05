@@ -26,7 +26,7 @@ func sshKeySchema() map[string]*schema.Schema {
 	}
 }
 
-func sshKeyResource() *schema.Resource {
+func SshKeyResource() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceQuakeSSHKeyCreate,
 		Read:   resourceQuakeSSHKeyRead,

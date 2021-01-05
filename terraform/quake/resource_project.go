@@ -129,7 +129,7 @@ func projectSchema() map[string]*schema.Schema {
 	}
 }
 
-func projectResource() *schema.Resource {
+func ProjectResource() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceQuattroProjectCreate,
 		Read:   resourceQuattroProjectRead,
