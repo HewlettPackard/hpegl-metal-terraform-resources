@@ -9,6 +9,8 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+const QjwtExtension = ".qjwt"
+
 // Qjwt declares the contents of the login file.
 type Qjwt struct {
 	RestURL     string `yaml:"rest_url"`
@@ -20,7 +22,7 @@ type Qjwt struct {
 }
 
 func loadConfig(dir string) (*Qjwt, error) {
-	f, err := os.Open(filepath.Clean(filepath.Join(dir, ".qjwt")))
+	f, err := os.Open(filepath.Clean(filepath.Join(dir, QjwtExtension)))
 	if err != nil {
 		return nil, err
 	}

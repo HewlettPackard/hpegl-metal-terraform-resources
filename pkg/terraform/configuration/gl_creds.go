@@ -9,6 +9,8 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+const GltformExtension = ".gltform"
+
 type Gljwt struct {
 	SpaceName string `yaml:"space_name,omitempty"`
 	ProjectID string `yaml:"project_id"`
@@ -17,7 +19,7 @@ type Gljwt struct {
 }
 
 func loadGLConfig(dir string) (*Gljwt, error) {
-	f, err := os.Open(filepath.Clean(filepath.Join(dir, ".gltform")))
+	f, err := os.Open(filepath.Clean(filepath.Join(dir, GltformExtension)))
 	if err != nil {
 		return nil, err
 	}
