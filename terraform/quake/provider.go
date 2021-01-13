@@ -18,8 +18,6 @@ const (
 const (
 	qPortal     = "portal_url"
 	qUseGLToken = "gl_token"
-	qRestURL    = "rest_url"
-	qSpace      = "space_id"
 	qProject    = Quake + "_project"
 	qHost       = Quake + "_host"
 	qVolume     = Quake + "_volume"
