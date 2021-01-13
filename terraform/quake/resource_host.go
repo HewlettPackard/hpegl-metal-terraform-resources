@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/quattronetworks/quake-client/pkg/terraform/configuration"
 	rest "github.com/quattronetworks/quake-client/v1/pkg/client"
 )
 
@@ -188,9 +189,9 @@ func HostResource() *schema.Resource {
 }
 
 func resourceQuattroHostCreate(d *schema.ResourceData, meta interface{}) (err error) {
-	p := meta.(*Config)
+	p := meta.(*configuration.Config)
 	// get available resources
-	resources := p.availableResources
+	resources := p.AvailableResources
 
 	host := rest.NewHost{
 		Name:        d.Get(hName).(string),
@@ -256,7 +257,7 @@ func resourceQuattroHostCreate(d *schema.ResourceData, meta interface{}) (err er
 	host.SSHKeyIDs = keyIDs
 
 	// 4) parse location, verify it exists, and get id
-	locationID, err := p.getLocationID(d.Get(hLocation).(string))
+	locationID, err := p.GetLocationID(d.Get(hLocation).(string))
 	if err != nil {
 		return err
 	}
@@ -334,7 +335,7 @@ func resourceQuattroHostCreate(d *schema.ResourceData, meta interface{}) (err er
 	}
 
 	// Create it
-	h, _, err := p.client.HostsApi.Add(p.context, host)
+	h, _, err := p.Client.HostsApi.Add(p.Context, host)
 	if err != nil {
 		return fmt.Errorf("failed to create host %+v: %v", host, err)
 	}
@@ -344,8 +345,8 @@ func resourceQuattroHostCreate(d *schema.ResourceData, meta interface{}) (err er
 }
 
 func resourceQuattroHostRead(d *schema.ResourceData, meta interface{}) error {
-	p := meta.(*Config)
-	host, _, err := p.client.HostsApi.GetByID(p.context, d.Id())
+	p := meta.(*configuration.Config)
+	host, _, err := p.Client.HostsApi.GetByID(p.Context, d.Id())
 	if err != nil {
 		return err
 	}
@@ -357,7 +358,7 @@ func resourceQuattroHostRead(d *schema.ResourceData, meta interface{}) error {
 	d.Set(hSizeID, host.MachineSizeID)
 	d.Set(hSize, host.MachineSizeName)
 	d.Set(hUserData, host.UserData)
-	loc, _ := p.getLocationName(host.LocationID)
+	loc, _ := p.GetLocationName(host.LocationID)
 	d.Set(hLocation, loc)
 	d.Set(hLocationID, host.LocationID)
 	d.Set(hNetworkIDs, host.NetworkIDs)
@@ -380,7 +381,7 @@ func resourceQuattroHostUpdate(d *schema.ResourceData, meta interface{}) error {
 }
 
 func resourceQuattroHostDelete(d *schema.ResourceData, meta interface{}) (err error) {
-	p := meta.(*Config)
+	p := meta.(*configuration.Config)
 	var host rest.Host
 
 	defer func() {
@@ -389,7 +390,7 @@ func resourceQuattroHostDelete(d *schema.ResourceData, meta interface{}) (err er
 		// any possible error that may have caused.
 		if err == nil {
 			// Update resource pool and propagate any error
-			err = p.refreshAvailableResources()
+			err = p.RefreshAvailableResources()
 		}
 	}()
 
@@ -402,7 +403,7 @@ func resourceQuattroHostDelete(d *schema.ResourceData, meta interface{}) (err er
 			// Host deletes are async so wait here until Quake reports that the host has really gone.
 			for {
 				time.Sleep(pollInterval)
-				host, _, err = p.client.HostsApi.GetByID(p.context, d.Id())
+				host, _, err = p.Client.HostsApi.GetByID(p.Context, d.Id())
 				if err != nil {
 					return
 				}
@@ -423,7 +424,7 @@ func resourceQuattroHostDelete(d *schema.ResourceData, meta interface{}) (err er
 		}
 	}()
 
-	host, _, err = p.client.HostsApi.GetByID(p.context, d.Id())
+	host, _, err = p.Client.HostsApi.GetByID(p.Context, d.Id())
 	if err != nil {
 		return err
 	}
@@ -431,26 +432,26 @@ func resourceQuattroHostDelete(d *schema.ResourceData, meta interface{}) (err er
 		return nil
 	}
 	if host.State == rest.HOSTSTATE_NEW {
-		_, err = p.client.HostsApi.Delete(p.context, d.Id())
+		_, err = p.Client.HostsApi.Delete(p.Context, d.Id())
 		return err
 	}
 
 	// Hosts that are powered-on can not be deleted directly, so flip the power.
 	if host.PowerStatus == rest.HOSTPOWERSTATE_ON {
-		_, _, err = p.client.HostsApi.PowerOff(p.context, d.Id())
+		_, _, err = p.Client.HostsApi.PowerOff(p.Context, d.Id())
 		if err != nil {
 			return err
 		}
 		// The call is asynchronous so wait for Quake to complete the request.
 		for host.PowerStatus != rest.HOSTPOWERSTATE_OFF {
 			time.Sleep(pollInterval)
-			host, _, err = p.client.HostsApi.GetByID(p.context, d.Id())
+			host, _, err = p.Client.HostsApi.GetByID(p.Context, d.Id())
 			if err != nil {
 				return err
 			}
 		}
 	}
 
-	_, err = p.client.HostsApi.Delete(p.context, d.Id())
+	_, err = p.Client.HostsApi.Delete(p.Context, d.Id())
 	return err
 }

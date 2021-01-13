@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+
+	"github.com/quattronetworks/quake-client/pkg/terraform/configuration"
 )
 
 const (
@@ -82,7 +84,7 @@ func Provider() *schema.Provider {
 
 	provider.ConfigureFunc = func(d *schema.ResourceData) (interface{}, error) {
 
-		config, err := NewConfig(d.Get(qPortal).(string), WithGLToken(d.Get(qUseGLToken).(bool)))
+		config, err := configuration.NewConfig(d.Get(qPortal).(string), configuration.WithGLToken(d.Get(qUseGLToken).(bool)))
 		if err != nil {
 			return nil, err
 		}
@@ -96,7 +98,7 @@ func Provider() *schema.Provider {
 			terraformVersion = "0.11+compatible"
 		}
 
-		if err = config.refreshAvailableResources(); err != nil {
+		if err = config.RefreshAvailableResources(); err != nil {
 			return nil, err
 		}
 		return config, nil

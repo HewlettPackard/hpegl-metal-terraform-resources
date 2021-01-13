@@ -5,6 +5,7 @@ package quake
 import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
+	"github.com/quattronetworks/quake-client/pkg/terraform/configuration"
 	rest "github.com/quattronetworks/quake-client/v1/pkg/client"
 )
 
@@ -143,7 +144,7 @@ func ProjectResource() *schema.Resource {
 }
 
 func resourceQuattroProjectCreate(d *schema.ResourceData, meta interface{}) (err error) {
-	p := meta.(*Config)
+	p := meta.(*configuration.Config)
 
 	safeString := func(s interface{}) string {
 		r, _ := s.(string)
@@ -181,7 +182,7 @@ func resourceQuattroProjectCreate(d *schema.ResourceData, meta interface{}) (err
 			VolumeCapacity: uint64(safeFloat(limits[pVolumeCapacity])),
 		}
 	}
-	project, _, err := p.client.ProjectsApi.Add(p.context, np)
+	project, _, err := p.Client.ProjectsApi.Add(p.Context, np)
 	if err != nil {
 		return err
 	}
@@ -190,8 +191,8 @@ func resourceQuattroProjectCreate(d *schema.ResourceData, meta interface{}) (err
 }
 
 func resourceQuattroProjectRead(d *schema.ResourceData, meta interface{}) (err error) {
-	p := meta.(*Config)
-	project, _, err := p.client.ProjectsApi.GetByID(p.context, d.Id())
+	p := meta.(*configuration.Config)
+	project, _, err := p.Client.ProjectsApi.GetByID(p.Context, d.Id())
 	if err != nil {
 		return err
 	}
@@ -232,8 +233,8 @@ func resourceQuattroProjectUpdate(d *schema.ResourceData, meta interface{}) (err
 }
 
 func resourceQuattroProjectDelete(d *schema.ResourceData, meta interface{}) (err error) {
-	p := meta.(*Config)
-	_, err = p.client.ProjectsApi.Delete(p.context, d.Id())
+	p := meta.(*configuration.Config)
+	_, err = p.Client.ProjectsApi.Delete(p.Context, d.Id())
 	if err != nil {
 		return err
 	}

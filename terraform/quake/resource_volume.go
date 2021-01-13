@@ -8,6 +8,8 @@ import (
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+
+	"github.com/quattronetworks/quake-client/pkg/terraform/configuration"
 	rest "github.com/quattronetworks/quake-client/v1/pkg/client"
 )
 
@@ -112,9 +114,9 @@ func VolumeResource() *schema.Resource {
 }
 
 func resourceQuatrroVolumeCreate(d *schema.ResourceData, meta interface{}) (err error) {
-	p := meta.(*Config)
+	p := meta.(*configuration.Config)
 	// Need to create one
-	resources := p.availableResources
+	resources := p.AvailableResources
 
 	var (
 		vfID, vfName string
@@ -169,14 +171,14 @@ func resourceQuatrroVolumeCreate(d *schema.ResourceData, meta interface{}) (err 
 		return fmt.Errorf("location %q not found in %q", targetLocation, locations)
 	}
 
-	v, _, err := p.client.VolumesApi.Add(p.context, volume)
+	v, _, err := p.Client.VolumesApi.Add(p.Context, volume)
 	if err != nil {
 		return err
 	}
 	d.SetId(v.ID)
 	for {
 		time.Sleep(pollInterval)
-		vol, _, err := p.client.VolumesApi.GetByID(p.context, v.ID)
+		vol, _, err := p.Client.VolumesApi.GetByID(p.Context, v.ID)
 		if err != nil {
 			break
 		}
@@ -185,7 +187,7 @@ func resourceQuatrroVolumeCreate(d *schema.ResourceData, meta interface{}) (err 
 			break
 		}
 	}
-	if err = p.refreshAvailableResources(); err != nil {
+	if err = p.RefreshAvailableResources(); err != nil {
 		return err
 	}
 	// Now populate additional volume fields.
@@ -193,9 +195,9 @@ func resourceQuatrroVolumeCreate(d *schema.ResourceData, meta interface{}) (err 
 }
 
 func resourceQuatrroVolumeRead(d *schema.ResourceData, meta interface{}) error {
-	p := meta.(*Config)
+	p := meta.(*configuration.Config)
 
-	volume, _, err := p.client.VolumesApi.GetByID(p.context, d.Id())
+	volume, _, err := p.Client.VolumesApi.GetByID(p.Context, d.Id())
 	if err != nil {
 		return err
 	}
@@ -204,10 +206,10 @@ func resourceQuatrroVolumeRead(d *schema.ResourceData, meta interface{}) error {
 	d.Set(vSize, float64(volume.Capacity/1024/1024))
 	d.Set(vName, volume.Name)
 	d.Set(vDescription, volume.Description)
-	flavorName, _ := p.getVolumeFlavorName(volume.FlavorID)
+	flavorName, _ := p.GetVolumeFlavorName(volume.FlavorID)
 	d.Set(vFlavor, flavorName)
 	d.Set(vFlavorID, volume.FlavorID)
-	loc, _ := p.getLocationName(volume.LocationID)
+	loc, _ := p.GetLocationName(volume.LocationID)
 	d.Set(vLocation, loc)
 	d.Set(vLocationID, volume.LocationID)
 	d.Set(vState, volume.State)
@@ -222,13 +224,13 @@ func resourceQuatrroVolumeUpdate(d *schema.ResourceData, meta interface{}) error
 
 func resourceQuatrroVolumeDelete(d *schema.ResourceData, meta interface{}) (err error) {
 	var volume rest.Volume
-	p := meta.(*Config)
+	p := meta.(*configuration.Config)
 	defer func() {
 		// This is the last in the deferred chain to fire. If there has been no
 		// preceding error we will refresh the available resources and return
 		// any possible error that may have caused.
 		if err == nil {
-			err = p.refreshAvailableResources()
+			err = p.RefreshAvailableResources()
 		}
 	}()
 
@@ -241,7 +243,7 @@ func resourceQuatrroVolumeDelete(d *schema.ResourceData, meta interface{}) (err 
 			// Volume deletes are async so wait here until Quake reports that the volume has really gone.
 			for {
 				time.Sleep(pollInterval)
-				volume, _, err = p.client.VolumesApi.GetByID(p.context, d.Id())
+				volume, _, err = p.Client.VolumesApi.GetByID(p.Context, d.Id())
 				if err != nil {
 					return
 				}
@@ -262,7 +264,7 @@ func resourceQuatrroVolumeDelete(d *schema.ResourceData, meta interface{}) (err 
 		}
 	}()
 
-	volume, _, err = p.client.VolumesApi.GetByID(p.context, d.Id())
+	volume, _, err = p.Client.VolumesApi.GetByID(p.Context, d.Id())
 	if err != nil {
 		return err
 	}
@@ -271,6 +273,6 @@ func resourceQuatrroVolumeDelete(d *schema.ResourceData, meta interface{}) (err 
 		return nil
 	}
 
-	_, err = p.client.VolumesApi.Delete(p.context, d.Id())
+	_, err = p.Client.VolumesApi.Delete(p.Context, d.Id())
 	return err
 }

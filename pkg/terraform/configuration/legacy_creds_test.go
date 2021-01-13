@@ -1,4 +1,4 @@
-package quake
+package configuration
 
 import (
 	"bytes"
@@ -19,7 +19,7 @@ no_tls: true
 `
 )
 
-func TesGetConfig(t *testing.T) {
+func TestGetConfig(t *testing.T) {
 	q, err := parseStream(bytes.NewBufferString(fakeQJWT))
 	if err != nil {
 		t.Fatal((err))

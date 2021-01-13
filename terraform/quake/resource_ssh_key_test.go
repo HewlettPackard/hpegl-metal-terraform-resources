@@ -8,6 +8,8 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
+
+	"github.com/quattronetworks/quake-client/pkg/terraform/configuration"
 	rest "github.com/quattronetworks/quake-client/v1/pkg/client"
 )
 
@@ -57,9 +59,9 @@ func testAccCheckQuattroSSHKeyExists(n string, out *rest.SshKey) resource.TestCh
 			return fmt.Errorf("No Record ID is set")
 		}
 
-		p := testAccProvider.Meta().(*Config)
+		p := testAccProvider.Meta().(*configuration.Config)
 
-		key, _, err := p.client.SshkeysApi.GetByID(p.context, rs.Primary.ID)
+		key, _, err := p.Client.SshkeysApi.GetByID(p.Context, rs.Primary.ID)
 		if err != nil {
 			return err
 		}
@@ -72,13 +74,13 @@ func testAccCheckQuattroSSHKeyExists(n string, out *rest.SshKey) resource.TestCh
 }
 
 func testAccCheckQuattroSSHKeyDestroy(s *terraform.State) error {
-	p := testAccProvider.Meta().(*Config)
+	p := testAccProvider.Meta().(*configuration.Config)
 
 	for _, rs := range s.RootModule().Resources {
 		if rs.Type != "quake_ssh_key" {
 			continue
 		}
-		if _, _, err := p.client.SshkeysApi.GetByID(p.context, rs.Primary.ID); err == nil {
+		if _, _, err := p.Client.SshkeysApi.GetByID(p.Context, rs.Primary.ID); err == nil {
 			return fmt.Errorf("SSHKey still exists")
 		}
 	}

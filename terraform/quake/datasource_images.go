@@ -4,6 +4,8 @@ package quake
 
 import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+
+	"github.com/quattronetworks/quake-client/pkg/terraform/configuration"
 )
 
 func DataSourceImage() *schema.Resource {
@@ -22,8 +24,8 @@ func DataSourceImage() *schema.Resource {
 }
 
 func dataSourceImageRead(d *schema.ResourceData, meta interface{}) error {
-	p := meta.(*Config)
-	available := p.availableResources
+	p := meta.(*configuration.Config)
+	available := p.AvailableResources
 
 	var images = make([]map[string]interface{}, 0, len(available.Images))
 	for _, image := range available.Images {

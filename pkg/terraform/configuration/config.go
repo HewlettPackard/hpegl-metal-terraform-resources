@@ -1,6 +1,6 @@
 // Copyright (c) 2016-2021 Hewlett Packard Enterprise Development LP.
 
-package quake
+package configuration
 
 import (
 	"context"
@@ -13,17 +13,18 @@ import (
 
 // Config holds all the information required to talk to the portal.
 type Config struct {
-	PortalURL        string
 	restURL          string
 	token            string
 	user             string
 	space            string
-	client           *rest.APIClient
 	terraformVersion string
-	context          context.Context
 	useGLToken       bool
+	// Exported fields
+	PortalURL string
+	Client    *rest.APIClient
+	Context   context.Context
 	// we will cache this here for the life of the provider
-	availableResources rest.AvailableResources
+	AvailableResources rest.AvailableResources
 }
 
 type CreateOpt func(c *Config)
@@ -34,17 +35,17 @@ func WithGLToken(g bool) CreateOpt {
 	}
 }
 
-func (c *Config) refreshAvailableResources() error {
-	resources, _, err := c.client.AvailableResourcesApi.List(c.context)
+func (c *Config) RefreshAvailableResources() error {
+	resources, _, err := c.Client.AvailableResourcesApi.List(c.Context)
 	if err != nil {
 		return err
 	}
-	c.availableResources = resources
+	c.AvailableResources = resources
 	return nil
 }
 
-func (c *Config) getLocationName(locationID string) (string, error) {
-	for _, loc := range c.availableResources.Locations {
+func (c *Config) GetLocationName(locationID string) (string, error) {
+	for _, loc := range c.AvailableResources.Locations {
 		if loc.ID == locationID {
 			return makeLocationName(string(loc.Country), loc.Region, loc.DataCenter), nil
 		}
@@ -52,11 +53,11 @@ func (c *Config) getLocationName(locationID string) (string, error) {
 	return "", fmt.Errorf("LocationID %s not found", locationID)
 }
 
-func (c *Config) getLocationID(locationName string) (locationID string, err error) {
+func (c *Config) GetLocationID(locationName string) (locationID string, err error) {
 	locations := []string{}
 	pieces := strings.Split(locationName, ":")
 
-	for _, loc := range c.availableResources.Locations {
+	for _, loc := range c.AvailableResources.Locations {
 		if len(pieces) == 3 {
 			if string(loc.Country) == pieces[0] && loc.Region == pieces[1] && loc.DataCenter == pieces[2] {
 				return loc.ID, nil
@@ -67,8 +68,8 @@ func (c *Config) getLocationID(locationName string) (locationID string, err erro
 	return "", fmt.Errorf("location %q not found in %q", locationName, locations)
 }
 
-func (c *Config) getVolumeFlavorName(flavorID string) (string, error) {
-	for _, vf := range c.availableResources.VolumeFlavors {
+func (c *Config) GetVolumeFlavorName(flavorID string) (string, error) {
+	for _, vf := range c.AvailableResources.VolumeFlavors {
 		if flavorID == vf.ID {
 			return vf.Name, nil
 		}
@@ -81,7 +82,7 @@ func makeLocationName(country, region, dataCenter string) string {
 }
 
 func NewConfig(portalURL string, opts ...CreateOpt) (*Config, error) {
-	// create REST client context
+	// create REST Client Context
 	ctx := context.Background()
 	config := new(Config)
 
@@ -117,10 +118,10 @@ func NewConfig(portalURL string, opts ...CreateOpt) (*Config, error) {
 		config.PortalURL = qtoken.OriginalURL
 	}
 
-	// add access token for auth to client context as required by the client API
+	// add access token for auth to Client Context as required by the Client API
 	ctx = context.WithValue(ctx, rest.ContextAccessToken, config.token)
 
-	// Get a new client configuration with basepath set to Quake portal URL and add base version path /rest/v1
+	// Get a new Client configuration with basepath set to Quake portal URL and add base version path /rest/v1
 	cfg := rest.NewConfiguration()
 	cfg.BasePath = config.restURL + "/rest/v1"
 
@@ -140,9 +141,9 @@ func NewConfig(portalURL string, opts ...CreateOpt) (*Config, error) {
 		cfg.AddDefaultHeader("Membership", config.user)
 	}
 
-	// get new API client with basepath and auth credentials setup in configuration and context
-	config.context = ctx
-	config.client = rest.NewAPIClient(cfg)
+	// get new API Client with basepath and auth credentials setup in configuration and Context
+	config.Context = ctx
+	config.Client = rest.NewAPIClient(cfg)
 	return config, nil
 }
 
