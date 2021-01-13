@@ -32,8 +32,6 @@ func parseGLStream(s io.Reader) (*Gljwt, error) {
 	}
 
 	q := &Gljwt{}
-	if err = yaml.Unmarshal(contents, q); err != nil {
-		return nil, err
-	}
-	return q, nil
+	err = yaml.Unmarshal(contents, q)
+	return q, err
 }

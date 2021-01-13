@@ -21,8 +21,17 @@ type Config struct {
 	client           *rest.APIClient
 	terraformVersion string
 	context          context.Context
+	useGLToken       bool
 	// we will cache this here for the life of the provider
 	availableResources rest.AvailableResources
+}
+
+type CreateOpt func(c *Config)
+
+func WithGLToken(g bool) CreateOpt {
+	return func(c *Config) {
+		c.useGLToken = g
+	}
 }
 
 func (c *Config) refreshAvailableResources() error {
@@ -37,7 +46,7 @@ func (c *Config) refreshAvailableResources() error {
 func (c *Config) getLocationName(locationID string) (string, error) {
 	for _, loc := range c.availableResources.Locations {
 		if loc.ID == locationID {
-			return fmt.Sprintf("%s:%s:%s", loc.Country, loc.Region, loc.DataCenter), nil
+			return makeLocationName(string(loc.Country), loc.Region, loc.DataCenter), nil
 		}
 	}
 	return "", fmt.Errorf("LocationID %s not found", locationID)
@@ -53,7 +62,7 @@ func (c *Config) getLocationID(locationName string) (locationID string, err erro
 				return loc.ID, nil
 			}
 		}
-		locations = append(locations, fmt.Sprintf("%s:%s:%s", loc.Country, loc.Region, loc.DataCenter))
+		locations = append(locations, makeLocationName(string(loc.Country), loc.Region, loc.DataCenter))
 	}
 	return "", fmt.Errorf("location %q not found in %q", locationName, locations)
 }
@@ -67,12 +76,25 @@ func (c *Config) getVolumeFlavorName(flavorID string) (string, error) {
 	return "", fmt.Errorf("VolumeFalvorID %s not found", flavorID)
 }
 
-func NewConfig(isGLToken bool, portalURL string) (*Config, error) {
+func makeLocationName(country, region, dataCenter string) string {
+	return fmt.Sprintf("%s:%s:%s", country, region, dataCenter)
+}
+
+func NewConfig(portalURL string, opts ...CreateOpt) (*Config, error) {
 	// create REST client context
 	ctx := context.Background()
 	config := new(Config)
 
-	if isGLToken {
+	config.useGLToken = false
+
+	// run overrides
+	for _, opt := range opts {
+		if opt != nil {
+			opt(config)
+		}
+	}
+
+	if config.useGLToken {
 		gltoken, err := getGLConfig()
 		if err != nil {
 			return nil, fmt.Errorf("Error reading GL token file:  %w", err)
@@ -102,7 +124,7 @@ func NewConfig(isGLToken bool, portalURL string) (*Config, error) {
 	cfg := rest.NewConfiguration()
 	cfg.BasePath = config.restURL + "/rest/v1"
 
-	if isGLToken {
+	if config.useGLToken {
 		// Add required headers if GL authentication method
 		if config.user != "" {
 			cfg.AddDefaultHeader("Project", config.user)
@@ -124,36 +146,26 @@ func NewConfig(isGLToken bool, portalURL string) (*Config, error) {
 	return config, nil
 }
 
-func getGLConfig() (*Gljwt, error) {
+func getGLConfig() (gljwt *Gljwt, err error) {
 	homeDir, _ := os.UserHomeDir()
 	workingDir, _ := os.Getwd()
-	var gljwt *Gljwt
-	var err error
 	for _, p := range []string{homeDir, workingDir} {
 		gljwt, err = loadGLConfig(p)
 		if err == nil {
 			break
 		}
 	}
-	if err != nil || gljwt == nil {
-		return nil, err
-	}
-	return gljwt, nil
+	return gljwt, err
 }
 
-func getQConfig() (*Qjwt, error) {
+func getQConfig() (qjwt *Qjwt, err error) {
 	homeDir, _ := os.UserHomeDir()
 	workingDir, _ := os.Getwd()
-	var qjwt *Qjwt
-	var err error
 	for _, p := range []string{homeDir, workingDir} {
 		qjwt, err = loadConfig(p)
 		if err == nil {
 			break
 		}
 	}
-	if err != nil || qjwt == nil {
-		return nil, err
-	}
-	return qjwt, nil
+	return qjwt, err
 }

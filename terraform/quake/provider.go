@@ -82,7 +82,7 @@ func Provider() *schema.Provider {
 
 	provider.ConfigureFunc = func(d *schema.ResourceData) (interface{}, error) {
 
-		config, err := NewConfig(d.Get(qUseGLToken).(bool), d.Get(qPortal).(string))
+		config, err := NewConfig(d.Get(qPortal).(string), WithGLToken(d.Get(qUseGLToken).(bool)))
 		if err != nil {
 			return nil, err
 		}
