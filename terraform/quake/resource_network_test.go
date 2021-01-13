@@ -8,6 +8,8 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
+
+	"github.com/quattronetworks/quake-client/pkg/terraform/configuration"
 )
 
 func TestAccQuakeNetwork(t *testing.T) {
@@ -38,13 +40,13 @@ resource "quake_network" "pnet" {
 }
 
 func testAccCheckNetworkDestroy(t *testing.T, s *terraform.State) error {
-	p := testAccProvider.Meta().(*Config)
+	p := testAccProvider.Meta().(*configuration.Config)
 	for _, rs := range s.RootModule().Resources {
 		if rs.Type != "pnet" {
 			continue
 		}
 
-		_, _, err := p.client.NetworksApi.GetByID(p.context, rs.Primary.ID)
+		_, _, err := p.Client.NetworksApi.GetByID(p.Context, rs.Primary.ID)
 		if err == nil {
 			return fmt.Errorf("Alert pnet still exists")
 		}

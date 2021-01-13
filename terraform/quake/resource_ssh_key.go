@@ -4,6 +4,8 @@ package quake
 
 import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+
+	"github.com/quattronetworks/quake-client/pkg/terraform/configuration"
 	rest "github.com/quattronetworks/quake-client/v1/pkg/client"
 )
 
@@ -41,25 +43,25 @@ func SshKeyResource() *schema.Resource {
 }
 
 func resourceQuakeSSHKeyCreate(d *schema.ResourceData, meta interface{}) error {
-	p := meta.(*Config)
+	p := meta.(*configuration.Config)
 	r := rest.NewSshKey{
 		Name: d.Get(sshKeyName).(string),
 		Key:  d.Get(sshPublicKey).(string),
 	}
-	key, _, err := p.client.SshkeysApi.Add(p.context, r)
+	key, _, err := p.Client.SshkeysApi.Add(p.Context, r)
 	if err != nil {
 		return err
 	}
 	d.SetId(key.ID)
-	if err = p.refreshAvailableResources(); err != nil {
+	if err = p.RefreshAvailableResources(); err != nil {
 		return err
 	}
 	return resourceQuakeSSHKeyRead(d, meta)
 }
 
 func resourceQuakeSSHKeyRead(d *schema.ResourceData, meta interface{}) error {
-	p := meta.(*Config)
-	ssh, _, err := p.client.SshkeysApi.GetByID(p.context, d.Id())
+	p := meta.(*configuration.Config)
+	ssh, _, err := p.Client.SshkeysApi.GetByID(p.Context, d.Id())
 	if err != nil {
 		return err
 	}
@@ -69,9 +71,9 @@ func resourceQuakeSSHKeyRead(d *schema.ResourceData, meta interface{}) error {
 }
 
 func resourceQuakeSSHKeyUpdate(d *schema.ResourceData, meta interface{}) error {
-	p := meta.(*Config)
+	p := meta.(*configuration.Config)
 	// Read existing
-	ssh, _, err := p.client.SshkeysApi.GetByID(p.context, d.Id())
+	ssh, _, err := p.Client.SshkeysApi.GetByID(p.Context, d.Id())
 	if err != nil {
 		return err
 	}
@@ -83,7 +85,7 @@ func resourceQuakeSSHKeyUpdate(d *schema.ResourceData, meta interface{}) error {
 		ssh.Key = public
 	}
 	// Update
-	_, _, err = p.client.SshkeysApi.Update(p.context, ssh.ID, ssh)
+	_, _, err = p.Client.SshkeysApi.Update(p.Context, ssh.ID, ssh)
 	if err != nil {
 		return err
 	}
@@ -91,11 +93,11 @@ func resourceQuakeSSHKeyUpdate(d *schema.ResourceData, meta interface{}) error {
 }
 
 func resourceQuakeSSHKeyDelete(d *schema.ResourceData, meta interface{}) error {
-	p := meta.(*Config)
-	_, err := p.client.SshkeysApi.Delete(p.context, d.Id())
+	p := meta.(*configuration.Config)
+	_, err := p.Client.SshkeysApi.Delete(p.Context, d.Id())
 	if err != nil {
 		return err
 	}
 	d.SetId("")
-	return p.refreshAvailableResources()
+	return p.RefreshAvailableResources()
 }

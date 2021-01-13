@@ -1,4 +1,4 @@
-package quake
+package configuration
 
 import (
 	"io"

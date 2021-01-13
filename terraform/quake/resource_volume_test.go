@@ -8,6 +8,8 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
+
+	"github.com/quattronetworks/quake-client/pkg/terraform/configuration"
 	rest "github.com/quattronetworks/quake-client/v1/pkg/client"
 )
 
@@ -48,8 +50,8 @@ func testAccCheckVolumeDestroy(t *testing.T, s *terraform.State) error {
 			return fmt.Errorf("No volume primary ID set")
 		}
 		volumeID := rs.Primary.ID
-		p := testAccProvider.Meta().(*Config)
-		volume, _, err := p.client.VolumesApi.GetByID(p.context, volumeID)
+		p := testAccProvider.Meta().(*configuration.Config)
+		volume, _, err := p.Client.VolumesApi.GetByID(p.Context, volumeID)
 		if err == nil && volume.State != rest.VOLUMESTATE_DELETED {
 			return fmt.Errorf("Volume: %v still exists", volume)
 		}
@@ -68,8 +70,8 @@ func testAccCheckVolumeExists(resource string) resource.TestCheckFunc {
 			return fmt.Errorf("No volume primary ID set")
 		}
 		volumeID := rs.Primary.ID
-		p := testAccProvider.Meta().(*Config)
-		_, _, err := p.client.VolumesApi.GetByID(p.context, volumeID)
+		p := testAccProvider.Meta().(*configuration.Config)
+		_, _, err := p.Client.VolumesApi.GetByID(p.Context, volumeID)
 		if err != nil {
 			return fmt.Errorf("Volume: %q not found: %s", volumeID, err)
 		}

@@ -7,6 +7,7 @@ import (
 
 	"github.com/antihax/optional"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/quattronetworks/quake-client/pkg/terraform/configuration"
 	rest "github.com/quattronetworks/quake-client/v1/pkg/client"
 )
 
@@ -241,7 +242,7 @@ func DataSourceUsage() *schema.Resource {
 }
 
 func resourceQuakeUsageRead(d *schema.ResourceData, meta interface{}) error {
-	p := meta.(*Config)
+	p := meta.(*configuration.Config)
 	var gOps *rest.GetOpts
 	start, err := time.Parse(time.RFC3339, d.Get(uUsageStart).(string))
 	if err != nil {
@@ -256,7 +257,7 @@ func resourceQuakeUsageRead(d *schema.ResourceData, meta interface{}) error {
 			End: optional.NewString(end.String()),
 		}
 	}
-	usage, _, err := p.client.UsageReportsApi.Get(p.context, start.Format(time.RFC3339), gOps)
+	usage, _, err := p.Client.UsageReportsApi.Get(p.Context, start.Format(time.RFC3339), gOps)
 	if err != nil {
 		return err
 	}

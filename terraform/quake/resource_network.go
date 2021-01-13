@@ -4,6 +4,7 @@ package quake
 
 import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/quattronetworks/quake-client/pkg/terraform/configuration"
 	rest "github.com/quattronetworks/quake-client/v1/pkg/client"
 )
 
@@ -63,9 +64,9 @@ func ProjectNetworkResource() *schema.Resource {
 }
 
 func resourceQuattroNetworkCreate(d *schema.ResourceData, meta interface{}) (err error) {
-	p := meta.(*Config)
+	p := meta.(*configuration.Config)
 
-	locationID, err := p.getLocationID(d.Get(nLocation).(string))
+	locationID, err := p.GetLocationID(d.Get(nLocation).(string))
 	if err != nil {
 		return err
 	}
@@ -76,12 +77,12 @@ func resourceQuattroNetworkCreate(d *schema.ResourceData, meta interface{}) (err
 		LocationID:  locationID,
 	}
 
-	n, _, err := p.client.NetworksApi.Add(p.context, newNetwork)
+	n, _, err := p.Client.NetworksApi.Add(p.Context, newNetwork)
 	if err != nil {
 		return err
 	}
 	d.SetId(n.ID)
-	if err = p.refreshAvailableResources(); err != nil {
+	if err = p.RefreshAvailableResources(); err != nil {
 		return err
 	}
 	return resourceQuattroNetworkRead(d, meta)
@@ -89,8 +90,8 @@ func resourceQuattroNetworkCreate(d *schema.ResourceData, meta interface{}) (err
 }
 
 func resourceQuattroNetworkRead(d *schema.ResourceData, meta interface{}) (err error) {
-	p := meta.(*Config)
-	n, _, err := p.client.NetworksApi.GetByID(p.context, d.Id())
+	p := meta.(*configuration.Config)
+	n, _, err := p.Client.NetworksApi.GetByID(p.Context, d.Id())
 	if err != nil {
 		return err
 	}
@@ -99,7 +100,7 @@ func resourceQuattroNetworkRead(d *schema.ResourceData, meta interface{}) (err e
 	d.Set(nLocationID, n.LocationID)
 	// Attempt best-effort to convert the locationID into huma readbale form. Not fatal
 	// if we can't
-	l, _ := p.getLocationName(n.LocationID)
+	l, _ := p.GetLocationName(n.LocationID)
 	d.Set(nLocation, l)
 	d.Set(nKind, n.Kind)
 	d.Set(nHostUse, n.HostUse)
@@ -107,16 +108,16 @@ func resourceQuattroNetworkRead(d *schema.ResourceData, meta interface{}) (err e
 }
 
 func resourceQuattroNetworkUpdate(d *schema.ResourceData, meta interface{}) (err error) {
-	p := meta.(*Config)
+	p := meta.(*configuration.Config)
 
-	n, _, err := p.client.NetworksApi.GetByID(p.context, d.Id())
+	n, _, err := p.Client.NetworksApi.GetByID(p.Context, d.Id())
 	if err != nil {
 		return err
 	}
 	n.Name = d.Get(nName).(string)
 	n.Description = d.Get(nDescription).(string)
 
-	_, _, err = p.client.NetworksApi.Update(p.context, n.ID, n)
+	_, _, err = p.Client.NetworksApi.Update(p.Context, n.ID, n)
 	if err != nil {
 		return err
 	}
@@ -125,13 +126,13 @@ func resourceQuattroNetworkUpdate(d *schema.ResourceData, meta interface{}) (err
 }
 
 func resourceQuattroNetworkDelete(d *schema.ResourceData, meta interface{}) (err error) {
-	p := meta.(*Config)
+	p := meta.(*configuration.Config)
 
-	_, err = p.client.NetworksApi.Delete(p.context, d.Id())
+	_, err = p.Client.NetworksApi.Delete(p.Context, d.Id())
 	if err != nil {
 		return err
 	}
 	d.SetId("")
 
-	return p.refreshAvailableResources()
+	return p.RefreshAvailableResources()
 }

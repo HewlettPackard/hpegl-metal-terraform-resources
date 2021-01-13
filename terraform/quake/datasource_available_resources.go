@@ -6,6 +6,8 @@ import (
 	"fmt"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+
+	"github.com/quattronetworks/quake-client/pkg/terraform/configuration"
 	rest "github.com/quattronetworks/quake-client/v1/pkg/client"
 )
 
@@ -247,8 +249,8 @@ func DataSourceAvailableResources() *schema.Resource {
 }
 
 func dataSourceAvailableResourcesRead(d *schema.ResourceData, meta interface{}) (err error) {
-	p := meta.(*Config)
-	available := p.availableResources
+	p := meta.(*configuration.Config)
+	available := p.AvailableResources
 
 	if err = addLocations(d, available); err != nil {
 		return err
@@ -323,7 +325,7 @@ func addSSHKeys(d *schema.ResourceData, available rest.AvailableResources) error
 	return nil
 }
 
-func addNetworks(p *Config, d *schema.ResourceData, available rest.AvailableResources) error {
+func addNetworks(p *configuration.Config, d *schema.ResourceData, available rest.AvailableResources) error {
 	networks := make([]map[string]interface{}, 0, len(available.Networks))
 	for _, net := range available.Networks {
 		iData := map[string]interface{}{
@@ -335,7 +337,7 @@ func addNetworks(p *Config, d *schema.ResourceData, available rest.AvailableReso
 			nHostUse:    net.HostUse,
 			nLocationID: net.LocationID,
 		}
-		l, _ := p.getLocationName(net.LocationID)
+		l, _ := p.GetLocationName(net.LocationID)
 		iData[nLocation] = l
 		networks = append(networks, iData)
 	}
@@ -345,7 +347,7 @@ func addNetworks(p *Config, d *schema.ResourceData, available rest.AvailableReso
 	return nil
 }
 
-func addMachineSizes(p *Config, d *schema.ResourceData, available rest.AvailableResources) error {
+func addMachineSizes(p *configuration.Config, d *schema.ResourceData, available rest.AvailableResources) error {
 	sizes := make([]map[string]interface{}, 0, len(available.MachineSizes))
 	for _, size := range available.MachineSizes {
 		var (
@@ -356,7 +358,7 @@ func addMachineSizes(p *Config, d *schema.ResourceData, available rest.Available
 			if machines.SizeID == size.ID {
 				total = int(machines.Number)
 				locationID = machines.LocationID
-				location, _ = p.getLocationName(locationID)
+				location, _ = p.GetLocationName(locationID)
 				break
 			}
 		}
@@ -378,7 +380,7 @@ func addMachineSizes(p *Config, d *schema.ResourceData, available rest.Available
 	return nil
 }
 
-func addVolmeFlavors(p *Config, d *schema.ResourceData, available rest.AvailableResources) error {
+func addVolmeFlavors(p *configuration.Config, d *schema.ResourceData, available rest.AvailableResources) error {
 	volFalvors := make([]map[string]interface{}, 0, len(available.VolumeFlavors))
 	for _, flavor := range available.VolumeFlavors {
 		iData := map[string]interface{}{
@@ -402,8 +404,8 @@ func addVolmeFlavors(p *Config, d *schema.ResourceData, available rest.Available
 			vLocationID:  vol.LocationID,
 			vFlavorID:    vol.FlavorID,
 		}
-		iData[sLocation], _ = p.getLocationName(vol.LocationID)
-		iData[vFlavor], _ = p.getVolumeFlavorName(vol.FlavorID)
+		iData[sLocation], _ = p.GetLocationName(vol.LocationID)
+		iData[vFlavor], _ = p.GetVolumeFlavorName(vol.FlavorID)
 		existingVols = append(existingVols, iData)
 	}
 	if err := d.Set(avVolumes, existingVols); err != nil {
