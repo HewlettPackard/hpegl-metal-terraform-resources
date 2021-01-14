@@ -5,6 +5,8 @@ import (
 	"regexp"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+
+	"github.com/quattronetworks/quake-client/pkg/terraform/configuration"
 )
 
 const dsFilter = "filter"
@@ -91,4 +93,27 @@ func convertStringArr(a []interface{}) (ret []string) {
 		ret = append(ret, v.(string))
 	}
 	return ret
+}
+
+// Function to fish Config out of meta.  meta can be of two forms:
+// *configuration.Config - if so return it
+// map[string]interface{} - if so check if *configuration.Config is
+//    present at key configuration.KeyForGLClientMap(), if not
+//    return error
+// If neither of the above, return an error
+func getConfigFromMeta(meta interface{}) (*configuration.Config, error) {
+	switch v := meta.(type) {
+
+	case *configuration.Config:
+		return v, nil
+
+	case map[string]interface{}:
+		// Check if Config can be found where expected in the map, if not return an error
+		switch ct := v[configuration.KeyForGLClientMap()].(type) {
+		case *configuration.Config:
+			return ct, nil
+		}
+	}
+	// Don't know what form meta is in, return an error
+	return nil, fmt.Errorf("cannot find client")
 }

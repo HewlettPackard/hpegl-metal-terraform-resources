@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/quattronetworks/quake-client/pkg/terraform/configuration"
+
 	rest "github.com/quattronetworks/quake-client/v1/pkg/client"
 )
 
@@ -189,7 +189,10 @@ func HostResource() *schema.Resource {
 }
 
 func resourceQuattroHostCreate(d *schema.ResourceData, meta interface{}) (err error) {
-	p := meta.(*configuration.Config)
+	p, err := getConfigFromMeta(meta)
+	if err != nil {
+		return err
+	}
 	// get available resources
 	resources := p.AvailableResources
 
@@ -345,7 +348,10 @@ func resourceQuattroHostCreate(d *schema.ResourceData, meta interface{}) (err er
 }
 
 func resourceQuattroHostRead(d *schema.ResourceData, meta interface{}) error {
-	p := meta.(*configuration.Config)
+	p, err := getConfigFromMeta(meta)
+	if err != nil {
+		return err
+	}
 	host, _, err := p.Client.HostsApi.GetByID(p.Context, d.Id())
 	if err != nil {
 		return err
@@ -381,7 +387,10 @@ func resourceQuattroHostUpdate(d *schema.ResourceData, meta interface{}) error {
 }
 
 func resourceQuattroHostDelete(d *schema.ResourceData, meta interface{}) (err error) {
-	p := meta.(*configuration.Config)
+	p, err := getConfigFromMeta(meta)
+	if err != nil {
+		return err
+	}
 	var host rest.Host
 
 	defer func() {

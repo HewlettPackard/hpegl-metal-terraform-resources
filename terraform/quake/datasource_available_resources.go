@@ -249,7 +249,10 @@ func DataSourceAvailableResources() *schema.Resource {
 }
 
 func dataSourceAvailableResourcesRead(d *schema.ResourceData, meta interface{}) (err error) {
-	p := meta.(*configuration.Config)
+	p, err := getConfigFromMeta(meta)
+	if err != nil {
+		return err
+	}
 	available := p.AvailableResources
 
 	if err = addLocations(d, available); err != nil {

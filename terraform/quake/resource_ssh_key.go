@@ -5,7 +5,6 @@ package quake
 import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
-	"github.com/quattronetworks/quake-client/pkg/terraform/configuration"
 	rest "github.com/quattronetworks/quake-client/v1/pkg/client"
 )
 
@@ -43,7 +42,10 @@ func SshKeyResource() *schema.Resource {
 }
 
 func resourceQuakeSSHKeyCreate(d *schema.ResourceData, meta interface{}) error {
-	p := meta.(*configuration.Config)
+	p, err := getConfigFromMeta(meta)
+	if err != nil {
+		return err
+	}
 	r := rest.NewSshKey{
 		Name: d.Get(sshKeyName).(string),
 		Key:  d.Get(sshPublicKey).(string),
@@ -60,7 +62,10 @@ func resourceQuakeSSHKeyCreate(d *schema.ResourceData, meta interface{}) error {
 }
 
 func resourceQuakeSSHKeyRead(d *schema.ResourceData, meta interface{}) error {
-	p := meta.(*configuration.Config)
+	p, err := getConfigFromMeta(meta)
+	if err != nil {
+		return err
+	}
 	ssh, _, err := p.Client.SshkeysApi.GetByID(p.Context, d.Id())
 	if err != nil {
 		return err
@@ -71,7 +76,10 @@ func resourceQuakeSSHKeyRead(d *schema.ResourceData, meta interface{}) error {
 }
 
 func resourceQuakeSSHKeyUpdate(d *schema.ResourceData, meta interface{}) error {
-	p := meta.(*configuration.Config)
+	p, err := getConfigFromMeta(meta)
+	if err != nil {
+		return err
+	}
 	// Read existing
 	ssh, _, err := p.Client.SshkeysApi.GetByID(p.Context, d.Id())
 	if err != nil {
@@ -93,8 +101,11 @@ func resourceQuakeSSHKeyUpdate(d *schema.ResourceData, meta interface{}) error {
 }
 
 func resourceQuakeSSHKeyDelete(d *schema.ResourceData, meta interface{}) error {
-	p := meta.(*configuration.Config)
-	_, err := p.Client.SshkeysApi.Delete(p.Context, d.Id())
+	p, err := getConfigFromMeta(meta)
+	if err != nil {
+		return err
+	}
+	_, err = p.Client.SshkeysApi.Delete(p.Context, d.Id())
 	if err != nil {
 		return err
 	}

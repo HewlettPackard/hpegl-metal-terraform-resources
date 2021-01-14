@@ -11,6 +11,13 @@ import (
 	rest "github.com/quattronetworks/quake-client/v1/pkg/client"
 )
 
+// This function is used by the GL terraform provider to set the key in the
+// map of clients that it creates.  The Quake client will be found using the key
+// returned here.
+func KeyForGLClientMap() string {
+	return "bmaasConfig"
+}
+
 // Config holds all the information required to talk to the portal.
 type Config struct {
 	restURL          string

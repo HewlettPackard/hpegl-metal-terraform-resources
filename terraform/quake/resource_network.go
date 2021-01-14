@@ -4,7 +4,7 @@ package quake
 
 import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/quattronetworks/quake-client/pkg/terraform/configuration"
+
 	rest "github.com/quattronetworks/quake-client/v1/pkg/client"
 )
 
@@ -64,7 +64,10 @@ func ProjectNetworkResource() *schema.Resource {
 }
 
 func resourceQuattroNetworkCreate(d *schema.ResourceData, meta interface{}) (err error) {
-	p := meta.(*configuration.Config)
+	p, err := getConfigFromMeta(meta)
+	if err != nil {
+		return err
+	}
 
 	locationID, err := p.GetLocationID(d.Get(nLocation).(string))
 	if err != nil {
@@ -90,7 +93,10 @@ func resourceQuattroNetworkCreate(d *schema.ResourceData, meta interface{}) (err
 }
 
 func resourceQuattroNetworkRead(d *schema.ResourceData, meta interface{}) (err error) {
-	p := meta.(*configuration.Config)
+	p, err := getConfigFromMeta(meta)
+	if err != nil {
+		return err
+	}
 	n, _, err := p.Client.NetworksApi.GetByID(p.Context, d.Id())
 	if err != nil {
 		return err
@@ -108,7 +114,10 @@ func resourceQuattroNetworkRead(d *schema.ResourceData, meta interface{}) (err e
 }
 
 func resourceQuattroNetworkUpdate(d *schema.ResourceData, meta interface{}) (err error) {
-	p := meta.(*configuration.Config)
+	p, err := getConfigFromMeta(meta)
+	if err != nil {
+		return err
+	}
 
 	n, _, err := p.Client.NetworksApi.GetByID(p.Context, d.Id())
 	if err != nil {
@@ -126,7 +135,10 @@ func resourceQuattroNetworkUpdate(d *schema.ResourceData, meta interface{}) (err
 }
 
 func resourceQuattroNetworkDelete(d *schema.ResourceData, meta interface{}) (err error) {
-	p := meta.(*configuration.Config)
+	p, err := getConfigFromMeta(meta)
+	if err != nil {
+		return err
+	}
 
 	_, err = p.Client.NetworksApi.Delete(p.Context, d.Id())
 	if err != nil {

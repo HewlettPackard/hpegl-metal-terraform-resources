@@ -9,7 +9,6 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
-	"github.com/quattronetworks/quake-client/pkg/terraform/configuration"
 	rest "github.com/quattronetworks/quake-client/v1/pkg/client"
 )
 
@@ -114,7 +113,10 @@ func VolumeResource() *schema.Resource {
 }
 
 func resourceQuatrroVolumeCreate(d *schema.ResourceData, meta interface{}) (err error) {
-	p := meta.(*configuration.Config)
+	p, err := getConfigFromMeta(meta)
+	if err != nil {
+		return err
+	}
 	// Need to create one
 	resources := p.AvailableResources
 
@@ -195,7 +197,10 @@ func resourceQuatrroVolumeCreate(d *schema.ResourceData, meta interface{}) (err 
 }
 
 func resourceQuatrroVolumeRead(d *schema.ResourceData, meta interface{}) error {
-	p := meta.(*configuration.Config)
+	p, err := getConfigFromMeta(meta)
+	if err != nil {
+		return err
+	}
 
 	volume, _, err := p.Client.VolumesApi.GetByID(p.Context, d.Id())
 	if err != nil {
@@ -224,7 +229,10 @@ func resourceQuatrroVolumeUpdate(d *schema.ResourceData, meta interface{}) error
 
 func resourceQuatrroVolumeDelete(d *schema.ResourceData, meta interface{}) (err error) {
 	var volume rest.Volume
-	p := meta.(*configuration.Config)
+	p, err := getConfigFromMeta(meta)
+	if err != nil {
+		return err
+	}
 	defer func() {
 		// This is the last in the deferred chain to fire. If there has been no
 		// preceding error we will refresh the available resources and return
