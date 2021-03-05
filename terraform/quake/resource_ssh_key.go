@@ -3,6 +3,10 @@
 package quake
 
 import (
+	"errors"
+	"fmt"
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 	rest "github.com/quattronetworks/quake-client/v1/pkg/client"
@@ -41,7 +45,15 @@ func SshKeyResource() *schema.Resource {
 	}
 }
 
-func resourceQuakeSSHKeyCreate(d *schema.ResourceData, meta interface{}) error {
+func resourceQuakeSSHKeyCreate(d *schema.ResourceData, meta interface{}) (err error) {
+	defer func() {
+		var nErr = rest.GenericOpenAPIError{}
+		if errors.As(err, &nErr) {
+			err = fmt.Errorf("failed to create ssh_key %s: %w", strings.Trim(string(nErr.Body()), "\n "), err)
+
+		}
+	}()
+
 	p, err := getConfigFromMeta(meta)
 	if err != nil {
 		return err
@@ -61,7 +73,15 @@ func resourceQuakeSSHKeyCreate(d *schema.ResourceData, meta interface{}) error {
 	return resourceQuakeSSHKeyRead(d, meta)
 }
 
-func resourceQuakeSSHKeyRead(d *schema.ResourceData, meta interface{}) error {
+func resourceQuakeSSHKeyRead(d *schema.ResourceData, meta interface{}) (err error) {
+	defer func() {
+		var nErr = rest.GenericOpenAPIError{}
+		if errors.As(err, &nErr) {
+			err = fmt.Errorf("failed to read ssh_key %s: %w", strings.Trim(string(nErr.Body()), "\n "), err)
+
+		}
+	}()
+
 	p, err := getConfigFromMeta(meta)
 	if err != nil {
 		return err
@@ -75,7 +95,15 @@ func resourceQuakeSSHKeyRead(d *schema.ResourceData, meta interface{}) error {
 	return nil
 }
 
-func resourceQuakeSSHKeyUpdate(d *schema.ResourceData, meta interface{}) error {
+func resourceQuakeSSHKeyUpdate(d *schema.ResourceData, meta interface{}) (err error) {
+	defer func() {
+		var nErr = rest.GenericOpenAPIError{}
+		if errors.As(err, &nErr) {
+			err = fmt.Errorf("failed to update ssh_key %s: %w", strings.Trim(string(nErr.Body()), "\n "), err)
+
+		}
+	}()
+
 	p, err := getConfigFromMeta(meta)
 	if err != nil {
 		return err
@@ -100,7 +128,15 @@ func resourceQuakeSSHKeyUpdate(d *schema.ResourceData, meta interface{}) error {
 	return resourceQuakeSSHKeyRead(d, meta)
 }
 
-func resourceQuakeSSHKeyDelete(d *schema.ResourceData, meta interface{}) error {
+func resourceQuakeSSHKeyDelete(d *schema.ResourceData, meta interface{}) (err error) {
+	defer func() {
+		var nErr = rest.GenericOpenAPIError{}
+		if errors.As(err, &nErr) {
+			err = fmt.Errorf("failed to delete ssh_key %s: %w", strings.Trim(string(nErr.Body()), "\n "), err)
+
+		}
+	}()
+
 	p, err := getConfigFromMeta(meta)
 	if err != nil {
 		return err

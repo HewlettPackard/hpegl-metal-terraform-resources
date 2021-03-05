@@ -3,7 +3,9 @@
 package quake
 
 import (
+	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -43,6 +45,7 @@ const (
 	hVolumes           = "volumes"
 	hVolumeAttachments = "volume_attachments"
 	hState             = "state"
+	hPwrState          = "power_state"
 )
 
 func hostSchema() map[string]*schema.Schema {
@@ -172,6 +175,11 @@ func hostSchema() map[string]*schema.Schema {
 			Computed:    true,
 			Description: "The current state of the host",
 		},
+		hPwrState: {
+			Type:        schema.TypeString,
+			Computed:    true,
+			Description: "The current power state of the host",
+		},
 	}
 }
 
@@ -189,6 +197,14 @@ func HostResource() *schema.Resource {
 }
 
 func resourceQuattroHostCreate(d *schema.ResourceData, meta interface{}) (err error) {
+	defer func() {
+		var nErr = rest.GenericOpenAPIError{}
+		if errors.As(err, &nErr) {
+			err = fmt.Errorf("failed to create host %s: %w", strings.Trim(string(nErr.Body()), "\n "), err)
+
+		}
+	}()
+
 	p, err := getConfigFromMeta(meta)
 	if err != nil {
 		return err
@@ -340,14 +356,22 @@ func resourceQuattroHostCreate(d *schema.ResourceData, meta interface{}) (err er
 	// Create it
 	h, _, err := p.Client.HostsApi.Add(p.Context, host)
 	if err != nil {
-		return fmt.Errorf("failed to create host %+v: %v", host, err)
+		return err
 	}
 	d.SetId(h.ID)
 
 	return resourceQuattroHostRead(d, meta)
 }
 
-func resourceQuattroHostRead(d *schema.ResourceData, meta interface{}) error {
+func resourceQuattroHostRead(d *schema.ResourceData, meta interface{}) (err error) {
+	defer func() {
+		var nErr = rest.GenericOpenAPIError{}
+		if errors.As(err, &nErr) {
+			err = fmt.Errorf("failed to query host %s: %w", strings.Trim(string(nErr.Body()), "\n "), err)
+
+		}
+	}()
+
 	p, err := getConfigFromMeta(meta)
 	if err != nil {
 		return err
@@ -358,6 +382,7 @@ func resourceQuattroHostRead(d *schema.ResourceData, meta interface{}) error {
 	}
 	d.Set(hName, host.Name)
 	d.Set(hState, host.State)
+	d.Set(hPwrState, host.PowerStatus)
 	d.Set(hFlavor, host.ServiceFlavor)
 	d.Set(hImageVersion, host.ServiceVersion)
 	d.Set(hSSHKeyIDs, host.SSHAuthorizedKeys)
@@ -382,11 +407,27 @@ func resourceQuattroHostRead(d *schema.ResourceData, meta interface{}) error {
 	return nil
 }
 
-func resourceQuattroHostUpdate(d *schema.ResourceData, meta interface{}) error {
+func resourceQuattroHostUpdate(d *schema.ResourceData, meta interface{}) (err error) {
+	defer func() {
+		var nErr = rest.GenericOpenAPIError{}
+		if errors.As(err, &nErr) {
+			err = fmt.Errorf("failed to update host %s: %w", strings.Trim(string(nErr.Body()), "\n "), err)
+
+		}
+	}()
+
 	return resourceQuattroHostRead(d, meta)
 }
 
 func resourceQuattroHostDelete(d *schema.ResourceData, meta interface{}) (err error) {
+	defer func() {
+		var nErr = rest.GenericOpenAPIError{}
+		if errors.As(err, &nErr) {
+			err = fmt.Errorf("failed to delete host %s: %w", strings.Trim(string(nErr.Body()), "\n "), err)
+
+		}
+	}()
+
 	p, err := getConfigFromMeta(meta)
 	if err != nil {
 		return err
@@ -423,7 +464,7 @@ func resourceQuattroHostDelete(d *schema.ResourceData, meta interface{}) (err er
 					return
 
 				case rest.HOSTSTATE_FAILED:
-					// Quake has finished a delete attempts but failed. Retain the reference to
+					// Quake has finished delete attempts but failed. Retain the reference to
 					// the host since it technically still exists so that terraform can attempt
 					// another delete at a later time.
 					err = fmt.Errorf("unable to delete host")

@@ -3,7 +3,12 @@
 package quake
 
 import (
+	"errors"
+	"fmt"
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	rest "github.com/quattronetworks/quake-client/v1/pkg/client"
 )
 
 func DataSourceImage() *schema.Resource {
@@ -21,7 +26,15 @@ func DataSourceImage() *schema.Resource {
 
 }
 
-func dataSourceImageRead(d *schema.ResourceData, meta interface{}) error {
+func dataSourceImageRead(d *schema.ResourceData, meta interface{}) (err error) {
+	defer func() {
+		var nErr = rest.GenericOpenAPIError{}
+		if errors.As(err, &nErr) {
+			err = fmt.Errorf("failed to read images %s: %w", strings.Trim(string(nErr.Body()), "\n "), err)
+
+		}
+	}()
+
 	p, err := getConfigFromMeta(meta)
 	if err != nil {
 		return err
