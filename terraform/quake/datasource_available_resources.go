@@ -3,7 +3,9 @@
 package quake
 
 import (
+	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
@@ -249,6 +251,14 @@ func DataSourceAvailableResources() *schema.Resource {
 }
 
 func dataSourceAvailableResourcesRead(d *schema.ResourceData, meta interface{}) (err error) {
+	defer func() {
+		var nErr = rest.GenericOpenAPIError{}
+		if errors.As(err, &nErr) {
+			err = fmt.Errorf("failed to read available resources %s: %w", strings.Trim(string(nErr.Body()), "\n "), err)
+
+		}
+	}()
+
 	p, err := getConfigFromMeta(meta)
 	if err != nil {
 		return err

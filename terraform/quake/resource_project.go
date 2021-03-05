@@ -3,6 +3,10 @@
 package quake
 
 import (
+	"errors"
+	"fmt"
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 	rest "github.com/quattronetworks/quake-client/v1/pkg/client"
@@ -143,6 +147,14 @@ func ProjectResource() *schema.Resource {
 }
 
 func resourceQuattroProjectCreate(d *schema.ResourceData, meta interface{}) (err error) {
+	defer func() {
+		var nErr = rest.GenericOpenAPIError{}
+		if errors.As(err, &nErr) {
+			err = fmt.Errorf("failed to create project %s: %w", strings.Trim(string(nErr.Body()), "\n "), err)
+
+		}
+	}()
+
 	p, err := getConfigFromMeta(meta)
 	if err != nil {
 		return err
@@ -193,6 +205,14 @@ func resourceQuattroProjectCreate(d *schema.ResourceData, meta interface{}) (err
 }
 
 func resourceQuattroProjectRead(d *schema.ResourceData, meta interface{}) (err error) {
+	defer func() {
+		var nErr = rest.GenericOpenAPIError{}
+		if errors.As(err, &nErr) {
+			err = fmt.Errorf("failed to read project %s: %w", strings.Trim(string(nErr.Body()), "\n "), err)
+
+		}
+	}()
+
 	p, err := getConfigFromMeta(meta)
 	if err != nil {
 		return err
@@ -233,11 +253,27 @@ func resourceQuattroProjectRead(d *schema.ResourceData, meta interface{}) (err e
 }
 
 func resourceQuattroProjectUpdate(d *schema.ResourceData, meta interface{}) (err error) {
+	defer func() {
+		var nErr = rest.GenericOpenAPIError{}
+		if errors.As(err, &nErr) {
+			err = fmt.Errorf("failed to update project %s: %w", strings.Trim(string(nErr.Body()), "\n "), err)
+
+		}
+	}()
+
 	//p := meta.(*Config)
 	return resourceQuattroProjectRead(d, meta)
 }
 
 func resourceQuattroProjectDelete(d *schema.ResourceData, meta interface{}) (err error) {
+	defer func() {
+		var nErr = rest.GenericOpenAPIError{}
+		if errors.As(err, &nErr) {
+			err = fmt.Errorf("failed to delete project %s: %w", strings.Trim(string(nErr.Body()), "\n "), err)
+
+		}
+	}()
+
 	p, err := getConfigFromMeta(meta)
 	if err != nil {
 		return err

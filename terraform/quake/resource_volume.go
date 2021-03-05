@@ -3,6 +3,7 @@
 package quake
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -113,6 +114,14 @@ func VolumeResource() *schema.Resource {
 }
 
 func resourceQuatrroVolumeCreate(d *schema.ResourceData, meta interface{}) (err error) {
+	defer func() {
+		var nErr = rest.GenericOpenAPIError{}
+		if errors.As(err, &nErr) {
+			err = fmt.Errorf("failed to create volume %s: %w", strings.Trim(string(nErr.Body()), "\n "), err)
+
+		}
+	}()
+
 	p, err := getConfigFromMeta(meta)
 	if err != nil {
 		return err
@@ -196,7 +205,14 @@ func resourceQuatrroVolumeCreate(d *schema.ResourceData, meta interface{}) (err 
 	return resourceQuatrroVolumeRead(d, meta)
 }
 
-func resourceQuatrroVolumeRead(d *schema.ResourceData, meta interface{}) error {
+func resourceQuatrroVolumeRead(d *schema.ResourceData, meta interface{}) (err error) {
+	defer func() {
+		var nErr = rest.GenericOpenAPIError{}
+		if errors.As(err, &nErr) {
+			err = fmt.Errorf("failed to read volume %s: %w", strings.Trim(string(nErr.Body()), "\n "), err)
+
+		}
+	}()
 	p, err := getConfigFromMeta(meta)
 	if err != nil {
 		return err
@@ -222,12 +238,27 @@ func resourceQuatrroVolumeRead(d *schema.ResourceData, meta interface{}) error {
 	return nil
 }
 
-func resourceQuatrroVolumeUpdate(d *schema.ResourceData, meta interface{}) error {
+func resourceQuatrroVolumeUpdate(d *schema.ResourceData, meta interface{}) (err error) {
+	defer func() {
+		var nErr = rest.GenericOpenAPIError{}
+		if errors.As(err, &nErr) {
+			err = fmt.Errorf("failed to update volume %s: %w", strings.Trim(string(nErr.Body()), "\n "), err)
+
+		}
+	}()
 	//@TODO - or not....?
 	return resourceQuatrroVolumeRead(d, meta)
 }
 
 func resourceQuatrroVolumeDelete(d *schema.ResourceData, meta interface{}) (err error) {
+	defer func() {
+		var nErr = rest.GenericOpenAPIError{}
+		if errors.As(err, &nErr) {
+			err = fmt.Errorf("failed to delete volume %s: %w", strings.Trim(string(nErr.Body()), "\n "), err)
+
+		}
+	}()
+
 	var volume rest.Volume
 	p, err := getConfigFromMeta(meta)
 	if err != nil {

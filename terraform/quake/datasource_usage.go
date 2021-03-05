@@ -3,6 +3,9 @@
 package quake
 
 import (
+	"errors"
+	"fmt"
+	"strings"
 	"time"
 
 	"github.com/antihax/optional"
@@ -241,7 +244,15 @@ func DataSourceUsage() *schema.Resource {
 	}
 }
 
-func resourceQuakeUsageRead(d *schema.ResourceData, meta interface{}) error {
+func resourceQuakeUsageRead(d *schema.ResourceData, meta interface{}) (err error) {
+	defer func() {
+		var nErr = rest.GenericOpenAPIError{}
+		if errors.As(err, &nErr) {
+			err = fmt.Errorf("failed to get usage %s: %w", strings.Trim(string(nErr.Body()), "\n "), err)
+
+		}
+	}()
+
 	p, err := getConfigFromMeta(meta)
 	if err != nil {
 		return err
