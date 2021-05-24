@@ -1,11 +1,11 @@
-// (C) Copyright 2020 Hewlett Packard Enterprise Development LP
+// (C) Copyright 2020-2021 Hewlett Packard Enterprise Development LP
 
 package registration
 
 import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
-	"github.com/quattronetworks/quake-client/terraform/quake"
+	"github.com/hpe-hcss/quake-client/terraform/quake"
 )
 
 const (

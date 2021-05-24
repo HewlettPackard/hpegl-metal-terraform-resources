@@ -8,7 +8,7 @@ import (
 	"os"
 	"strings"
 
-	rest "github.com/quattronetworks/quake-client/v1/pkg/client"
+	rest "github.com/hpe-hcss/quake-client/v1/pkg/client"
 )
 
 // This function is used by the GL terraform provider to set the key in the

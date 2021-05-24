@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2020 Hewlett Packard Enterprise Development LP.
+// Copyright (c) 2016-2021 Hewlett Packard Enterprise Development LP.
 
 package quake
 
@@ -7,7 +7,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
-	"github.com/quattronetworks/quake-client/pkg/terraform/configuration"
+	"github.com/hpe-hcss/quake-client/pkg/terraform/configuration"
 )
 
 const (
