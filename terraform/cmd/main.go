@@ -4,7 +4,7 @@ package main
 import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/plugin"
 
-	"github.com/quattronetworks/quake-client/terraform/quake"
+	"github.com/hpe-hcss/quake-client/terraform/quake"
 )
 
 func main() {

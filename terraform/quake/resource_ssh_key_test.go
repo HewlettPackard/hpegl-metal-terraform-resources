@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2020 Hewlett Packard Enterprise Development LP.
+// Copyright (c) 2016-2021 Hewlett Packard Enterprise Development LP.
 
 package quake
 
@@ -9,8 +9,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 
-	"github.com/quattronetworks/quake-client/pkg/terraform/configuration"
-	rest "github.com/quattronetworks/quake-client/v1/pkg/client"
+	"github.com/hpe-hcss/quake-client/pkg/terraform/configuration"
+	rest "github.com/hpe-hcss/quake-client/v1/pkg/client"
 )
 
 func quatrroSSHKeyConfigBasic(name, publicSSHKey string) string {

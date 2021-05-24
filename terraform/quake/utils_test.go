@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/quattronetworks/quake-client/pkg/terraform/configuration"
+	"github.com/hpe-hcss/quake-client/pkg/terraform/configuration"
 )
 
 func TestGetConfigFromMeta(t *testing.T) {

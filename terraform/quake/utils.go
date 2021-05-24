@@ -6,7 +6,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
-	"github.com/quattronetworks/quake-client/pkg/terraform/configuration"
+	"github.com/hpe-hcss/quake-client/pkg/terraform/configuration"
 )
 
 const dsFilter = "filter"

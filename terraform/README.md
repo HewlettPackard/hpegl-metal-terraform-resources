@@ -25,7 +25,7 @@ make install
  go test -v -i $(go list ./quake | grep -v vendor) 
 echo $(go list ./quake | grep -v vendor) | \
 	TF_ACC=true xargs -t -n4 go test -v  -timeout=60s -cover
-go test -v -timeout=60s -cover github.com/quattronetworks/quake-client/terraform/quake 
+go test -v -timeout=60s -cover github.com/hpe-hcss/quake-client/terraform/quake 
 === RUN   TestAvailableResourcesBasic
 --- PASS: TestAvailableResourcesBasic (0.27s)
 === RUN   TestAccImages_Basic
@@ -44,7 +44,7 @@ go test -v -timeout=60s -cover github.com/quattronetworks/quake-client/terraform
 --- PASS: TestAccQuattroVolume (6.25s)
 PASS
 coverage: 67.2% of statements
-ok  	github.com/quattronetworks/quake-client/terraform/quake	7.600s	coverage: 67.2% of statements
+ok  	github.com/hpe-hcss/quake-client/terraform/quake	7.600s	coverage: 67.2% of statements
 ```
 
 # Using GreenLake tokens
