@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2021 Hewlett Packard Enterprise Development LP.
+// Copyright 2016-2021 Hewlett Packard Enterprise Development LP
 
 package quake
 
@@ -45,6 +45,8 @@ const (
 	hVolumes           = "volumes"
 	hVolumeAttachments = "volume_attachments"
 	hState             = "state"
+	hSubState          = "sub_state"
+	hPortalCommOkay    = "portal_comm_okay"
 	hPwrState          = "power_state"
 )
 
@@ -174,6 +176,16 @@ func hostSchema() map[string]*schema.Schema {
 			Type:        schema.TypeString,
 			Computed:    true,
 			Description: "The current state of the host",
+		},
+		hSubState: {
+			Type:        schema.TypeString,
+			Computed:    true,
+			Description: "The current state of the deployment",
+		},
+		hPortalCommOkay: {
+			Type:        schema.TypeBool,
+			Computed:    true,
+			Description: "The current portal communication state of the host",
 		},
 		hPwrState: {
 			Type:        schema.TypeString,
@@ -382,6 +394,8 @@ func resourceQuattroHostRead(d *schema.ResourceData, meta interface{}) (err erro
 	}
 	d.Set(hName, host.Name)
 	d.Set(hState, host.State)
+	d.Set(hSubState, host.Substate)
+	d.Set(hPortalCommOkay, host.PortalCommOkay)
 	d.Set(hPwrState, host.PowerStatus)
 	d.Set(hFlavor, host.ServiceFlavor)
 	d.Set(hImageVersion, host.ServiceVersion)
