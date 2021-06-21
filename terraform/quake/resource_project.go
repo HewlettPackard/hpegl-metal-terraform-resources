@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2021 Hewlett Packard Enterprise Development LP.
+// (C) Copyright 2016-2021 Hewlett Packard Enterprise Development LP.
 
 package quake
 
@@ -35,17 +35,17 @@ func limitsSchema() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		pHosts: {
 			Type:        schema.TypeInt,
-			Computed:    true,
+			Optional:    true,
 			Description: "Maximum number of host allowed in the team.",
 		},
 		pVolumes: {
 			Type:        schema.TypeInt,
-			Computed:    true,
+			Optional:    true,
 			Description: "Maximum number of volumes allowed in the team.",
 		},
 		pVolumeCapacity: {
 			Type:        schema.TypeFloat,
-			Computed:    true,
+			Optional:    true,
 			Description: "Total allowable volume capacity (GiB) allowed in the team.",
 		},
 	}
@@ -105,7 +105,7 @@ func projectSchema() map[string]*schema.Schema {
 		},
 
 		pProfile: {
-			// TODO the V2 SDK doesn't (yet) support TypeMap with Elem *Resource
+			// TODO the V2 SDK doesn't (yet) support TypeMap with Elem *Resource for nested objects
 			// This is the currently recommended work-around. See
 			// https://github.com/hashicorp/terraform-plugin-sdk/issues/155
 			// https://github.com/hashicorp/terraform-plugin-sdk/issues/616
@@ -118,7 +118,7 @@ func projectSchema() map[string]*schema.Schema {
 			},
 		},
 		pLimits: {
-			// TODO the V2 SDK doesn't (yet) support TypeMap with Elem *Resource
+			// TODO the V2 SDK doesn't (yet) support TypeMap with Elem *Resource for nested objects
 			// This is the currently recommended work-around. See
 			// https://github.com/hashicorp/terraform-plugin-sdk/issues/155
 			// https://github.com/hashicorp/terraform-plugin-sdk/issues/616
