@@ -1,3 +1,5 @@
+#(C) Copyright 2020-2021 Hewlett Packard Enterprise Development LP
+
 TEST?=$$(go list ./quake | grep -v vendor)
 TF_VERSION:=$(shell cat ./version)
 
@@ -10,15 +12,19 @@ GOOS='$(GOOSALT)'
 
 default: build
 
-build: 
+vendor:
+	go mod download
+	go mod vendor
+
+build: vendor
 	(cd cmd; CGO_ENABLED=0 GOOS=$(GOOS) GOARCH=amd64 go build -mod=vendor -o terraform-provider-quake_$(TF_VERSION))
 
-test:
+test: vendor
 	go test -v -i $(TEST) 
 	echo $(TEST) | \
 		xargs -t -n4 go test $(TESTGARHS) -timeout=5s
 
-acceptance:
+acceptance: vendor
 	go test -v -i $(TEST) 
 	echo $(TEST) | \
 		TF_ACC=true xargs -t -n4 go test -v $(TESTGARHS) -timeout=120s -cover
