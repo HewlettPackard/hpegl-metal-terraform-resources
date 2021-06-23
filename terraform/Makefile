@@ -9,6 +9,7 @@ LOCAL_LOCATION=~/.local/share/terraform/plugins/terraform.example.com/quake/quak
 
 GOOSALT ?= 'linux'
 GOOS='$(GOOSALT)'
+GOPRIVATE=github.com/hpe-hcss
 
 default: build
 
