@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2021 Hewlett Packard Enterprise Development LP.
+// (C) Copyright 2016-2021 Hewlett Packard Enterprise Development LP.
 
 package quake
 
@@ -271,7 +271,9 @@ func resourceQuakeUsageRead(d *schema.ResourceData, meta interface{}) (err error
 			End: optional.NewString(end.String()),
 		}
 	}
-	usage, _, err := p.Client.UsageReportsApi.Get(p.Context, start.Format(time.RFC3339), gOps)
+
+	ctx := p.GetContext()
+	usage, _, err := p.Client.UsageReportsApi.Get(ctx, start.Format(time.RFC3339), gOps)
 	if err != nil {
 		return err
 	}

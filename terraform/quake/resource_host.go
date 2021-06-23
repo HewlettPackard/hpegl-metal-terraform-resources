@@ -366,7 +366,8 @@ func resourceQuattroHostCreate(d *schema.ResourceData, meta interface{}) (err er
 	}
 
 	// Create it
-	h, _, err := p.Client.HostsApi.Add(p.Context, host)
+	ctx := p.GetContext()
+	h, _, err := p.Client.HostsApi.Add(ctx, host)
 	if err != nil {
 		return err
 	}
@@ -388,7 +389,9 @@ func resourceQuattroHostRead(d *schema.ResourceData, meta interface{}) (err erro
 	if err != nil {
 		return err
 	}
-	host, _, err := p.Client.HostsApi.GetByID(p.Context, d.Id())
+
+	ctx := p.GetContext()
+	host, _, err := p.Client.HostsApi.GetByID(ctx, d.Id())
 	if err != nil {
 		return err
 	}
@@ -467,7 +470,9 @@ func resourceQuattroHostDelete(d *schema.ResourceData, meta interface{}) (err er
 			// Host deletes are async so wait here until Quake reports that the host has really gone.
 			for {
 				time.Sleep(pollInterval)
-				host, _, err = p.Client.HostsApi.GetByID(p.Context, d.Id())
+
+				ctx := p.GetContext()
+				host, _, err := p.Client.HostsApi.GetByID(ctx, d.Id())
 				if err != nil {
 					return
 				}
@@ -488,7 +493,8 @@ func resourceQuattroHostDelete(d *schema.ResourceData, meta interface{}) (err er
 		}
 	}()
 
-	host, _, err = p.Client.HostsApi.GetByID(p.Context, d.Id())
+	ctx := p.GetContext()
+	host, _, err = p.Client.HostsApi.GetByID(ctx, d.Id())
 	if err != nil {
 		return err
 	}
@@ -496,26 +502,31 @@ func resourceQuattroHostDelete(d *schema.ResourceData, meta interface{}) (err er
 		return nil
 	}
 	if host.State == rest.HOSTSTATE_NEW {
-		_, err = p.Client.HostsApi.Delete(p.Context, d.Id())
+		_, err = p.Client.HostsApi.Delete(ctx, d.Id())
+
 		return err
 	}
 
 	// Hosts that are powered-on can not be deleted directly, so flip the power.
 	if host.PowerStatus == rest.HOSTPOWERSTATE_ON {
-		_, _, err = p.Client.HostsApi.PowerOff(p.Context, d.Id())
+		ctx = p.GetContext()
+		_, _, err = p.Client.HostsApi.PowerOff(ctx, d.Id())
 		if err != nil {
 			return err
 		}
 		// The call is asynchronous so wait for Quake to complete the request.
 		for host.PowerStatus != rest.HOSTPOWERSTATE_OFF {
 			time.Sleep(pollInterval)
-			host, _, err = p.Client.HostsApi.GetByID(p.Context, d.Id())
+
+			host, _, err = p.Client.HostsApi.GetByID(ctx, d.Id())
 			if err != nil {
 				return err
 			}
 		}
 	}
 
-	_, err = p.Client.HostsApi.Delete(p.Context, d.Id())
+	ctx = p.GetContext()
+	_, err = p.Client.HostsApi.Delete(ctx, d.Id())
+
 	return err
 }

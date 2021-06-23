@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2021 Hewlett Packard Enterprise Development LP.
+// (C) Copyright 2016-2021 Hewlett Packard Enterprise Development LP.
 
 package quake
 
@@ -182,14 +182,17 @@ func resourceQuatrroVolumeCreate(d *schema.ResourceData, meta interface{}) (err 
 		return fmt.Errorf("location %q not found in %q", targetLocation, locations)
 	}
 
-	v, _, err := p.Client.VolumesApi.Add(p.Context, volume)
+	ctx := p.GetContext()
+	v, _, err := p.Client.VolumesApi.Add(ctx, volume)
 	if err != nil {
 		return err
 	}
 	d.SetId(v.ID)
 	for {
 		time.Sleep(pollInterval)
-		vol, _, err := p.Client.VolumesApi.GetByID(p.Context, v.ID)
+
+		ctx = p.GetContext()
+		vol, _, err := p.Client.VolumesApi.GetByID(ctx, v.ID)
 		if err != nil {
 			break
 		}
@@ -218,7 +221,8 @@ func resourceQuatrroVolumeRead(d *schema.ResourceData, meta interface{}) (err er
 		return err
 	}
 
-	volume, _, err := p.Client.VolumesApi.GetByID(p.Context, d.Id())
+	ctx := p.GetContext()
+	volume, _, err := p.Client.VolumesApi.GetByID(ctx, d.Id())
 	if err != nil {
 		return err
 	}
@@ -282,7 +286,9 @@ func resourceQuatrroVolumeDelete(d *schema.ResourceData, meta interface{}) (err 
 			// Volume deletes are async so wait here until Quake reports that the volume has really gone.
 			for {
 				time.Sleep(pollInterval)
-				volume, _, err = p.Client.VolumesApi.GetByID(p.Context, d.Id())
+
+				ctx := p.GetContext()
+				volume, _, err = p.Client.VolumesApi.GetByID(ctx, d.Id())
 				if err != nil {
 					return
 				}
@@ -303,7 +309,8 @@ func resourceQuatrroVolumeDelete(d *schema.ResourceData, meta interface{}) (err 
 		}
 	}()
 
-	volume, _, err = p.Client.VolumesApi.GetByID(p.Context, d.Id())
+	ctx := p.GetContext()
+	volume, _, err = p.Client.VolumesApi.GetByID(ctx, d.Id())
 	if err != nil {
 		return err
 	}
@@ -312,6 +319,6 @@ func resourceQuatrroVolumeDelete(d *schema.ResourceData, meta interface{}) (err 
 		return nil
 	}
 
-	_, err = p.Client.VolumesApi.Delete(p.Context, d.Id())
+	_, err = p.Client.VolumesApi.Delete(ctx, d.Id())
 	return err
 }

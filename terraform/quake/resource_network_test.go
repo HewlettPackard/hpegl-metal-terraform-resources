@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2021 Hewlett Packard Enterprise Development LP.
+// (C) Copyright 2016-2021 Hewlett Packard Enterprise Development LP.
 
 package quake
 
@@ -46,7 +46,8 @@ func testAccCheckNetworkDestroy(t *testing.T, s *terraform.State) error {
 			continue
 		}
 
-		_, _, err := p.Client.NetworksApi.GetByID(p.Context, rs.Primary.ID)
+		ctx := p.GetContext()
+		_, _, err := p.Client.NetworksApi.GetByID(ctx, rs.Primary.ID)
 		if err == nil {
 			return fmt.Errorf("Alert pnet still exists")
 		}

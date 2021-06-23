@@ -1,12 +1,15 @@
-// Copyright (c) 2016-2021 Hewlett Packard Enterprise Development LP.
+// (C) Copyright 2016-2021 Hewlett Packard Enterprise Development LP.
 
 package configuration
 
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 	"strings"
+
+	"github.com/hewlettpackard/hpegl-provider-lib/pkg/token/retrieve"
 
 	rest "github.com/hpe-hcss/quake-client/v1/pkg/client"
 )
@@ -25,11 +28,12 @@ type Config struct {
 	user             string
 	space            string
 	terraformVersion string
+	trf              retrieve.TokenRetrieveFuncCtx
 	useGLToken       bool
+	context          context.Context
 	// Exported fields
 	PortalURL string
 	Client    *rest.APIClient
-	Context   context.Context
 	// we will cache this here for the life of the provider
 	AvailableResources rest.AvailableResources
 }
@@ -42,8 +46,19 @@ func WithGLToken(g bool) CreateOpt {
 	}
 }
 
+// WithTRF this create option is for use by the hpegl terraform provider
+// It is used to pass-in a token retrieve function which is used to get
+// a GL IAM token.  Behind the scenes tokens are generated and refreshed
+// if they are due to expire
+func WithTRF(trf retrieve.TokenRetrieveFuncCtx) CreateOpt {
+	return func(c *Config) {
+		c.trf = trf
+	}
+}
+
 func (c *Config) RefreshAvailableResources() error {
-	resources, _, err := c.Client.AvailableResourcesApi.List(c.Context)
+	ctx := c.GetContext()
+	resources, _, err := c.Client.AvailableResourcesApi.List(ctx)
 	if err != nil {
 		return err
 	}
@@ -84,6 +99,24 @@ func (c *Config) GetVolumeFlavorName(flavorID string) (string, error) {
 	return "", fmt.Errorf("VolumeFalvorID %s not found", flavorID)
 }
 
+// GetContext is used to retrieve the context.
+// If the token retrieve function is nil the context in Config is returned
+// If there is a token retrieve function it is executed to retrieve a GL IAM token, which is
+// placed in the context before it is returned.
+// If we get an error we log it and return the context with the new token.
+func (c *Config) GetContext() context.Context {
+	if c.trf == nil {
+		return c.context
+	}
+
+	token, err := c.trf(c.context)
+	if err != nil {
+		log.Printf("error in retrieving token %s", err)
+	}
+
+	return context.WithValue(c.context, rest.ContextAccessToken, token)
+}
+
 func makeLocationName(country, region, dataCenter string) string {
 	return fmt.Sprintf("%s:%s:%s", country, region, dataCenter)
 }
@@ -94,6 +127,7 @@ func NewConfig(portalURL string, opts ...CreateOpt) (*Config, error) {
 	config := new(Config)
 
 	config.useGLToken = false
+	config.trf = nil
 
 	// run overrides
 	for _, opt := range opts {
@@ -102,7 +136,7 @@ func NewConfig(portalURL string, opts ...CreateOpt) (*Config, error) {
 		}
 	}
 
-	if config.useGLToken {
+	if config.useGLToken || config.trf != nil {
 		gltoken, err := getGLConfig()
 		if err != nil {
 			return nil, fmt.Errorf("Error reading GL token file:  %w", err)
@@ -132,7 +166,7 @@ func NewConfig(portalURL string, opts ...CreateOpt) (*Config, error) {
 	cfg := rest.NewConfiguration()
 	cfg.BasePath = config.restURL + "/rest/v1"
 
-	if config.useGLToken {
+	if config.useGLToken || config.trf != nil {
 		// Add required headers if GL authentication method
 		if config.user != "" {
 			cfg.AddDefaultHeader("Project", config.user)
@@ -149,7 +183,7 @@ func NewConfig(portalURL string, opts ...CreateOpt) (*Config, error) {
 	}
 
 	// get new API Client with basepath and auth credentials setup in configuration and Context
-	config.Context = ctx
+	config.context = ctx
 	config.Client = rest.NewAPIClient(cfg)
 	return config, nil
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2021 Hewlett Packard Enterprise Development LP.
+// (C) Copyright 2016-2021 Hewlett Packard Enterprise Development LP.
 
 package quake
 
@@ -62,7 +62,8 @@ func resourceQuakeSSHKeyCreate(d *schema.ResourceData, meta interface{}) (err er
 		Name: d.Get(sshKeyName).(string),
 		Key:  d.Get(sshPublicKey).(string),
 	}
-	key, _, err := p.Client.SshkeysApi.Add(p.Context, r)
+	ctx := p.GetContext()
+	key, _, err := p.Client.SshkeysApi.Add(ctx, r)
 	if err != nil {
 		return err
 	}
@@ -86,7 +87,9 @@ func resourceQuakeSSHKeyRead(d *schema.ResourceData, meta interface{}) (err erro
 	if err != nil {
 		return err
 	}
-	ssh, _, err := p.Client.SshkeysApi.GetByID(p.Context, d.Id())
+
+	ctx := p.GetContext()
+	ssh, _, err := p.Client.SshkeysApi.GetByID(ctx, d.Id())
 	if err != nil {
 		return err
 	}
@@ -109,7 +112,8 @@ func resourceQuakeSSHKeyUpdate(d *schema.ResourceData, meta interface{}) (err er
 		return err
 	}
 	// Read existing
-	ssh, _, err := p.Client.SshkeysApi.GetByID(p.Context, d.Id())
+	ctx := p.GetContext()
+	ssh, _, err := p.Client.SshkeysApi.GetByID(ctx, d.Id())
 	if err != nil {
 		return err
 	}
@@ -121,7 +125,8 @@ func resourceQuakeSSHKeyUpdate(d *schema.ResourceData, meta interface{}) (err er
 		ssh.Key = public
 	}
 	// Update
-	_, _, err = p.Client.SshkeysApi.Update(p.Context, ssh.ID, ssh)
+	ctx = p.GetContext()
+	_, _, err = p.Client.SshkeysApi.Update(ctx, ssh.ID, ssh)
 	if err != nil {
 		return err
 	}
@@ -141,7 +146,9 @@ func resourceQuakeSSHKeyDelete(d *schema.ResourceData, meta interface{}) (err er
 	if err != nil {
 		return err
 	}
-	_, err = p.Client.SshkeysApi.Delete(p.Context, d.Id())
+
+	ctx := p.GetContext()
+	_, err = p.Client.SshkeysApi.Delete(ctx, d.Id())
 	if err != nil {
 		return err
 	}

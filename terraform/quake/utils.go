@@ -1,3 +1,5 @@
+// (C) Copyright 2016-2021 Hewlett Packard Enterprise Development LP.
+
 package quake
 
 import (
@@ -5,7 +7,6 @@ import (
 	"regexp"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-
 	"github.com/hpe-hcss/quake-client/pkg/terraform/configuration"
 )
 

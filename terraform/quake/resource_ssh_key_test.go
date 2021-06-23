@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2021 Hewlett Packard Enterprise Development LP.
+// (C) Copyright 2016-2021 Hewlett Packard Enterprise Development LP.
 
 package quake
 
@@ -61,7 +61,8 @@ func testAccCheckQuattroSSHKeyExists(n string, out *rest.SshKey) resource.TestCh
 
 		p := testAccProvider.Meta().(*configuration.Config)
 
-		key, _, err := p.Client.SshkeysApi.GetByID(p.Context, rs.Primary.ID)
+		ctx := p.GetContext()
+		key, _, err := p.Client.SshkeysApi.GetByID(ctx, rs.Primary.ID)
 		if err != nil {
 			return err
 		}
@@ -80,7 +81,9 @@ func testAccCheckQuattroSSHKeyDestroy(s *terraform.State) error {
 		if rs.Type != "quake_ssh_key" {
 			continue
 		}
-		if _, _, err := p.Client.SshkeysApi.GetByID(p.Context, rs.Primary.ID); err == nil {
+
+		ctx := p.GetContext()
+		if _, _, err := p.Client.SshkeysApi.GetByID(ctx, rs.Primary.ID); err == nil {
 			return fmt.Errorf("SSHKey still exists")
 		}
 	}

@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2021 Hewlett Packard Enterprise Development LP.
+// (C) Copyright 2016-2021 Hewlett Packard Enterprise Development LP.
 
 package quake
 
@@ -51,7 +51,8 @@ func testAccCheckVolumeDestroy(t *testing.T, s *terraform.State) error {
 		}
 		volumeID := rs.Primary.ID
 		p := testAccProvider.Meta().(*configuration.Config)
-		volume, _, err := p.Client.VolumesApi.GetByID(p.Context, volumeID)
+		ctx := p.GetContext()
+		volume, _, err := p.Client.VolumesApi.GetByID(ctx, volumeID)
 		if err == nil && volume.State != rest.VOLUMESTATE_DELETED {
 			return fmt.Errorf("Volume: %v still exists", volume)
 		}
@@ -71,7 +72,8 @@ func testAccCheckVolumeExists(resource string) resource.TestCheckFunc {
 		}
 		volumeID := rs.Primary.ID
 		p := testAccProvider.Meta().(*configuration.Config)
-		_, _, err := p.Client.VolumesApi.GetByID(p.Context, volumeID)
+		ctx := p.GetContext()
+		_, _, err := p.Client.VolumesApi.GetByID(ctx, volumeID)
 		if err != nil {
 			return fmt.Errorf("Volume: %q not found: %s", volumeID, err)
 		}

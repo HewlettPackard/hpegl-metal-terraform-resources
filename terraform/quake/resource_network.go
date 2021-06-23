@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2021 Hewlett Packard Enterprise Development LP.
+// (C) Copyright 2016-2021 Hewlett Packard Enterprise Development LP.
 
 package quake
 
@@ -92,7 +92,8 @@ func resourceQuattroNetworkCreate(d *schema.ResourceData, meta interface{}) (err
 		LocationID:  locationID,
 	}
 
-	n, _, err := p.Client.NetworksApi.Add(p.Context, newNetwork)
+	ctx := p.GetContext()
+	n, _, err := p.Client.NetworksApi.Add(ctx, newNetwork)
 	if err != nil {
 		return err
 	}
@@ -117,7 +118,9 @@ func resourceQuattroNetworkRead(d *schema.ResourceData, meta interface{}) (err e
 	if err != nil {
 		return err
 	}
-	n, _, err := p.Client.NetworksApi.GetByID(p.Context, d.Id())
+
+	ctx := p.GetContext()
+	n, _, err := p.Client.NetworksApi.GetByID(ctx, d.Id())
 	if err != nil {
 		return err
 	}
@@ -147,14 +150,16 @@ func resourceQuattroNetworkUpdate(d *schema.ResourceData, meta interface{}) (err
 		return err
 	}
 
-	n, _, err := p.Client.NetworksApi.GetByID(p.Context, d.Id())
+	ctx := p.GetContext()
+
+	n, _, err := p.Client.NetworksApi.GetByID(ctx, d.Id())
 	if err != nil {
 		return err
 	}
 	n.Name = d.Get(nName).(string)
 	n.Description = d.Get(nDescription).(string)
 
-	_, _, err = p.Client.NetworksApi.Update(p.Context, n.ID, n)
+	_, _, err = p.Client.NetworksApi.Update(ctx, n.ID, n)
 	if err != nil {
 		return err
 	}
@@ -176,7 +181,8 @@ func resourceQuattroNetworkDelete(d *schema.ResourceData, meta interface{}) (err
 		return err
 	}
 
-	_, err = p.Client.NetworksApi.Delete(p.Context, d.Id())
+	ctx := p.GetContext()
+	_, err = p.Client.NetworksApi.Delete(ctx, d.Id())
 	if err != nil {
 		return err
 	}

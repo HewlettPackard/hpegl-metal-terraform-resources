@@ -196,7 +196,9 @@ func resourceQuattroProjectCreate(d *schema.ResourceData, meta interface{}) (err
 			VolumeCapacity: uint64(safeFloat(limits[pVolumeCapacity])),
 		}
 	}
-	project, _, err := p.Client.ProjectsApi.Add(p.Context, np)
+
+	ctx := p.GetContext()
+	project, _, err := p.Client.ProjectsApi.Add(ctx, np)
 	if err != nil {
 		return err
 	}
@@ -217,7 +219,9 @@ func resourceQuattroProjectRead(d *schema.ResourceData, meta interface{}) (err e
 	if err != nil {
 		return err
 	}
-	project, _, err := p.Client.ProjectsApi.GetByID(p.Context, d.Id())
+
+	ctx := p.GetContext()
+	project, _, err := p.Client.ProjectsApi.GetByID(ctx, d.Id())
 	if err != nil {
 		return err
 	}
@@ -278,7 +282,9 @@ func resourceQuattroProjectDelete(d *schema.ResourceData, meta interface{}) (err
 	if err != nil {
 		return err
 	}
-	_, err = p.Client.ProjectsApi.Delete(p.Context, d.Id())
+
+	ctx := p.GetContext()
+	_, err = p.Client.ProjectsApi.Delete(ctx, d.Id())
 	if err != nil {
 		return err
 	}
