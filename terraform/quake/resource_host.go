@@ -472,10 +472,11 @@ func resourceQuattroHostDelete(d *schema.ResourceData, meta interface{}) (err er
 				time.Sleep(pollInterval)
 
 				ctx := p.GetContext()
-				host, _, err := p.Client.HostsApi.GetByID(ctx, d.Id())
+				host, _, err = p.Client.HostsApi.GetByID(ctx, d.Id())
 				if err != nil {
 					return
 				}
+
 				switch host.State {
 				case rest.HOSTSTATE_DELETED:
 					// Success; delete terraform reference.
@@ -488,6 +489,9 @@ func resourceQuattroHostDelete(d *schema.ResourceData, meta interface{}) (err er
 					// another delete at a later time.
 					err = fmt.Errorf("unable to delete host")
 					return
+
+				default:
+					continue
 				}
 			}
 		}
@@ -498,10 +502,14 @@ func resourceQuattroHostDelete(d *schema.ResourceData, meta interface{}) (err er
 	if err != nil {
 		return err
 	}
+
 	if host.State == rest.HOSTSTATE_DELETED {
 		return nil
 	}
-	if host.State == rest.HOSTSTATE_NEW {
+
+	if host.State != rest.HOSTSTATE_READY {
+		// Hosts that are still prvisioning can be
+		// deleted immediately.
 		_, err = p.Client.HostsApi.Delete(ctx, d.Id())
 
 		return err
@@ -521,6 +529,10 @@ func resourceQuattroHostDelete(d *schema.ResourceData, meta interface{}) (err er
 			host, _, err = p.Client.HostsApi.GetByID(ctx, d.Id())
 			if err != nil {
 				return err
+			}
+
+			if host.State == rest.HOSTSTATE_FAILED {
+				return fmt.Errorf("failed to turn off host power")
 			}
 		}
 	}
