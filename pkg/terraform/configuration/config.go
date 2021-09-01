@@ -9,6 +9,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/hewlettpackard/hpegl-provider-lib/pkg/gltform"
 	"github.com/hewlettpackard/hpegl-provider-lib/pkg/token/retrieve"
 
 	rest "github.com/hpe-hcss/quake-client/v1/pkg/client"
@@ -137,14 +138,16 @@ func NewConfig(portalURL string, opts ...CreateOpt) (*Config, error) {
 	}
 
 	if config.useGLToken || config.trf != nil {
-		gltoken, err := getGLConfig()
+		// Use GetGLConfig from gltform
+		glconfig, err := gltform.GetGLConfig()
 		if err != nil {
 			return nil, fmt.Errorf("Error reading GL token file:  %w", err)
 		}
-		config.restURL = gltoken.RestURL
-		config.token = gltoken.Token
-		config.user = gltoken.ProjectID
-		config.space = gltoken.SpaceName
+
+		config.restURL = glconfig.RestURL
+		config.token = glconfig.Token
+		config.user = glconfig.ProjectID
+		config.space = glconfig.SpaceName
 	} else {
 		qtoken, err := getQConfig()
 		if err != nil {
@@ -186,18 +189,6 @@ func NewConfig(portalURL string, opts ...CreateOpt) (*Config, error) {
 	config.context = ctx
 	config.Client = rest.NewAPIClient(cfg)
 	return config, nil
-}
-
-func getGLConfig() (gljwt *Gljwt, err error) {
-	homeDir, _ := os.UserHomeDir()
-	workingDir, _ := os.Getwd()
-	for _, p := range []string{homeDir, workingDir} {
-		gljwt, err = loadGLConfig(p)
-		if err == nil {
-			break
-		}
-	}
-	return gljwt, err
 }
 
 func getQConfig() (qjwt *Qjwt, err error) {
