@@ -16,6 +16,7 @@ const (
 	qVolume  = Quake + "_volume"
 	qSSHKey  = Quake + "_ssh_key"
 	qNetwork = Quake + "_network"
+	qIP      = Quake + "_ip"
 
 	qAvailableResource = Quake + "_available_resources"
 	qAvailableImages   = Quake + "_available_images"
@@ -49,6 +50,7 @@ func (r Registration) SupportedResources() map[string]*schema.Resource {
 		qSSHKey:  quake.SshKeyResource(),
 		qProject: quake.ProjectResource(),
 		qNetwork: quake.ProjectNetworkResource(),
+		qIP:      quake.IPResource(),
 	}
 }
 

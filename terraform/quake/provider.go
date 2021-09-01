@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2021 Hewlett Packard Enterprise Development LP.
+// (C) Copyright 2016-2021 Hewlett Packard Enterprise Development LP
 
 package quake
 
@@ -25,6 +25,7 @@ const (
 	qVolume     = Quake + "_volume"
 	qSSHKey     = Quake + "_ssh_key"
 	qNetwork    = Quake + "_network"
+	qIP         = Quake + "_ip"
 
 	// For data sources
 	qAvailableResource = Quake + "_available_resources"
@@ -74,6 +75,7 @@ func Provider() *schema.Provider {
 			qSSHKey:  SshKeyResource(),
 			qProject: ProjectResource(),
 			qNetwork: ProjectNetworkResource(),
+			qIP:      IPResource(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
 			qAvailableResource: DataSourceAvailableResources(),

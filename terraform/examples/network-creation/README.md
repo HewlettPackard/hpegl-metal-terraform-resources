@@ -29,6 +29,22 @@ Terraform will perform the following actions:
       + location    = "USA:Texas:AUSL2"
       + location_id = (known after apply)
       + name        = "pnet"
+      + ip_pool     = [
+        + {
+            + base_ip       = "10.0.0.0"
+            + default_route = ""
+            + description   = "A description of npool"
+            + dns           = []
+            + ip_ver        = "IPv4"
+            + name          = "npool"
+            + netmask       = "/24"
+            + no_proxy      = ""
+            + ntp           = []
+            + proxy         = ""
+            + sources       = []
+          },
+        ]
+      + ip_pool_id  = (known after apply)
     }
 
 Plan: 1 to add, 0 to change, 0 to destroy.
@@ -53,6 +69,22 @@ pnet = {
   "kind" = "Custom"
   "location" = "USA:Texas:AUSL2"
   "name" = "pnet"
+  "ip_pool" = toset([
+    {
+      "base_ip" = "10.0.0.0"
+      "default_route" = ""
+      "description" = "A description of npool"
+      "dns" = tolist([])
+      "ip_ver" = "IPv4"
+      "name" = "npool60"
+      "netmask" = "/24"
+      "no_proxy" = ""
+      "ntp" = tolist([])
+      "proxy" = ""
+      "sources" = tolist([])
+    },
+  ])
+  "ip_pool_id" = "0c2047ef-a24a-432a-b87d-7c454c1e3a83"
 }
 
 ```
@@ -64,7 +96,7 @@ The following arguments are supported:
 - `name` - The name of the network.
 - `description` - (Optional) Some descriptive text that helps describe the network and purpose.
 - `location` - Where the network is to be created in country:region:data-center style.
-
+- `ip_pool` - (Optional) IP pool used by the network. If not defined an IP allocated from the hoster IP pool factory will be used.
 
 ### Attribute Reference
 

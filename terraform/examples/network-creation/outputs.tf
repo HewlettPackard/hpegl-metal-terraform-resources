@@ -1,4 +1,6 @@
+// (C) Copyright 2016-2021 Hewlett Packard Enterprise Development LP
+
 output "pnet" {
-  # Output a map of hostame with all the IP addresses assigned on each network.
+  # Output the created network.
   value = quake_network.pnet
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2021 Hewlett Packard Enterprise Development LP.
+// (C) Copyright 2016-2021 Hewlett Packard Enterprise Development LP
 
 package quake
 
@@ -36,6 +36,7 @@ const (
 	nHostUse     = "host_use"
 	nLocation    = "location"
 	nLocationID  = "location_id"
+	nIPPoolID    = "ip_pool_id"
 
 	// For avMachineSizes each terraform block has these attributes.
 	sName        = "name"
@@ -342,13 +343,13 @@ func addNetworks(p *configuration.Config, d *schema.ResourceData, available rest
 	networks := make([]map[string]interface{}, 0, len(available.Networks))
 	for _, net := range available.Networks {
 		iData := map[string]interface{}{
-			"id":  net.ID,
-			nName: net.Name,
-			// Why is this not returned???
-			// nDescription: net.Description,
-			nKind:       net.Kind,
-			nHostUse:    net.HostUse,
-			nLocationID: net.LocationID,
+			"id":         net.ID,
+			nName:        net.Name,
+			nDescription: net.Description,
+			nKind:        net.Kind,
+			nHostUse:     net.HostUse,
+			nLocationID:  net.LocationID,
+			nIPPoolID:    net.IPPoolID,
 		}
 		l, _ := p.GetLocationName(net.LocationID)
 		iData[nLocation] = l

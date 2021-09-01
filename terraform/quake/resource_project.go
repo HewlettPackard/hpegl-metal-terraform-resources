@@ -160,18 +160,6 @@ func resourceQuattroProjectCreate(d *schema.ResourceData, meta interface{}) (err
 		return err
 	}
 
-	safeString := func(s interface{}) string {
-		r, _ := s.(string)
-		return r
-	}
-	safeInt := func(s interface{}) int {
-		r, _ := s.(int)
-		return r
-	}
-	safeFloat := func(s interface{}) float64 {
-		r, _ := s.(float64)
-		return r
-	}
 	profile := d.Get(pProfile).(map[string]interface{})
 	limits := d.Get(pLimits).(map[string]interface{})
 

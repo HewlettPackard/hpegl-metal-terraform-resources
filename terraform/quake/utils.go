@@ -121,3 +121,18 @@ func getConfigFromMeta(meta interface{}) (*configuration.Config, error) {
 
 	return nil, fmt.Errorf(errStr)
 }
+
+func safeString(s interface{}) string {
+	r, _ := s.(string)
+	return r
+}
+
+func safeInt(s interface{}) int {
+	r, _ := s.(int)
+	return r
+}
+
+func safeFloat(s interface{}) float64 {
+	r, _ := s.(float64)
+	return r
+}
