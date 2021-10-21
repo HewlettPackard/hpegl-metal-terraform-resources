@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	Quake = "hpegl_bmaas"
+	Quake = "hpegl_metal"
 
 	qProject = Quake + "_project"
 	qHost    = Quake + "_host"
@@ -31,7 +31,7 @@ const (
 type Registration struct{}
 
 func (r Registration) Name() string {
-	return "bmaas"
+	return "metal"
 }
 
 func (r Registration) SupportedDataSources() map[string]*schema.Resource {
@@ -60,20 +60,21 @@ func (r Registration) ProviderSchemaEntry() *schema.Resource {
 			projectID: {
 				Type:        schema.TypeString,
 				Required:    true,
-				DefaultFunc: schema.EnvDefaultFunc("HPEGL_BMAAS_PROJECT_ID", ""),
-				Description: "The BMaaS project-id to use, can also be set with the HPEGL_BMAAS_PROJECT_ID env-var",
+				DefaultFunc: schema.EnvDefaultFunc("HPEGL_METAL_PROJECT_ID", ""),
+				Description: "The Metal project-id to use, can also be set with the HPEGL_METAL_PROJECT_ID env-var",
 			},
 			restURL: {
 				Type:        schema.TypeString,
 				Required:    true,
-				DefaultFunc: schema.EnvDefaultFunc("HPEGL_BMAAS_REST_URL", ""),
-				Description: "The BMaaS portal rest-url to use, can also be set with the HPEGL_BMAAS_REST_URL env-var",
+				DefaultFunc: schema.EnvDefaultFunc("HPEGL_METAL_REST_URL", ""),
+				Description: "The Metal portal rest-url to use, can also be set with the HPEGL_METAL_REST_URL env-var",
 			},
 			spaceName: {
 				Type:        schema.TypeString,
 				Optional:    true,
-				DefaultFunc: schema.EnvDefaultFunc("HPEGL_BMAAS_SPACE_NAME", ""),
-				Description: "The space-name to use with BMaaS, only required for project creation operations, can also be set with the HPEGL_BMAAS_SPACE_NAME env-var",
+				DefaultFunc: schema.EnvDefaultFunc("HPEGL_METAL_SPACE_NAME", ""),
+				Description: `The space-name to use with Metal, only required for project creation operations,
+                    can also be set with the HPEGL_METAL_SPACE_NAME env-var`,
 			},
 		},
 	}
