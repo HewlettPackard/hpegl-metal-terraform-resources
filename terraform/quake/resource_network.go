@@ -146,6 +146,7 @@ func networkSchema() map[string]*schema.Schema {
 		nLocation: {
 			Type:        schema.TypeString,
 			Required:    true,
+			ForceNew:    true,
 			Description: "Textual representation of the location country:region:enter",
 		},
 		nKind: {

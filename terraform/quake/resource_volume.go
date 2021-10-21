@@ -35,15 +35,14 @@ func volumeSchema() map[string]*schema.Schema {
 
 		vFlavorID: {
 			Type:        schema.TypeString,
-			Required:    false,
 			Computed:    true,
 			Description: "The flavor of the volume to be created.",
 		},
 
 		vFlavor: {
 			Type:        schema.TypeString,
-			Required:    false,
-			Optional:    true,
+			Required:    true,
+			ForceNew:    true,
 			Description: "The flavor of the volume to be created.",
 		},
 
@@ -56,8 +55,8 @@ func volumeSchema() map[string]*schema.Schema {
 
 		vLocation: {
 			Type:        schema.TypeString,
-			Required:    false,
-			Optional:    true,
+			Required:    true,
+			ForceNew:    true,
 			Description: "Location of the volume country:region:data-center.",
 		},
 
@@ -71,6 +70,7 @@ func volumeSchema() map[string]*schema.Schema {
 		vSize: {
 			Type:        schema.TypeFloat,
 			Required:    true,
+			ForceNew:    true,
 			Description: "The minimum size of the volume specified in units of GBytes.",
 			ValidateFunc: func(val interface{}, key string) (warns []string, errs []error) {
 				sz, ok := val.(float64)

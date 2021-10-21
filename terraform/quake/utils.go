@@ -86,13 +86,17 @@ func getFilters(d *schema.ResourceData) (filters []filter, err error) {
 	return
 }
 
-func convertStringArr(a []interface{}) (ret []string) {
-	for _, v := range a {
+func convertStringArr(a []interface{}) []string {
+	ret := make([]string, len(a))
+
+	for idx, v := range a {
 		if v == nil {
 			continue
 		}
-		ret = append(ret, v.(string))
+
+		ret[idx] = v.(string)
 	}
+
 	return ret
 }
 

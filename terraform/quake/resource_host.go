@@ -33,6 +33,7 @@ const (
 	hLocationID        = "location_id"
 	hNetworks          = "networks"
 	hNetworkIDs        = "network_ids"
+	hPreAllocatedIPs   = "allocated_ips"
 	hSSHKeys           = "ssh"
 	hSSHKeyIDs         = "ssh_ids"
 	hSize              = "machine_size"
@@ -130,6 +131,15 @@ func hostSchema() map[string]*schema.Schema {
 				Type: schema.TypeString,
 			},
 			Description: "List of network UUIDs.",
+		},
+		hPreAllocatedIPs: {
+			Type:     schema.TypeList,
+			ForceNew: true,
+			Optional: true,
+			Elem: &schema.Schema{
+				Type: schema.TypeString,
+			},
+			Description: "List of pre-allocated IP addresses in one-to-one correspondance wth Networks.",
 		},
 		hDescription: {
 			Type:        schema.TypeString,
@@ -365,8 +375,14 @@ func resourceQuattroHostCreate(d *schema.ResourceData, meta interface{}) (err er
 		}
 	}
 
+	// PreAllocatedIP addreses
+	if ips, ok := d.Get(hPreAllocatedIPs).([]interface{}); ok {
+		host.PreAllocatedIPs = convertStringArr(ips)
+	}
+
 	// Create it
 	ctx := p.GetContext()
+
 	h, _, err := p.Client.HostsApi.Add(ctx, host)
 	if err != nil {
 		return err

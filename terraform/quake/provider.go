@@ -3,11 +3,15 @@
 package quake
 
 import (
+	"errors"
+	"fmt"
+	"strings"
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 	"github.com/hpe-hcss/quake-client/pkg/terraform/configuration"
+	rest "github.com/hpe-hcss/quake-client/v1/pkg/client"
 )
 
 const (
@@ -85,6 +89,14 @@ func Provider() *schema.Provider {
 	}
 
 	provider.ConfigureFunc = func(d *schema.ResourceData) (interface{}, error) {
+		var err error
+
+		defer func() {
+			var nErr = rest.GenericOpenAPIError{}
+			if errors.As(err, &nErr) {
+				err = fmt.Errorf("failed to configure provider %s: %w", strings.Trim(string(nErr.Body()), "\n "), err)
+			}
+		}()
 
 		config, err := configuration.NewConfig(d.Get(qPortal).(string), configuration.WithGLToken(d.Get(qUseGLToken).(bool)))
 		if err != nil {
