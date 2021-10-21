@@ -350,7 +350,7 @@ func resourceQuattroHostCreate(d *schema.ResourceData, meta interface{}) (err er
 			host.NewVolumes = append(host.NewVolumes, rest.AddVolume{
 				Name:        vol[vName].(string),
 				Description: vol[vDescription].(string),
-				Capacity:    uint64(vol[vSize].(float64)),
+				Capacity:    int64(vol[vSize].(float64)),
 				FlavorID:    vfID,
 			})
 		}

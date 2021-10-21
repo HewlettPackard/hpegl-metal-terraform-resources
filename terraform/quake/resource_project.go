@@ -179,9 +179,9 @@ func resourceQuattroProjectCreate(d *schema.ResourceData, meta interface{}) (err
 
 	if limits != nil {
 		np.Limits = rest.Limits{
-			Hosts:          uint32(safeInt(limits[pHosts])),
-			Volumes:        uint32(safeInt(limits[pVolumes])),
-			VolumeCapacity: uint64(safeFloat(limits[pVolumeCapacity])),
+			Hosts:          int32(safeInt(limits[pHosts])),
+			Volumes:        int32(safeInt(limits[pVolumes])),
+			VolumeCapacity: int64(safeFloat(limits[pVolumeCapacity])),
 		}
 	}
 

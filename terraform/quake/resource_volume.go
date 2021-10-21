@@ -151,7 +151,7 @@ func resourceQuatrroVolumeCreate(d *schema.ResourceData, meta interface{}) (err 
 
 	volume := rest.NewVolume{
 		Name:        d.Get(vName).(string),
-		Capacity:    uint64(d.Get(vSize).(float64)),
+		Capacity:    int64(d.Get(vSize).(float64)),
 		Description: d.Get(vDescription).(string),
 		FlavorID:    vfID,
 	}
