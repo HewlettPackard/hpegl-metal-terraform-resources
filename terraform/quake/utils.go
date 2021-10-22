@@ -121,7 +121,7 @@ func getConfigFromMeta(meta interface{}) (*configuration.Config, error) {
 	}
 	// Don't know what form meta is in, return an error
 
-	errStr := "cannot find client, make sure that a .gltform file or a hpegl stanza bmaas block is present"
+	errStr := "cannot find client, make sure that a .gltform file or a hpegl stanza metal block is present"
 
 	return nil, fmt.Errorf(errStr)
 }

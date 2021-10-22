@@ -19,7 +19,7 @@ import (
 // map of clients that it creates.  The Quake client will be found using the key
 // returned here.
 func KeyForGLClientMap() string {
-	return "bmaasConfig"
+	return "metalConfig"
 }
 
 // Config holds all the information required to talk to the portal.

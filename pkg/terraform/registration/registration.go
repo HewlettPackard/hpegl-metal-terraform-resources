@@ -22,7 +22,7 @@ const (
 	qAvailableImages   = Quake + "_available_images"
 	qUsage             = Quake + "_usage"
 
-	// These constants are used to set the optional hpegl provider "bmaas" block field-names
+	// These constants are used to set the optional hpegl provider "metal" block field-names
 	projectID = "project_id"
 	restURL   = "rest_url"
 	spaceName = "space_name"
