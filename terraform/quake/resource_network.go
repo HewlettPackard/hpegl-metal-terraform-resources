@@ -165,7 +165,12 @@ func networkSchema() map[string]*schema.Schema {
 			Description: "IP pool ID associated with the network",
 		},
 		nIPPool: {
+			// TODO the V2 SDK doesn't (yet) support TypeMap with Elem *Resource for nested objects
+			// This is the currently recommended work-around. See
+			// https://github.com/hashicorp/terraform-plugin-sdk/issues/155
+			// https://github.com/hashicorp/terraform-plugin-sdk/issues/616
 			Type:     schema.TypeSet,
+			MaxItems: 1,
 			Optional: true,
 			Elem: &schema.Resource{
 				Schema: ipPoolSchema(),
