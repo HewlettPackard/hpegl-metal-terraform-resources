@@ -19,9 +19,10 @@ Terraform will perform the following actions:
   + resource "quake_project" "project" {
       + id      = (known after apply)
       + limits  = {
-          + "hosts"           = "5"
-          + "volume_capacity" = "300"
-          + "volumes"         = "10"
+          + "hosts"            = "5"
+          + "volume_capacity"  = "300"
+          + "volumes"          = "10"
+          + "private_networks" = "20"
         }
       + name    = "blob"
       + profile = {

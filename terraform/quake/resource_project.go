@@ -1,4 +1,4 @@
-// (C) Copyright 2016-2021 Hewlett Packard Enterprise Development LP.
+// (C) Copyright 2016-2021 Hewlett Packard Enterprise Development LP
 
 package quake
 
@@ -26,9 +26,10 @@ const (
 	pPhoneNumber        = "phone_number"
 	pPhoneVerified      = "phone_number_verified"
 
-	pHosts          = "hosts"
-	pVolumes        = "volumes"
-	pVolumeCapacity = "volume_capacity"
+	pHosts           = "hosts"
+	pVolumes         = "volumes"
+	pVolumeCapacity  = "volume_capacity"
+	pPrivateNetworks = "private_networks"
 )
 
 func limitsSchema() map[string]*schema.Schema {
@@ -47,6 +48,11 @@ func limitsSchema() map[string]*schema.Schema {
 			Type:        schema.TypeFloat,
 			Optional:    true,
 			Description: "Total allowable volume capacity (GiB) allowed in the team.",
+		},
+		pPrivateNetworks: {
+			Type:        schema.TypeInt,
+			Optional:    true,
+			Description: "Maximum number of private networks allowed in the team.",
 		},
 	}
 }
@@ -179,9 +185,10 @@ func resourceQuattroProjectCreate(d *schema.ResourceData, meta interface{}) (err
 
 	if limits != nil {
 		np.Limits = rest.Limits{
-			Hosts:          int32(safeInt(limits[pHosts])),
-			Volumes:        int32(safeInt(limits[pVolumes])),
-			VolumeCapacity: int64(safeFloat(limits[pVolumeCapacity])),
+			Hosts:           int32(safeInt(limits[pHosts])),
+			Volumes:         int32(safeInt(limits[pVolumes])),
+			VolumeCapacity:  int64(safeFloat(limits[pVolumeCapacity])),
+			PrivateNetworks: int32(safeInt(limits[pPrivateNetworks])),
 		}
 	}
 
@@ -233,9 +240,10 @@ func resourceQuattroProjectRead(d *schema.ResourceData, meta interface{}) (err e
 
 	lim := project.Limits
 	lData := map[string]interface{}{
-		pHosts:          int(lim.Hosts),
-		pVolumes:        int(lim.Volumes),
-		pVolumeCapacity: float64(lim.VolumeCapacity),
+		pHosts:           int(lim.Hosts),
+		pVolumes:         int(lim.Volumes),
+		pVolumeCapacity:  float64(lim.VolumeCapacity),
+		pPrivateNetworks: int(lim.PrivateNetworks),
 	}
 
 	if err = d.Set(pLimits, lData); err != nil {

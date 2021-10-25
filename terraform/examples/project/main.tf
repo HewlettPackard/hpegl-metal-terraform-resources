@@ -1,3 +1,5 @@
+// (C) Copyright 2016-2021 Hewlett Packard Enterprise Development LP
+
 provider "quake" {
   
 }
@@ -16,5 +18,6 @@ resource "quake_project" "project" {
         hosts = 5
         volumes = 10
         volume_capacity = 300
+        private_networks = 20
     }
 }
