@@ -72,3 +72,4 @@ In addition to the arguments listed above, the following attributes are exported
 - `location_id` - Unique ID of the location.
 - `flavor_id` - unique ID of the chosen flavor.
 - `state` - The provisioning state of the volume.
+- `status` - The provisioning status of the volume.

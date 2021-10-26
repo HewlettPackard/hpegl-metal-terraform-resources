@@ -22,8 +22,6 @@ Resource actions are indicated with the following symbols:
 
 Terraform will perform the following actions:
 
- Terraform will perform the following actions:
-
   # quake_ip.ip1 will be created
   + resource "quake_ip" "ip1" {
       + id         = (known after apply)

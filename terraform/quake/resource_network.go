@@ -68,7 +68,7 @@ func ipPoolSchema() map[string]*schema.Schema {
 		},
 		poolDescription: {
 			Type:        schema.TypeString,
-			Required:    true,
+			Optional:    true,
 			Description: "A description of the IP pool.",
 		},
 		poolVer: {
@@ -156,7 +156,7 @@ func networkSchema() map[string]*schema.Schema {
 		},
 		nHostUse: {
 			Type:        schema.TypeString,
-			Computed:    true,
+			Optional:    true,
 			Description: "Required, Optional or Default",
 		},
 		nIPPoolID: {

@@ -35,6 +35,7 @@ The following arguments are supported:
 - `ssh` - A list of ssh key names or IDs that will be placed into the host image.
 - `size` - The machine size to use for this host.
 - `networks` - A list of network names or IDs on which this host will be connected and be allocated an IP address.
+- `allocated_ips` - A list of pre-allocated IP addresses in one-to-one correspondance wth Networks.
 - `volumes` - Code blocks describing any iSCSI volumes to be created and attached to the host.
   - `name` - The name of the volume.
   - `description` - (Optional) Some descriptive text that helps describe the volume and purpose.
@@ -55,6 +56,3 @@ In addition to the arguments listed above, the following attributes are exported
 - `chap_secret` - The iSCSI CHAP secret of the host.
 - `initiator_name` - The iSCSI initator name of the host.
 - `state` - The provisioning state of the host.
-
-
-
