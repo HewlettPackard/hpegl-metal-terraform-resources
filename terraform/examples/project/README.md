@@ -1,4 +1,5 @@
 # Example of creating project
+**IMPORTANT NOTE**: Projects can be created only with an IAM token and a BMaaS Owner role associated with the token
 
 To run the example:
 * Authenticate against a portal using steeld login
@@ -18,14 +19,14 @@ Terraform will perform the following actions:
  # quake_project.project will be created
   + resource "quake_project" "project" {
       + id      = (known after apply)
-      + limits  = {
+      + limits  {
           + "hosts"            = "5"
           + "volume_capacity"  = "300"
           + "volumes"          = "10"
           + "private_networks" = "20"
         }
       + name    = "blob"
-      + profile = {
+      + profile {
           + "address"             = "Area51 Nevada"
           + "company"             = "ACME"
           + "email"               = "acme@intergalactic.universe"

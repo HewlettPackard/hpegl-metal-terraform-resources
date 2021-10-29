@@ -117,7 +117,7 @@ func projectSchema() map[string]*schema.Schema {
 			// https://github.com/hashicorp/terraform-plugin-sdk/issues/616
 			Type:        schema.TypeList,
 			MaxItems:    1,
-			Optional:    true,
+			Required:    true,
 			Description: "Team profile.",
 			Elem: &schema.Resource{
 				Schema: profileSchema(),
@@ -130,7 +130,7 @@ func projectSchema() map[string]*schema.Schema {
 			// https://github.com/hashicorp/terraform-plugin-sdk/issues/616
 			Type:        schema.TypeList,
 			MaxItems:    1,
-			Optional:    true,
+			Required:    true,
 			Description: "Resource limits applied to this team.",
 			Elem: &schema.Resource{
 				Schema: limitsSchema(),
@@ -166,30 +166,24 @@ func resourceQuattroProjectCreate(d *schema.ResourceData, meta interface{}) (err
 		return err
 	}
 
-	profile := d.Get(pProfile).(map[string]interface{})
-	limits := d.Get(pLimits).(map[string]interface{})
-
 	np := rest.NewProject{
 		Name: d.Get(pName).(string),
 	}
-	if profile != nil {
-		np.Profile = rest.Profile{
-			Address:     safeString(profile[pAddress]),
-			Company:     safeString(profile[pCompany]),
-			Email:       safeString(profile[pEmail]),
-			PhoneNumber: safeString(profile[pPhoneNumber]),
-			TeamDesc:    safeString(profile[pProjectDescription]),
-			TeamName:    safeString(profile[pProjectName]),
+
+	if list, ok := d.Get(pProfile).([]interface{}); ok && len(list) == 1 {
+		if np.Profile, err = getProfile(list[0]); err != nil {
+			return fmt.Errorf("failed to create project %s: %v", np.Name, err)
 		}
+	} else {
+		return fmt.Errorf("failed to create project %s: only 1 profile block is allowed", np.Name)
 	}
 
-	if limits != nil {
-		np.Limits = rest.Limits{
-			Hosts:           int32(safeInt(limits[pHosts])),
-			Volumes:         int32(safeInt(limits[pVolumes])),
-			VolumeCapacity:  int64(safeFloat(limits[pVolumeCapacity])),
-			PrivateNetworks: int32(safeInt(limits[pPrivateNetworks])),
+	if list, ok := d.Get(pLimits).([]interface{}); ok && len(list) == 1 {
+		if np.Limits, err = getLimits(list[0]); err != nil {
+			return fmt.Errorf("failed to create project %s: %v", np.Name, err)
 		}
+	} else {
+		return fmt.Errorf("failed to create project %s: only 1 limit block is allowed", np.Name)
 	}
 
 	ctx := p.GetContext()
@@ -199,6 +193,38 @@ func resourceQuattroProjectCreate(d *schema.ResourceData, meta interface{}) (err
 	}
 	d.SetId(project.ID)
 	return resourceQuattroProjectRead(d, meta)
+}
+
+func getProfile(profile interface{}) (p rest.Profile, err error) {
+	profileMap, ok := profile.(map[string]interface{})
+	if !ok {
+		err = fmt.Errorf("wrong profile format")
+		return
+	}
+
+	return rest.Profile{
+		Address:     safeString(profileMap[pAddress]),
+		Company:     safeString(profileMap[pCompany]),
+		Email:       safeString(profileMap[pEmail]),
+		PhoneNumber: safeString(profileMap[pPhoneNumber]),
+		TeamDesc:    safeString(profileMap[pProjectDescription]),
+		TeamName:    safeString(profileMap[pProjectName]),
+	}, nil
+}
+
+func getLimits(limits interface{}) (p rest.Limits, err error) {
+	limitsMap, ok := limits.(map[string]interface{})
+	if !ok {
+		err = fmt.Errorf("wrong limits format")
+		return
+	}
+
+	return rest.Limits{
+		Hosts:           int32(safeInt(limitsMap[pHosts])),
+		Volumes:         int32(safeInt(limitsMap[pVolumes])),
+		VolumeCapacity:  int64(safeFloat(limitsMap[pVolumeCapacity])),
+		PrivateNetworks: int32(safeInt(limitsMap[pPrivateNetworks])),
+	}, nil
 }
 
 func resourceQuattroProjectRead(d *schema.ResourceData, meta interface{}) (err error) {
