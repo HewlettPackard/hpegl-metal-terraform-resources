@@ -257,7 +257,9 @@ func resourceQuakeUsageRead(d *schema.ResourceData, meta interface{}) (err error
 	if err != nil {
 		return err
 	}
-	var gOps *rest.GetOpts
+
+	var gOps *rest.UsageReportsApiGetOpts
+
 	start, err := time.Parse(time.RFC3339, d.Get(uUsageStart).(string))
 	if err != nil {
 		return err
@@ -267,7 +269,8 @@ func resourceQuakeUsageRead(d *schema.ResourceData, meta interface{}) (err error
 		if err != nil {
 			return err
 		}
-		gOps = &rest.GetOpts{
+
+		gOps = &rest.UsageReportsApiGetOpts{
 			End: optional.NewString(end.String()),
 		}
 	}

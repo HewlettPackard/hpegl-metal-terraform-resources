@@ -187,7 +187,13 @@ func resourceQuattroProjectCreate(d *schema.ResourceData, meta interface{}) (err
 	}
 
 	ctx := p.GetContext()
-	project, _, err := p.Client.ProjectsApi.Add(ctx, np)
+
+	// TO DO:
+	//  1. Remove 'Space' from the default header list with REST client.
+	//  2. Instantiate ProjectsApiAddOpts with space name and pass as 3rd arg.
+	//     For now, passing 'nil' as 3rd arg as the 'Space' header is already
+	//     configured to be sent as one of the default header with REST client.
+	project, _, err := p.Client.ProjectsApi.Add(ctx, np, nil)
 	if err != nil {
 		return err
 	}

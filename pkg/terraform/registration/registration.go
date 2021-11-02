@@ -74,7 +74,7 @@ func (r Registration) ProviderSchemaEntry() *schema.Resource {
 				Optional:    true,
 				DefaultFunc: schema.EnvDefaultFunc("HPEGL_METAL_SPACE_NAME", ""),
 				Description: `The space-name to use with Metal, only required for project creation operations,
-                    can also be set with the HPEGL_METAL_SPACE_NAME env-var`,
+				can also be set with the HPEGL_METAL_SPACE_NAME env-var`,
 			},
 		},
 	}
