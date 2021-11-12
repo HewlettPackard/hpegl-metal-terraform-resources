@@ -94,7 +94,7 @@ func Provider() *schema.Provider {
 		defer func() {
 			var nErr = rest.GenericOpenAPIError{}
 			if errors.As(err, &nErr) {
-				err = fmt.Errorf("failed to configure provider %s: %w", strings.Trim(string(nErr.Body()), "\n "), err)
+				err = fmt.Errorf("failed to configure provider %s: %w", strings.Trim(nErr.Message(), "\n "), err)
 			}
 		}()
 

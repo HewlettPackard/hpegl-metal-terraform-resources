@@ -222,7 +222,7 @@ func resourceQuattroHostCreate(d *schema.ResourceData, meta interface{}) (err er
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
 		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to create host %s: %w", strings.Trim(string(nErr.Body()), "\n "), err)
+			err = fmt.Errorf("failed to create host %s: %w", strings.Trim(nErr.Message(), "\n "), err)
 
 		}
 	}()
@@ -396,7 +396,7 @@ func resourceQuattroHostRead(d *schema.ResourceData, meta interface{}) (err erro
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
 		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to query host %s: %w", strings.Trim(string(nErr.Body()), "\n "), err)
+			err = fmt.Errorf("failed to query host %s: %w", strings.Trim(nErr.Message(), "\n "), err)
 
 		}
 	}()
@@ -444,7 +444,7 @@ func resourceQuattroHostUpdate(d *schema.ResourceData, meta interface{}) (err er
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
 		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to update host %s: %w", strings.Trim(string(nErr.Body()), "\n "), err)
+			err = fmt.Errorf("failed to update host %s: %w", strings.Trim(nErr.Message(), "\n "), err)
 
 		}
 	}()
@@ -456,7 +456,7 @@ func resourceQuattroHostDelete(d *schema.ResourceData, meta interface{}) (err er
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
 		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to delete host %s: %w", strings.Trim(string(nErr.Body()), "\n "), err)
+			err = fmt.Errorf("failed to delete host %s: %w", strings.Trim(nErr.Message(), "\n "), err)
 
 		}
 	}()

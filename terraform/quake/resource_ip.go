@@ -56,7 +56,7 @@ func resourceIPCreate(d *schema.ResourceData, meta interface{}) (err error) {
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
 		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to create IP resources %s: %w", strings.Trim(string(nErr.Body()), "\n "), err)
+			err = fmt.Errorf("failed to create IP resources %s: %w", strings.Trim(nErr.Message(), "\n "), err)
 		}
 	}()
 
@@ -100,7 +100,7 @@ func resourceIPRead(d *schema.ResourceData, meta interface{}) (err error) {
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
 		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to read IP resources %s: %w", strings.Trim(string(nErr.Body()), "\n "), err)
+			err = fmt.Errorf("failed to read IP resources %s: %w", strings.Trim(nErr.Message(), "\n "), err)
 		}
 	}()
 
@@ -146,7 +146,7 @@ func resourceIPDelete(d *schema.ResourceData, meta interface{}) (err error) {
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
 		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to delete IP resources %s: %w", strings.Trim(string(nErr.Body()), "\n "), err)
+			err = fmt.Errorf("failed to delete IP resources %s: %w", strings.Trim(nErr.Message(), "\n "), err)
 		}
 	}()
 

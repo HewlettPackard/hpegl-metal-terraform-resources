@@ -49,7 +49,7 @@ func resourceQuakeSSHKeyCreate(d *schema.ResourceData, meta interface{}) (err er
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
 		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to create ssh_key %s: %w", strings.Trim(string(nErr.Body()), "\n "), err)
+			err = fmt.Errorf("failed to create ssh_key %s: %w", strings.Trim(nErr.Message(), "\n "), err)
 
 		}
 	}()
@@ -78,7 +78,7 @@ func resourceQuakeSSHKeyRead(d *schema.ResourceData, meta interface{}) (err erro
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
 		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to read ssh_key %s: %w", strings.Trim(string(nErr.Body()), "\n "), err)
+			err = fmt.Errorf("failed to read ssh_key %s: %w", strings.Trim(nErr.Message(), "\n "), err)
 
 		}
 	}()
@@ -102,7 +102,7 @@ func resourceQuakeSSHKeyUpdate(d *schema.ResourceData, meta interface{}) (err er
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
 		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to update ssh_key %s: %w", strings.Trim(string(nErr.Body()), "\n "), err)
+			err = fmt.Errorf("failed to update ssh_key %s: %w", strings.Trim(nErr.Message(), "\n "), err)
 
 		}
 	}()
@@ -137,7 +137,7 @@ func resourceQuakeSSHKeyDelete(d *schema.ResourceData, meta interface{}) (err er
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
 		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to delete ssh_key %s: %w", strings.Trim(string(nErr.Body()), "\n "), err)
+			err = fmt.Errorf("failed to delete ssh_key %s: %w", strings.Trim(nErr.Message(), "\n "), err)
 
 		}
 	}()

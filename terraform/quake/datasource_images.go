@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2021 Hewlett Packard Enterprise Development LP.
+// (C) Copyright 2016-2021 Hewlett Packard Enterprise Development LP
 
 package quake
 
@@ -30,7 +30,7 @@ func dataSourceImageRead(d *schema.ResourceData, meta interface{}) (err error) {
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
 		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to read images %s: %w", strings.Trim(string(nErr.Body()), "\n "), err)
+			err = fmt.Errorf("failed to read images %s: %w", strings.Trim(nErr.Message(), "\n "), err)
 
 		}
 	}()

@@ -197,7 +197,7 @@ func resourceQuattroNetworkCreate(d *schema.ResourceData, meta interface{}) (err
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
 		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to create network resources %s: %w", strings.Trim(string(nErr.Body()), "\n "), err)
+			err = fmt.Errorf("failed to create network resources %s: %w", strings.Trim(nErr.Message(), "\n "), err)
 
 		}
 	}()
@@ -301,7 +301,7 @@ func resourceQuattroNetworkRead(d *schema.ResourceData, meta interface{}) (err e
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
 		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to read network %s: %w", strings.Trim(string(nErr.Body()), "\n "), err)
+			err = fmt.Errorf("failed to read network %s: %w", strings.Trim(nErr.Message(), "\n "), err)
 
 		}
 	}()
@@ -355,7 +355,7 @@ func resourceQuattroNetworkUpdate(d *schema.ResourceData, meta interface{}) (err
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
 		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to update network %s: %w", strings.Trim(string(nErr.Body()), "\n "), err)
+			err = fmt.Errorf("failed to update network %s: %w", strings.Trim(nErr.Message(), "\n "), err)
 
 		}
 	}()
@@ -386,7 +386,7 @@ func resourceQuattroNetworkDelete(d *schema.ResourceData, meta interface{}) (err
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
 		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to delete network %s: %w", strings.Trim(string(nErr.Body()), "\n "), err)
+			err = fmt.Errorf("failed to delete network %s: %w", strings.Trim(nErr.Message(), "\n "), err)
 
 		}
 	}()

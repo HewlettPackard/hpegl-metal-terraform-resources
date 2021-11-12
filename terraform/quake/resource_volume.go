@@ -117,7 +117,7 @@ func resourceQuatrroVolumeCreate(d *schema.ResourceData, meta interface{}) (err 
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
 		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to create volume %s: %w", strings.Trim(string(nErr.Body()), "\n "), err)
+			err = fmt.Errorf("failed to create volume %s: %w", strings.Trim(nErr.Message(), "\n "), err)
 
 		}
 	}()
@@ -212,7 +212,7 @@ func resourceQuatrroVolumeRead(d *schema.ResourceData, meta interface{}) (err er
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
 		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to read volume %s: %w", strings.Trim(string(nErr.Body()), "\n "), err)
+			err = fmt.Errorf("failed to read volume %s: %w", strings.Trim(nErr.Message(), "\n "), err)
 
 		}
 	}()
@@ -246,7 +246,7 @@ func resourceQuatrroVolumeUpdate(d *schema.ResourceData, meta interface{}) (err 
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
 		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to update volume %s: %w", strings.Trim(string(nErr.Body()), "\n "), err)
+			err = fmt.Errorf("failed to update volume %s: %w", strings.Trim(nErr.Message(), "\n "), err)
 
 		}
 	}()
@@ -258,7 +258,7 @@ func resourceQuatrroVolumeDelete(d *schema.ResourceData, meta interface{}) (err 
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
 		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to delete volume %s: %w", strings.Trim(string(nErr.Body()), "\n "), err)
+			err = fmt.Errorf("failed to delete volume %s: %w", strings.Trim(nErr.Message(), "\n "), err)
 
 		}
 	}()

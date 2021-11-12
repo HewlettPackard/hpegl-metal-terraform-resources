@@ -156,7 +156,7 @@ func resourceQuattroProjectCreate(d *schema.ResourceData, meta interface{}) (err
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
 		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to create project %s: %w", strings.Trim(string(nErr.Body()), "\n "), err)
+			err = fmt.Errorf("failed to create project %s: %w", strings.Trim(nErr.Message(), "\n "), err)
 
 		}
 	}()
@@ -237,7 +237,7 @@ func resourceQuattroProjectRead(d *schema.ResourceData, meta interface{}) (err e
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
 		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to read project %s: %w", strings.Trim(string(nErr.Body()), "\n "), err)
+			err = fmt.Errorf("failed to read project %s: %w", strings.Trim(nErr.Message(), "\n "), err)
 
 		}
 	}()
@@ -288,7 +288,7 @@ func resourceQuattroProjectUpdate(d *schema.ResourceData, meta interface{}) (err
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
 		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to update project %s: %w", strings.Trim(string(nErr.Body()), "\n "), err)
+			err = fmt.Errorf("failed to update project %s: %w", strings.Trim(nErr.Message(), "\n "), err)
 
 		}
 	}()
@@ -301,7 +301,7 @@ func resourceQuattroProjectDelete(d *schema.ResourceData, meta interface{}) (err
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
 		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to delete project %s: %w", strings.Trim(string(nErr.Body()), "\n "), err)
+			err = fmt.Errorf("failed to delete project %s: %w", strings.Trim(nErr.Message(), "\n "), err)
 
 		}
 	}()

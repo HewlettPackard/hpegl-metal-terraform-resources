@@ -248,7 +248,7 @@ func resourceQuakeUsageRead(d *schema.ResourceData, meta interface{}) (err error
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
 		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to get usage %s: %w", strings.Trim(string(nErr.Body()), "\n "), err)
+			err = fmt.Errorf("failed to get usage %s: %w", strings.Trim(nErr.Message(), "\n "), err)
 
 		}
 	}()

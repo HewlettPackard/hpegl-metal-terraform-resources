@@ -255,7 +255,7 @@ func dataSourceAvailableResourcesRead(d *schema.ResourceData, meta interface{}) 
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
 		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to read available resources %s: %w", strings.Trim(string(nErr.Body()), "\n "), err)
+			err = fmt.Errorf("failed to read available resources %s: %w", strings.Trim(nErr.Message(), "\n "), err)
 
 		}
 	}()
