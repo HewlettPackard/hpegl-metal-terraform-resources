@@ -1,4 +1,4 @@
-// Copyright 2016-2021 Hewlett Packard Enterprise Development LP
+// (C) Copyright 2020-2021 Hewlett Packard Enterprise Development LP
 
 package quake
 
@@ -20,6 +20,8 @@ const (
 	//       description      = "hello from Terraform"
 	//       image_flavor      = "coreos"
 	//       image_version     = "1800.6.0"
+	//       # flavor and version can also be provided as below
+	//       # image           = "coreos@1800.6.0"
 	//       machie_size       = "Very Small"
 	//       ssh               = ["Chuck's Mac as Team One member"]
 	//       networks          = ["Private", "Public"]
@@ -29,6 +31,7 @@ const (
 	hDescription       = "description"
 	hFlavor            = "image_flavor"
 	hImageVersion      = "image_version"
+	hImage             = "image"
 	hLocation          = "location"
 	hLocationID        = "location_id"
 	hNetworks          = "networks"
@@ -49,6 +52,9 @@ const (
 	hSubState          = "sub_state"
 	hPortalCommOkay    = "portal_comm_okay"
 	hPwrState          = "power_state"
+
+	// allowedImageLength is number of Image related attributes that can be provided in the from of 'image@version'.
+	allowedImageLength = 2
 )
 
 func hostSchema() map[string]*schema.Schema {
@@ -70,6 +76,13 @@ func hostSchema() map[string]*schema.Schema {
 			Required:    true,
 			ForceNew:    true,
 			Description: "A specific flavor version, eg '18.04'.",
+		},
+		hImage: {
+			Type:     schema.TypeString,
+			ForceNew: true,
+			Optional: true,
+			Description: "A specific flavor and version in the form of flavor@version, eg 'ubuntu@18.04'." +
+				"This takes precedence over image_flavor and image_version, if set.",
 		},
 		hSSHKeys: {
 			Type:     schema.TypeList,
@@ -243,8 +256,20 @@ func resourceQuattroHostCreate(d *schema.ResourceData, meta interface{}) (err er
 	// 1) verify that flavor and version are sane
 	flavorFound := false
 	versionFound := false
+
 	targetImageFlavor := d.Get(hFlavor).(string)
 	targetImageVersion := d.Get(hImageVersion).(string)
+
+	// flavor and version provided through 'Image' attribute is taking the precedence.
+	image, ok := d.Get(hImage).(string)
+	if ok {
+		fv := strings.Split(image, "@")
+		if len(fv) != allowedImageLength {
+			targetImageFlavor = fv[0]
+			targetImageVersion = fv[1]
+		}
+	}
+
 	flavors := []string{}
 	for _, image := range resources.Images {
 		if image.Flavor == targetImageFlavor {
@@ -418,6 +443,7 @@ func resourceQuattroHostRead(d *schema.ResourceData, meta interface{}) (err erro
 	d.Set(hPwrState, host.PowerStatus)
 	d.Set(hFlavor, host.ServiceFlavor)
 	d.Set(hImageVersion, host.ServiceVersion)
+	d.Set(hImage, fmt.Sprintf("%s@%s", host.ServiceFlavor, host.ServiceVersion)) //nolint:errcheck
 	d.Set(hSSHKeyIDs, host.SSHAuthorizedKeys)
 	d.Set(hSizeID, host.MachineSizeID)
 	d.Set(hSize, host.MachineSizeName)

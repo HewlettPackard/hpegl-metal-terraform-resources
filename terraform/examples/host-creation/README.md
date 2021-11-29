@@ -29,8 +29,10 @@ The following arguments are supported:
 
 - `name` - The name of the host, this will become the hostname if the operating system is a Linux flavor.
 - `description` - (Optional) Some descriptive text that helps describe the host and purpose.
-- `image_flavor` - The base operating system distribtion, e.g. "ubuntu"
-- `image_version` - A specifc version of the image_flavor.
+- `image_flavor` - The base operating system distribution, e.g. "ubuntu"
+- `image_version` - A specific version of the image_flavor.
+- `image` - A specific flavor and version in the form of flavor@version, e.g., "ubuntu@18.0.3". If this is not provided,
+   then falls back to image_flavor and image_version.
 - `location` - Where the host is to be created in country:region:data-center style.
 - `ssh` - A list of ssh key names or IDs that will be placed into the host image.
 - `size` - The machine size to use for this host.
