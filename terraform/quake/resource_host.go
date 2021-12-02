@@ -274,7 +274,7 @@ func resourceQuattroHostCreate(d *schema.ResourceData, meta interface{}) (err er
 
 	// flavor and version provided through 'Image' attribute is taking the precedence.
 	image, ok := d.Get(hImage).(string)
-	if ok {
+	if ok && image != "" {
 		fv := strings.Split(image, "@")
 		if len(fv) != allowedImageLength {
 			targetImageFlavor = fv[0]
