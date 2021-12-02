@@ -27,31 +27,33 @@ const (
 	//       networks          = ["Private", "Public"]
 	//       location          = "Demo Pod" //"USA:Austin:Demo1"
 	//    }
-	hName              = "name"
-	hDescription       = "description"
-	hFlavor            = "image_flavor"
-	hImageVersion      = "image_version"
-	hImage             = "image"
-	hLocation          = "location"
-	hLocationID        = "location_id"
-	hNetworks          = "networks"
-	hNetworkIDs        = "network_ids"
-	hPreAllocatedIPs   = "allocated_ips"
-	hSSHKeys           = "ssh"
-	hSSHKeyIDs         = "ssh_ids"
-	hSize              = "machine_size"
-	hSizeID            = "machine_size_id"
-	hConnections       = "connections"
-	hUserData          = "user_data"
-	hCHAPUser          = "chap_user"
-	hCHAPSecret        = "chap_secret"
-	hInitiatorName     = "initiator_name"
-	hVolumes           = "volumes"
-	hVolumeAttachments = "volume_attachments"
-	hState             = "state"
-	hSubState          = "sub_state"
-	hPortalCommOkay    = "portal_comm_okay"
-	hPwrState          = "power_state"
+	hName                 = "name"
+	hDescription          = "description"
+	hFlavor               = "image_flavor"
+	hImageVersion         = "image_version"
+	hImage                = "image"
+	hLocation             = "location"
+	hLocationID           = "location_id"
+	hNetworks             = "networks"
+	hNetworkIDs           = "network_ids"
+	hPreAllocatedIPs      = "allocated_ips"
+	hNetForDefaultRouteID = "network_route_id"
+	hNetForDefaultRoute   = "network_route"
+	hSSHKeys              = "ssh"
+	hSSHKeyIDs            = "ssh_ids"
+	hSize                 = "machine_size"
+	hSizeID               = "machine_size_id"
+	hConnections          = "connections"
+	hUserData             = "user_data"
+	hCHAPUser             = "chap_user"
+	hCHAPSecret           = "chap_secret"
+	hInitiatorName        = "initiator_name"
+	hVolumes              = "volumes"
+	hVolumeAttachments    = "volume_attachments"
+	hState                = "state"
+	hSubState             = "sub_state"
+	hPortalCommOkay       = "portal_comm_okay"
+	hPwrState             = "power_state"
 
 	// allowedImageLength is number of Image related attributes that can be provided in the from of 'image@version'.
 	allowedImageLength = 2
@@ -215,6 +217,16 @@ func hostSchema() map[string]*schema.Schema {
 			Computed:    true,
 			Description: "The current power state of the host",
 		},
+		hNetForDefaultRoute: {
+			Type:        schema.TypeString,
+			Description: "Network selected for the default route",
+			Required:    true,
+		},
+		hNetForDefaultRouteID: {
+			Type:        schema.TypeString,
+			Computed:    true,
+			Description: "Network ID of the default route",
+		},
 	}
 }
 
@@ -343,7 +355,10 @@ func resourceQuattroHostCreate(d *schema.ResourceData, meta interface{}) (err er
 			availableNetworks = append(availableNetworks, podNet.Name)
 		}
 	}
-	for _, network := range convertStringArr(d.Get(hNetworks).([]interface{})) {
+
+	networks := convertStringArr(d.Get(hNetworks).([]interface{}))
+
+	for _, network := range networks {
 		if _, ok := podNetIDMap[network]; ok {
 			// used direct network ID rather than a name
 			processedNetworks = append(processedNetworks, network)
@@ -362,6 +377,34 @@ func resourceQuattroHostCreate(d *schema.ResourceData, meta interface{}) (err er
 		return fmt.Errorf("no networks in %q found in %q", d.Get(hNetworks), availableNetworks)
 	}
 	host.NetworkIDs = processedNetworks
+
+	// Network for default route
+	netDefaultRoute := d.Get(hNetForDefaultRoute).(string)
+
+	found := false
+	if _, ok := podNetIDMap[netDefaultRoute]; ok {
+		for _, netID := range processedNetworks {
+			if netID == netDefaultRoute {
+				found = true
+				host.NetworkForDefaultRoute = netDefaultRoute
+				break
+			}
+		}
+	} else if id, ok := podNetMap[netDefaultRoute]; ok {
+		for _, netID := range processedNetworks {
+			if netID == id {
+				found = true
+				host.NetworkForDefaultRoute = id
+				break
+			}
+		}
+	} else {
+		return fmt.Errorf("network for default route %s not found in %q", netDefaultRoute, availableNetworks)
+	}
+
+	if !found {
+		return fmt.Errorf("network for default route %s must be one of the selected networks", netDefaultRoute)
+	}
 
 	// 6 add any new volumes
 	if vols, vOK := d.Get(hVolumes).(*schema.Set); vOK {
@@ -463,6 +506,9 @@ func resourceQuattroHostRead(d *schema.ResourceData, meta interface{}) (err erro
 	d.Set(hCHAPUser, host.ISCSIConfig.CHAPUser)
 	d.Set(hCHAPSecret, host.ISCSIConfig.CHAPSecret)
 	d.Set(hInitiatorName, host.ISCSIConfig.InitiatorName)
+	if err = d.Set(hNetForDefaultRouteID, host.NetworkForDefaultRoute); err != nil {
+		return err
+	}
 	return nil
 }
 

@@ -13,7 +13,8 @@ resource "quake_host" "terra_host" {
   # image       = "centos@7.6.1810"
   machine_size  = "Any"
   ssh           = ["User1 - Linux"]  
-  networks      = ["Private", "Public", "Storage"]  
+  networks      = ["Private", "Public", "Storage"]
+  network_route = "Public"
   location      = var.location
   description   = "Hello from Terraform"
   # This will create and attach an iSCSI volume to the host.
