@@ -196,7 +196,7 @@ func resourceQuatrroVolumeCreate(d *schema.ResourceData, meta interface{}) (err 
 		if err != nil {
 			break
 		}
-		if vol.State != rest.VOLUMESTATE_NEW {
+		if vol.State != rest.VOLUMESTATE_NEW && vol.State != rest.VOLUMESTATE_ALLOCATING {
 			// The Volume create has been processed by the rack-controller so move on.
 			break
 		}
