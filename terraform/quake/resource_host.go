@@ -220,7 +220,7 @@ func hostSchema() map[string]*schema.Schema {
 		hNetForDefaultRoute: {
 			Type:        schema.TypeString,
 			Description: "Network selected for the default route",
-			Required:    true,
+			Optional:    true,
 		},
 		hNetForDefaultRouteID: {
 			Type:        schema.TypeString,
@@ -376,34 +376,39 @@ func resourceQuattroHostCreate(d *schema.ResourceData, meta interface{}) (err er
 	if len(processedNetworks) == 0 {
 		return fmt.Errorf("no networks in %q found in %q", d.Get(hNetworks), availableNetworks)
 	}
+
 	host.NetworkIDs = processedNetworks
 
 	// Network for default route
 	netDefaultRoute := d.Get(hNetForDefaultRoute).(string)
 
-	found := false
-	if _, ok := podNetIDMap[netDefaultRoute]; ok {
-		for _, netID := range processedNetworks {
-			if netID == netDefaultRoute {
-				found = true
-				host.NetworkForDefaultRoute = netDefaultRoute
-				break
-			}
-		}
-	} else if id, ok := podNetMap[netDefaultRoute]; ok {
-		for _, netID := range processedNetworks {
-			if netID == id {
-				found = true
-				host.NetworkForDefaultRoute = id
-				break
-			}
-		}
+	if netDefaultRoute == "" {
+		host.NetworkForDefaultRoute = processedNetworks[0]
 	} else {
-		return fmt.Errorf("network for default route %s not found in %q", netDefaultRoute, availableNetworks)
-	}
+		found := false
+		if _, ok := podNetIDMap[netDefaultRoute]; ok {
+			for _, netID := range processedNetworks {
+				if netID == netDefaultRoute {
+					found = true
+					host.NetworkForDefaultRoute = netDefaultRoute
+					break
+				}
+			}
+		} else if id, ok := podNetMap[netDefaultRoute]; ok {
+			for _, netID := range processedNetworks {
+				if netID == id {
+					found = true
+					host.NetworkForDefaultRoute = id
+					break
+				}
+			}
+		} else {
+			return fmt.Errorf("network for default route %s not found in %q", netDefaultRoute, availableNetworks)
+		}
 
-	if !found {
-		return fmt.Errorf("network for default route %s must be one of the selected networks", netDefaultRoute)
+		if !found {
+			return fmt.Errorf("network for default route %s must be one of the selected networks", netDefaultRoute)
+		}
 	}
 
 	// 6 add any new volumes
