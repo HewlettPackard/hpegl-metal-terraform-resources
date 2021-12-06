@@ -6,11 +6,8 @@ provider "quake" {
 
 resource "quake_host" "terra_host" {
   count         = 1
-  name          = "tformed-${count.index}"
-  image_flavor  = "centos"                
-  image_version = "7.6.1810"
-  # flavor and version can also be provided as below
-  # image       = "centos@7.6.1810"
+  name          = "tformed-${count.index}"                
+  image         = "centos@7.6.1810"
   machine_size  = "Any"
   ssh           = ["User1 - Linux"]  
   networks      = ["Private", "Public", "Storage"]

@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2020 Hewlett Packard Enterprise Development LP.
+// (C) Copyright 2016-2020, 2021 Hewlett Packard Enterprise Development LP
 
 package quake
 
@@ -34,8 +34,7 @@ data "quake_available_resources" "compute" {
 }
 resource "quake_host" "test_host" {
   name               = "test"
-  image_flavor       = "${data.quake_available_resources.compute.images.0.flavor}"
-  image_version      = "${data.quake_available_resources.compute.images.0.version}"
+  image              = "${data.quake_available_resources.compute.images.0.image}"
   machine_size       = "Any"
   ssh                = ["User1 - Linux"]
   networks           = [for net in "${data.quake_available_resources.compute.networks}": net.name if net.location == var.location]               

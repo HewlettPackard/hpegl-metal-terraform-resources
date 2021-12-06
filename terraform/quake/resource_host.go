@@ -17,9 +17,8 @@ const (
 	// field names for a Quattro host. These are referenceable from some terraform source
 	//    resource "quattro_host" "test_host" {
 	//       name              = "test"
-	//       description      = "hello from Terraform"
-	//       image_flavor      = "coreos"
-	//       image_version     = "1800.6.0"
+	//       description       = "hello from Terraform"
+	//       image             = "coreos@1800.6.0"
 	//       # flavor and version can also be provided as below
 	//       # image           = "coreos@1800.6.0"
 	//       machie_size       = "Very Small"
@@ -29,8 +28,6 @@ const (
 	//    }
 	hName                 = "name"
 	hDescription          = "description"
-	hFlavor               = "image_flavor"
-	hImageVersion         = "image_version"
 	hImage                = "image"
 	hLocation             = "location"
 	hLocationID           = "location_id"
@@ -67,24 +64,11 @@ func hostSchema() map[string]*schema.Schema {
 			ForceNew:    true,
 			Description: "Any friendly name to identify the host that will become the OS hostname in lower case.",
 		},
-		hFlavor: {
-			Type:        schema.TypeString,
-			Required:    true,
-			ForceNew:    true,
-			Description: "A reference to the image that will be provisioned, eg 'ubuntu'.",
-		},
-		hImageVersion: {
-			Type:        schema.TypeString,
-			Required:    true,
-			ForceNew:    true,
-			Description: "A specific flavor version, eg '18.04'.",
-		},
 		hImage: {
-			Type:     schema.TypeString,
-			ForceNew: true,
-			Optional: true,
-			Description: "A specific flavor and version in the form of flavor@version, eg 'ubuntu@18.04'." +
-				"This takes precedence over image_flavor and image_version, if set.",
+			Type:        schema.TypeString,
+			ForceNew:    true,
+			Required:    true,
+			Description: "A specific flavor and version in the form of flavor@version, eg 'ubuntu@18.04'.",
 		},
 		hSSHKeys: {
 			Type:     schema.TypeList,
@@ -269,16 +253,16 @@ func resourceQuattroHostCreate(d *schema.ResourceData, meta interface{}) (err er
 	flavorFound := false
 	versionFound := false
 
-	targetImageFlavor := d.Get(hFlavor).(string)
-	targetImageVersion := d.Get(hImageVersion).(string)
+	var targetImageFlavor, targetImageVersion string
 
-	// flavor and version provided through 'Image' attribute is taking the precedence.
 	image, ok := d.Get(hImage).(string)
-	if ok && image != "" {
+	if ok {
 		fv := strings.Split(image, "@")
-		if len(fv) != allowedImageLength {
+		if len(fv) == allowedImageLength {
 			targetImageFlavor = fv[0]
 			targetImageVersion = fv[1]
+		} else {
+			return fmt.Errorf("image attribute %q must be in falvor@version format", image)
 		}
 	}
 
@@ -489,8 +473,6 @@ func resourceQuattroHostRead(d *schema.ResourceData, meta interface{}) (err erro
 	d.Set(hSubState, host.Substate)
 	d.Set(hPortalCommOkay, host.PortalCommOkay)
 	d.Set(hPwrState, host.PowerStatus)
-	d.Set(hFlavor, host.ServiceFlavor)
-	d.Set(hImageVersion, host.ServiceVersion)
 	d.Set(hImage, fmt.Sprintf("%s@%s", host.ServiceFlavor, host.ServiceVersion)) //nolint:errcheck
 	d.Set(hSSHKeyIDs, host.SSHAuthorizedKeys)
 	d.Set(hSizeID, host.MachineSizeID)

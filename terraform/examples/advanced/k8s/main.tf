@@ -1,3 +1,4 @@
+# (C) Copyright 2020-2021 Hewlett Packard Enterprise Development LP
 # This terraform script is designed to self-ignite the light-weight
 # kubernetes install from Rancher called k3s (5 lighter than k8s).
 #
@@ -131,8 +132,7 @@ data "quake_available_images" "ubuntu" {
 # network access attempted.
 resource "quake_host" "master" {
   name          = "master"
-  image_flavor  = data.quake_available_images.ubuntu.images[0].flavor
-  image_version = data.quake_available_images.ubuntu.images[0].version
+  image         = format("%s@%s",data.quake_available_images.ubuntu.images[0].flavor,data.quake_available_images.ubuntu.images[0].version)
   machine_size  = var.msize
   ssh           = var.ssh_keys
   networks      = distinct(concat(["Private", "Public"], [for net in data.quake_available_resources.physical.networks : net.name if net.host_use == "Required" && net.location == var.location]))
@@ -211,8 +211,7 @@ EOF
 resource "quake_host" "workers" {
   count         = var.workers
   name          = "worker-${count.index}"
-  image_flavor  = data.quake_available_images.ubuntu.images[0].flavor
-  image_version = data.quake_available_images.ubuntu.images[0].version
+  image         = format("%s@%s",data.quake_available_images.ubuntu.images[0].flavor,data.quake_available_images.ubuntu.images[0].version)
   machine_size  = var.msize
   ssh           = var.ssh_keys
   networks      = distinct(concat(["Private", "Public"], [for net in data.quake_available_resources.physical.networks : net.name if net.host_use == "Required"  && net.location == var.location]))

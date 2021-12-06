@@ -1,3 +1,4 @@
+# (C) Copyright 2020-2021 Hewlett Packard Enterprise Development LP
 # Examples of using the Quake Terraform provider.
 
 ## Pre-requisites
@@ -96,8 +97,7 @@ provider "quake" {
 
 resource "quake_host" "terra_host" {
   name          = "tfhost"
-  image_flavor  = "CoreOS"                
-  image_version = "2135.6.0"  
+  image         = "CoreOS@2135.6.0"                
   machine_size  = "Any"
   ssh           = ["User1 - Linux"]  
   networks      = ["Private", "Public"]  
