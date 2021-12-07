@@ -251,7 +251,7 @@ func getIPPool(set *schema.Set) (ipPool *rest.NewIpPool) {
 
 		ipPool.Name = safeString(pool[poolName])
 		ipPool.Description = safeString(pool[poolDescription])
-		ipPool.IPVersion = rest.IpVer(safeString(pool[poolDescription]))
+		ipPool.IPVersion = rest.IpVer(safeString(pool[poolVer]))
 		ipPool.BaseIP = safeString(pool[poolBaseIP])
 		ipPool.Netmask = rest.Netmask(safeString(pool[poolNetmask]))
 		ipPool.DefaultRoute = safeString(pool[poolDefaultRoute])
