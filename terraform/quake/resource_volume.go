@@ -1,4 +1,4 @@
-// (C) Copyright 2016-2021 Hewlett Packard Enterprise Development LP.
+// (C) Copyright 2016-2021 Hewlett Packard Enterprise Development LP
 
 package quake
 
@@ -21,6 +21,7 @@ const (
 	vFlavorID    = "flavor_id"
 	vFlavor      = "flavor"
 	vSize        = "size"
+	vShareable   = "shareable"
 	vState       = "state"
 	vStatus      = "status"
 )
@@ -85,6 +86,15 @@ func volumeSchema() map[string]*schema.Schema {
 			},
 		},
 
+		vShareable: {
+			Type:        schema.TypeBool,
+			Required:    false,
+			Optional:    true,
+			Default:     false,
+			ForceNew:    true,
+			Description: "The volume can be shared by multiple hosts if set.",
+		},
+
 		vState: {
 			Type:        schema.TypeString,
 			Computed:    true,
@@ -146,7 +156,7 @@ func resourceQuatrroVolumeCreate(d *schema.ResourceData, meta interface{}) (err 
 		}
 	}
 	if vfID == "" {
-		return fmt.Errorf("Unable to locate a volume flavor")
+		return fmt.Errorf("unable to locate a volume flavor")
 	}
 
 	volume := rest.NewVolume{
@@ -154,6 +164,7 @@ func resourceQuatrroVolumeCreate(d *schema.ResourceData, meta interface{}) (err 
 		Capacity:    int64(d.Get(vSize).(float64)),
 		Description: d.Get(vDescription).(string),
 		FlavorID:    vfID,
+		Shareable:   d.Get(vShareable).(bool),
 	}
 
 	targetLocation, ok := d.Get(vLocation).(string)
@@ -237,6 +248,9 @@ func resourceQuatrroVolumeRead(d *schema.ResourceData, meta interface{}) (err er
 	loc, _ := p.GetLocationName(volume.LocationID)
 	d.Set(vLocation, loc)
 	d.Set(vLocationID, volume.LocationID)
+	if err = d.Set(vShareable, volume.Shareable); err != nil {
+		return err
+	}
 	d.Set(vState, volume.State)
 	d.Set(vStatus, volume.Status)
 	return nil

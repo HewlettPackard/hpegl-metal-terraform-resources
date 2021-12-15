@@ -418,6 +418,7 @@ func resourceQuattroHostCreate(d *schema.ResourceData, meta interface{}) (err er
 				Name:        vol[vName].(string),
 				Description: vol[vDescription].(string),
 				Capacity:    int64(vol[vSize].(float64)),
+				Shareable:   vol[vShareable].(bool),
 				FlavorID:    vfID,
 			})
 		}
