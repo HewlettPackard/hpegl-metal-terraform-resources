@@ -1,4 +1,4 @@
-// (C) Copyright 2020-2021 Hewlett Packard Enterprise Development LP
+// (C) Copyright 2020-2022 Hewlett Packard Enterprise Development LP
 
 package quake
 
@@ -423,14 +423,15 @@ func resourceQuattroHostCreate(d *schema.ResourceData, meta interface{}) (err er
 			})
 		}
 	}
+
 	// Existing volumes
 	for _, vID := range convertStringArr(d.Get(hVolumeAttachments).([]interface{})) {
-		for _, volume := range resources.Volumes {
-			if vID == volume.ID || vID == volume.Name {
-				host.VolumeIDs = append(host.VolumeIDs, volume.ID)
-				continue
-			}
+		id, exists := isVolumeAvailable(vID, resources.Volumes)
+		if !exists {
+			return fmt.Errorf("volume attachment failed due to volume %q not being available", vID)
 		}
+
+		host.VolumeIDs = append(host.VolumeIDs, id)
 	}
 
 	// PreAllocatedIP addreses
@@ -448,6 +449,18 @@ func resourceQuattroHostCreate(d *schema.ResourceData, meta interface{}) (err er
 	d.SetId(h.ID)
 
 	return resourceQuattroHostRead(d, meta)
+}
+
+// isVolumeAvailable returns (vol ID, true) if the given vID matches an entry in
+// availVols by volume id or volume name, else returns ("", false)
+func isVolumeAvailable(vID string, availVols []rest.VolumeInfo) (string, bool) {
+	for _, volume := range availVols {
+		if vID == volume.ID || vID == volume.Name {
+			return volume.ID, true
+		}
+	}
+
+	return "", false
 }
 
 func resourceQuattroHostRead(d *schema.ResourceData, meta interface{}) (err error) {
