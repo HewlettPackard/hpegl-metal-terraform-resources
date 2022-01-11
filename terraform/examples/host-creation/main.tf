@@ -1,32 +1,67 @@
-# (C) Copyright 2020-2021 Hewlett Packard Enterprise Development LP
+# (C) Copyright 2020-2022 Hewlett Packard Enterprise Development LP
 
 provider "quake" {
 
 }
 
+resource "quake_volume" iscsi_volume {
+  name        = "iscsi-volume"
+  size        = 5
+  shareable   = true
+  flavor      = "Fast"
+  location    = var.location
+  description = "Terraform shareable volume"
+}
+
 resource "quake_host" "terra_host" {
-  count         = 1
-  name          = "tformed-${count.index}"
-  image         = "centos@7.6.1810"
-  machine_size  = "Any"
-  ssh           = ["User1 - Linux"]
-  networks      = ["Private", "Public", "Storage"]
+  count              = 1
+  name               = "tformed-${count.index}"
+  image              = "ubuntu@18.04-20201102"
+  machine_size       = "Medium System"
+  ssh                = ["User1 - Linux"]
+  networks           = ["Private", "Public", "Storage"]
+  network_route      = "Public"
+  location           = var.location
+  description        = "Hello from Terraform"
+  volume_attachments = [quake_volume.iscsi_volume.id]
+}
+
+# Example of Host creation with implicit dependencies
+resource "quake_ssh_key" "newssh_1" {
+  name       = "newssh_1"
+  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCv03o//GEQ9/6eI1qZleyBbSndg0n5AkcKVnf5D4fEjwkWrtSIJEnROqJddEAn2XYALAk9x1AcB4Nue3q4tDG17VeK3ODo0+9Dx0LYqUTawnFWmo4X80QKr658Jmt7Enmnk5x2IrUDcNwAzALVellkBbwq7QbYUu1swSycNlNhSfGizqo/lQCNIHXyeRQ8oJxOuZkbiturXHZL389blIrTeUo53xmwE1TolVS8QzZRN8ve1GjFvpC5dl6orzi6LXDcrDcbZaxlrW+YQqyaipFRAw1DyTalrfpqxtq/Y9+Elz5xgCnUaepHN6ha/k81wtI2rySHga6pMOcJKlxaRS5OfzdrWh7oi2tEAaiq2y3pTr9hROQ2OGcMNU5gxbVU2ymeXdHVsAHMCmyKvQe0g0/fJzmNA/excogFCWDN7Spy9s2V39IbEKttyXjD/dpave7re9eFzYHA1CBEnNjMuvJj0H4tnpAETdQ6UbnjbE4JYn5eKGvnJ2w1JTfSdMK8nMcxqo4HfHWuLFuntCV9GAlWIVIvJn1pYisY8kEOtN5w6QrLTfsei96/TfssAsfhrDrVtgcgNU3EvZlC6Uaaly7D0ISFeufsxkPswu+jGNUJvGEqDiqvt05lSEZWS5viR/TOROTlicaGN9dhez/fqHcj5cnuoK1pmibK5GT7/Yf1Gw== user1@quattronetworks.com"
+}
+
+resource "quake_network" "newpnet_1" {
+  name        = "newpnet_1"
+  description = "New private network 1 description"
+  location    = var.location
+  ip_pool {
+    name          = "npool"
+    description   = "New IP pool description"
+    ip_ver        = "IPv4"
+    base_ip       = "10.0.0.0"
+    netmask       = "/24"
+    default_route = "10.0.0.1"
+    sources {
+      base_ip = "10.0.0.3"
+      count   = 10
+    }
+    dns      = ["10.0.0.50"]
+    proxy    = "10.0.0.60"
+    no_proxy = "10.0.0.5"
+    ntp      = ["10.0.0.80"]
+  }
+}
+
+resource "quake_host" "terra_host_new_ssh" {
+  count         = 2
+  name          = "tformed-newssh-${count.index}"
+  image         = "ubuntu@18.04-20201102"
+  machine_size  = "Medium System"
+  ssh           = [quake_ssh_key.newssh_1.id]
+  networks      = ["Private", "Public", quake_network.newpnet_1.name]
   network_route = "Public"
   location      = var.location
   description   = "Hello from Terraform"
-  # This will create a shareable iSCSI volume and attach it to the host.
-  volumes {
-    name        = "large-volume-${count.index}"
-    size        = 5
-    shareable   = true
-    flavor      = "Fast"
-    location    = var.location
-    description = "Terraformed volume"
-  }
-  # Create and attach additional volumes by using multiple volume{} blocks.
-  #volumes {
-  #  name   = "small-volume-${count.index}"
-  #  size   = 2
-  #  flavor = "Fast"
-  #}
 }
