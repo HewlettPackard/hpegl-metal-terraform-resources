@@ -1,4 +1,4 @@
-#(C) Copyright 2020-2021 Hewlett Packard Enterprise Development LP
+# (C) Copyright 2020-2022 Hewlett Packard Enterprise Development LP
 
 TEST?=$$(go list ./quake | grep -v vendor)
 TF_VERSION:=$(shell cat ./version)
@@ -32,6 +32,6 @@ acceptance: vendor
 
 install: build	
 	mkdir -p ~/.terraform.d/plugins
-	cp cmd/terraform-provider-quake* ~/.terraform.d/plugins
+	cp cmd/terraform-provider-quake_$(TF_VERSION) ~/.terraform.d/plugins
 	mkdir -p $(LOCAL_LOCATION)
-	cp cmd/terraform-provider-quake* $(LOCAL_LOCATION)/terraform-provider-quake
+	cp cmd/terraform-provider-quake_$(TF_VERSION) $(LOCAL_LOCATION)/terraform-provider-quake

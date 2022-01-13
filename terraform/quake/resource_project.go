@@ -1,4 +1,4 @@
-// (C) Copyright 2016-2021 Hewlett Packard Enterprise Development LP
+// (C) Copyright 2016-2022 Hewlett Packard Enterprise Development LP
 
 package quake
 
@@ -266,7 +266,7 @@ func resourceQuattroProjectRead(d *schema.ResourceData, meta interface{}) (err e
 		pProjectName:        prof.TeamName,
 	}
 
-	if err = d.Set(pProfile, pData); err != nil {
+	if err = d.Set(pProfile, []interface{}{pData}); err != nil {
 		return err
 	}
 
@@ -278,7 +278,7 @@ func resourceQuattroProjectRead(d *schema.ResourceData, meta interface{}) (err e
 		pPrivateNetworks: int(lim.PrivateNetworks),
 	}
 
-	if err = d.Set(pLimits, lData); err != nil {
+	if err = d.Set(pLimits, []interface{}{lData}); err != nil {
 		return err
 	}
 	return nil
