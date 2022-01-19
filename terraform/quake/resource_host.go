@@ -45,7 +45,7 @@ const (
 	hCHAPUser             = "chap_user"
 	hCHAPSecret           = "chap_secret"
 	hInitiatorName        = "initiator_name"
-	hVolumes              = "volumes"
+	hVolumeInfos          = "volume_infos"
 	hVolumeAttachments    = "volume_attachments"
 	hState                = "state"
 	hSubState             = "sub_state"
@@ -165,14 +165,6 @@ func hostSchema() map[string]*schema.Schema {
 			Computed:    true,
 			Description: "The iSCSI initiator name for this host.",
 		},
-		hVolumes: {
-			Type:        schema.TypeSet,
-			Optional:    true,
-			Description: "Create volumes and connect them to this host.",
-			Elem: &schema.Resource{
-				Schema: volumeSchema(),
-			},
-		},
 		hVolumeAttachments: {
 			Type:     schema.TypeList,
 			Optional: true,
@@ -211,6 +203,15 @@ func hostSchema() map[string]*schema.Schema {
 			Computed:    true,
 			Description: "Network ID of the default route",
 		},
+		hVolumeInfos: {
+			Type:        schema.TypeSet,
+			Optional:    true,
+			Computed:    true,
+			Description: "Information about volumes attached to this host.",
+			Elem: &schema.Resource{
+				Schema: volumeInfoSchema(),
+			},
+		},
 	}
 }
 
@@ -242,7 +243,6 @@ func resourceQuattroHostCreate(d *schema.ResourceData, meta interface{}) (err er
 	}
 	// get available resources
 	resources := p.AvailableResources
-
 	host := rest.NewHost{
 		Name:        d.Get(hName).(string),
 		Description: d.Get(hDescription).(string),
@@ -395,40 +395,11 @@ func resourceQuattroHostCreate(d *schema.ResourceData, meta interface{}) (err er
 		}
 	}
 
-	// 6 add any new volumes
-	if vols, vOK := d.Get(hVolumes).(*schema.Set); vOK {
-		for _, element := range vols.List() {
-			vol := element.(map[string]interface{})
-			vfID, ok := vol[vFlavorID].(string)
-			if !ok || vfID == "" {
-				flavorName, ok := vol[vFlavor]
-				if ok && flavorName != "" {
-					for _, flavor := range resources.VolumeFlavors {
-						// Name or ID match
-						if flavor.Name == flavorName || flavor.ID == flavorName {
-							vfID = flavor.ID
-							break
-						}
-					}
-				} else {
-					return fmt.Errorf("volume %q needs %q or a %q to be set", vol[vName], vFlavorID, vFlavor)
-				}
-			}
-			host.NewVolumes = append(host.NewVolumes, rest.AddVolume{
-				Name:        vol[vName].(string),
-				Description: vol[vDescription].(string),
-				Capacity:    int64(vol[vSize].(float64)),
-				Shareable:   vol[vShareable].(bool),
-				FlavorID:    vfID,
-			})
-		}
-	}
-
-	// Existing volumes
+	// Check if the volume is available
 	for _, vID := range convertStringArr(d.Get(hVolumeAttachments).([]interface{})) {
 		id, exists := isVolumeAvailable(vID, resources.Volumes)
 		if !exists {
-			return fmt.Errorf("volume attachment failed due to volume %q not being available", vID)
+			return fmt.Errorf("volume attachment failed due to volume %q does not exist", vID)
 		}
 
 		host.VolumeIDs = append(host.VolumeIDs, id)
@@ -451,18 +422,6 @@ func resourceQuattroHostCreate(d *schema.ResourceData, meta interface{}) (err er
 	return resourceQuattroHostRead(d, meta)
 }
 
-// isVolumeAvailable returns (vol ID, true) if the given vID matches an entry in
-// availVols by volume id or volume name, else returns ("", false)
-func isVolumeAvailable(vID string, availVols []rest.VolumeInfo) (string, bool) {
-	for _, volume := range availVols {
-		if vID == volume.ID || vID == volume.Name {
-			return volume.ID, true
-		}
-	}
-
-	return "", false
-}
-
 func resourceQuattroHostRead(d *schema.ResourceData, meta interface{}) (err error) {
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
@@ -482,6 +441,7 @@ func resourceQuattroHostRead(d *schema.ResourceData, meta interface{}) (err erro
 	if err != nil {
 		return err
 	}
+
 	d.Set(hName, host.Name)
 	d.Set(hState, host.State)
 	d.Set(hSubState, host.Substate)
@@ -496,6 +456,28 @@ func resourceQuattroHostRead(d *schema.ResourceData, meta interface{}) (err erro
 	d.Set(hLocation, loc)
 	d.Set(hLocationID, host.LocationID)
 	d.Set(hNetworkIDs, host.NetworkIDs)
+
+	varesources, _, err := p.Client.VolumeAttachmentsApi.List(ctx)
+	if err != nil {
+		return fmt.Errorf("error reading volume attachment information %v", err)
+	}
+
+	hostvas := getVAsForHost(host.ID, varesources)
+	volumeInfos := make([]map[string]interface{}, 0, len(hostvas))
+	for _, i := range hostvas {
+		vi := map[string]interface{}{
+			vID:          i.ID,
+			vName:        i.Name,
+			vDiscoveryIP: i.DiscoveryIP,
+			vTargetIQN:   i.TargetIQN,
+		}
+		volumeInfos = append(volumeInfos, vi)
+	}
+
+	if err := d.Set(hVolumeInfos, volumeInfos); err != nil {
+		return err
+	}
+
 	d.Set(hDescription, host.Description)
 	hCons := make(map[string]interface{})
 	for _, con := range host.Connections {
@@ -510,7 +492,25 @@ func resourceQuattroHostRead(d *schema.ResourceData, meta interface{}) (err erro
 	if err = d.Set(hNetForDefaultRouteID, host.NetworkForDefaultRoute); err != nil {
 		return err
 	}
+
 	return nil
+}
+
+func getVAsForHost(hostID string, vas []rest.VolumeAttachment) []rest.VolumeInfo {
+	hostvas := make([]rest.VolumeInfo, 0, len(vas))
+
+	for _, i := range vas {
+		if i.HostID == hostID {
+			vi := rest.VolumeInfo{}
+			vi.ID = i.VolumeID
+			vi.Name = i.Name
+			vi.DiscoveryIP = i.VolumeTargetIPAddress
+			vi.TargetIQN = i.VolumeTargetIQN
+			hostvas = append(hostvas, vi)
+		}
+	}
+
+	return hostvas
 }
 
 func resourceQuattroHostUpdate(d *schema.ResourceData, meta interface{}) (err error) {
@@ -521,6 +521,67 @@ func resourceQuattroHostUpdate(d *schema.ResourceData, meta interface{}) (err er
 
 		}
 	}()
+
+	p, err := getConfigFromMeta(meta)
+	if err != nil {
+		return err
+	}
+
+	ctx := p.GetContext()
+	host, _, err := p.Client.HostsApi.GetByID(ctx, d.Id())
+	if err != nil {
+		return err
+	}
+
+	volumes, _, err := p.Client.VolumesApi.List(ctx)
+	if err != nil {
+		return fmt.Errorf("error reading volume information %v", err)
+	}
+	varesources, _, err := p.Client.VolumeAttachmentsApi.List(ctx)
+	if err != nil {
+		return fmt.Errorf("error reading volume attachment information %v", err)
+	}
+	hostvas := getVAsForHost(host.ID, varesources)
+
+	// desired volume IDs
+	desired := make([]string, 0, len(hostvas))
+	for _, vID := range convertStringArr(d.Get(hVolumeAttachments).([]interface{})) {
+		volID, exists := volumeExists(vID, volumes)
+		if !exists {
+			return fmt.Errorf("volume attachment failed due to volume %q does not exist", vID)
+		}
+
+		desired = append(desired, volID)
+	}
+
+	// existing volume IDs
+	existing := make([]string, 0, len(hostvas))
+	for _, i := range hostvas {
+		existing = append(existing, i.ID)
+	}
+
+	// volume IDs to attach & detach
+	attachList := difference(desired, existing)
+	detachList := difference(existing, desired)
+
+	// detach
+	vaHostID := rest.VolumeAttachHostUuid{HostID: host.ID}
+	for _, dv := range detachList {
+		_, err = p.Client.VolumesApi.Detach(ctx, dv, vaHostID)
+
+		if err != nil {
+			return err
+		}
+	}
+
+	// attach
+	for _, av := range attachList {
+		_, _, err = p.Client.VolumesApi.Attach(ctx, av, vaHostID)
+
+		if err != nil {
+			return err
+		}
+	}
 
 	return resourceQuattroHostRead(d, meta)
 }
@@ -630,4 +691,28 @@ func resourceQuattroHostDelete(d *schema.ResourceData, meta interface{}) (err er
 	_, err = p.Client.HostsApi.Delete(ctx, d.Id())
 
 	return err
+}
+
+// volumeExists returns true & the volume ID, if the input matches
+// either the ID or the name from existing volumes.
+func volumeExists(vID string, volumes []rest.Volume) (string, bool) {
+	for _, volume := range volumes {
+		if vID == volume.ID || vID == volume.Name {
+			return volume.ID, true
+		}
+	}
+
+	return "", false
+}
+
+// isVolumeAvailable returns (vol ID, true) if the given vID matches an entry in
+// availVols by volume id or volume name, else returns ("", false).
+func isVolumeAvailable(vID string, availVols []rest.VolumeInfo) (string, bool) {
+	for _, volume := range availVols {
+		if vID == volume.ID || vID == volume.Name {
+			return volume.ID, true
+		}
+	}
+
+	return "", false
 }

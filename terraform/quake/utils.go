@@ -1,4 +1,4 @@
-// (C) Copyright 2016-2021 Hewlett Packard Enterprise Development LP.
+// (C) Copyright 2016-2022 Hewlett Packard Enterprise Development LP.
 
 package quake
 
@@ -139,4 +139,22 @@ func safeInt(s interface{}) int {
 func safeFloat(s interface{}) float64 {
 	r, _ := s.(float64)
 	return r
+}
+
+// difference returns the elements in `a` that aren't in `b`.
+func difference(a, b []string) []string {
+	mb := make(map[string]struct{}, len(b))
+	for _, x := range b {
+		mb[x] = struct{}{}
+	}
+
+	diff := make([]string, 0)
+
+	for _, x := range a {
+		if _, found := mb[x]; !found {
+			diff = append(diff, x)
+		}
+	}
+
+	return diff
 }

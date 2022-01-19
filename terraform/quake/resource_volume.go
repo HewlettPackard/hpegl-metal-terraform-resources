@@ -1,4 +1,4 @@
-// (C) Copyright 2016-2021 Hewlett Packard Enterprise Development LP
+// (C) Copyright 2016-2022 Hewlett Packard Enterprise Development LP
 
 package quake
 
@@ -24,6 +24,11 @@ const (
 	vShareable   = "shareable"
 	vState       = "state"
 	vStatus      = "status"
+
+	// volume Info constants.
+	vID          = "id"
+	vDiscoveryIP = "discovery_ip"
+	vTargetIQN   = "target_iqn"
 )
 
 func volumeSchema() map[string]*schema.Schema {
@@ -335,4 +340,34 @@ func resourceQuatrroVolumeDelete(d *schema.ResourceData, meta interface{}) (err 
 
 	_, err = p.Client.VolumesApi.Delete(ctx, d.Id())
 	return err
+}
+
+func volumeInfoSchema() map[string]*schema.Schema {
+	return map[string]*schema.Schema{
+		vName: {
+			Type:        schema.TypeString,
+			Required:    true,
+			Description: "A friendly name of the volume attached.",
+		},
+
+		vID: {
+			Type:        schema.TypeString,
+			Computed:    true,
+			Description: "The ID the volume attached.",
+		},
+
+		vDiscoveryIP: {
+			Type:        schema.TypeString,
+			Required:    false,
+			Computed:    true,
+			Description: "iSCSI Discovery IP.",
+		},
+
+		vTargetIQN: {
+			Type:        schema.TypeString,
+			Required:    false,
+			Computed:    true,
+			Description: "iSCSI Target IQN.",
+		},
+	}
 }
