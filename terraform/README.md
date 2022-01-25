@@ -75,50 +75,49 @@ Notes:
 * Note that the project referred to must be in a GreenLake Organization.
 * If creating a project, be warned that ippools information cannot be provided as input (a restriction in the
     client).  Without ippools information host creation will fail.
-  
 
-## Setting up simulator to use GreenLake tokens
 
-### Add AWS credentials and scmClientConfig.yaml file to simulator
+## Setting up the Portal to use GreenLake tokens  
 
-To enable the Simulator to handle GreenLake tokens you need to add the following to the Simportal container:
+To enable the development portal/simulator portal to handle GreenLake tokens, you need to:
 
-* The following file scmClientConfig.yaml:
-   ```yaml
-    aws:
-      creds:
-        mount: ./creds
-      secrets:
-        namespace: integ
-    hpe:
-      scm:
-        url: https://iam.intg.hpedevops.net
-      identity:
-        url: https://iam.intg.hpedevops.net
-    client:
-      serviceName: bmaas
-      serviceSpace: _hpe_bmaas
-      timeout: 30
-      base:
-        tenantId: root
-      log:
-        level: info
-        formatter: text
-    ```
+### Specify the path of the IAM config file 'scmClientConfig.yml'.   
 
-* The ./creds directory must contain AWS creds, the contents are as follows:
-    ```bash
-    -rw-rw-r-- 1 eamonn eamonn 21 Jan  8 09:26 AWS_ACCESS_KEY_ID
-    -rw-rw-r-- 1 eamonn eamonn 10 Jan  8 09:25 AWS_REGION_NAME
-    -rw-rw-r-- 1 eamonn eamonn 41 Jan  8 09:26 AWS_SECRET_ACCESS_KEY
-    ```
-    The contents can be obtained from Bret McKee
+It can be specified in either of the following ways:
 
-* Add the following to steeld_config.yml:
-    ```yaml
-    glhc_iam_auth_endpoint: "iam.intg.hpedevops.net:443"
-    glhc_iam_config_file: "./scmClientConfig.yaml"
-    ```
+1. Through steeld_config.yml     
+   Un-comment the line in `steeld_config.yml` with the pattern `# glhc_iam_config_file`.  
+
+2. Through environment variable  
+   Set GLHC_IAM_CONFIG_FILE to the full path of `scmClientConfig.yml` file.  
+   
+   On Simulators, this file is located in '/var/local/quake' directory.  
+   On Developer setup, it can be found in 'portal/cmd/steeld' sub-directory.  
+
+   If you are following this option on Developer setup, then make sure to run `steeld` with `-configFromEnv` option.  
+
+   ```bash
+   sudo -E ./steeld --configFromEnv
+   ```  
+
+   On Simulators, `steeld` starts with this option by default.
+
+### Create the `/glhc-iam/creds` directory with AWS IAM user(Base Client) credentials.  
+
+In `scmClientConfig.yml`, `/glhc-iam/creds` is specified as the credentials directory. So, create a directory by this name first and then add following files(no newlines, no special characters, just the value).  
+
+   AWS_ACCESS_KEY_ID     - Populate this file with just the AWS Access Key ID.  
+   AWS_SECRET_ACCESS_KEY - Populate this file with just the AWS Secret Access Key.  
+   AWS_REGION_NAME       - Populate with the AWS Region Name associated with this account. Use 'us-west-2' as the region.  
+
+    The credentails can be obtained from Dilip Verma.
+
+  If you are using simulator, you can map this local directory to '/glhc-iam/creds' on container through volumes mount option during launching.  
+
+  ```bash
+  export GLIAM_OPTS='--env GLHC_IAM_CONFIG_FILE=/var/local/quake/scmClientConfig.yml -v '/glhc-iam/creds:/glhc-iam/creds'
+  docker run ${GLIAM_OPTS} <other-options>  
+  ```
 
 ### Add GreenLake organization to portal
 
