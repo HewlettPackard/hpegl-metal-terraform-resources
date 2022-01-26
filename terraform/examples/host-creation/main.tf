@@ -1,7 +1,6 @@
 # (C) Copyright 2020-2022 Hewlett Packard Enterprise Development LP
 
 provider "quake" {
-
 }
 
 resource "quake_volume" iscsi_volume {
@@ -18,8 +17,8 @@ resource "quake_host" "terra_host" {
   name               = "tformed-${count.index}"
   image              = "ubuntu@18.04-20201102"
   machine_size       = "Medium System"
-  ssh                = ["User1 - Linux"]
-  networks           = ["Private", "Public", "Storage"]
+  ssh                = [quake_ssh_key.newssh_1.id]
+  networks           = ["Public", "Storage"]
   network_route      = "Public"
   location           = var.location
   description        = "Hello from Terraform"
@@ -48,7 +47,7 @@ resource "quake_network" "newpnet_1" {
       count   = 10
     }
     dns      = ["10.0.0.50"]
-    proxy    = "10.0.0.60"
+    proxy    = "https://10.0.0.60"
     no_proxy = "10.0.0.5"
     ntp      = ["10.0.0.80"]
   }
@@ -60,7 +59,7 @@ resource "quake_host" "terra_host_new_ssh" {
   image         = "ubuntu@18.04-20201102"
   machine_size  = "Medium System"
   ssh           = [quake_ssh_key.newssh_1.id]
-  networks      = ["Private", "Public", quake_network.newpnet_1.name]
+  networks      = ["Public", quake_network.newpnet_1.name]
   network_route = "Public"
   location      = var.location
   description   = "Hello from Terraform"

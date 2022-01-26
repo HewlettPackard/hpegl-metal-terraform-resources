@@ -1,4 +1,4 @@
-// (C) Copyright 2016-2021 Hewlett Packard Enterprise Development LP
+// (C) Copyright 2016-2022 Hewlett Packard Enterprise Development LP
 
 package quake
 
@@ -112,9 +112,13 @@ func Provider() *schema.Provider {
 			terraformVersion = "0.11+compatible"
 		}
 
-		if err = config.RefreshAvailableResources(); err != nil {
-			return nil, err
+		// Cache Available Resources in a project when the scope is Project level
+		if !config.IsHosterContext() {
+			if err = config.RefreshAvailableResources(); err != nil {
+				return nil, err
+			}
 		}
+
 		return config, nil
 	}
 	return provider

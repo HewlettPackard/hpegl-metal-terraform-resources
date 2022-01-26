@@ -1,4 +1,4 @@
-// (C) Copyright 2016-2021 Hewlett Packard Enterprise Development LP.
+// (C) Copyright 2016-2022 Hewlett Packard Enterprise Development LP
 
 package configuration
 
@@ -201,4 +201,22 @@ func getQConfig() (qjwt *Qjwt, err error) {
 		}
 	}
 	return qjwt, err
+}
+
+// IsHosterContext determines whether the provider configuration
+// is project scope or hoster scope when GL IAM token is used.
+// Project operations with Metal token not supported yet via Terraform, so
+// 'false' is returned in this case.
+// The scope determines what Metal APIs are allowed. Project resource create/delete/update
+// requires Hoster scope configuration and, the remaining resources require Project scope
+// configuration Project.
+func (c *Config) IsHosterContext() bool {
+	if c.useGLToken || c.trf != nil {
+		// if project_id is not set, then it is Hoster scope
+		if c.user == "" {
+			return true
+		}
+	}
+
+	return false
 }
