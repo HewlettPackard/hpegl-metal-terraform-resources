@@ -10,8 +10,8 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
-	rest "github.com/hpe-hcss/quake-client/v1/pkg/client"
 	"github.com/HewlettPackard/hpegl-metal-terraform-resources/pkg/client"
+	rest "github.com/hpe-hcss/quake-client/v1/pkg/client"
 )
 
 const (
@@ -225,7 +225,8 @@ func HostResource() *schema.Resource {
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,
 		},
-		Schema: hostSchema(),
+		Schema:      hostSchema(),
+		Description: "Provides Host resource. This allows Metal Host creation, deletion and update.",
 	}
 }
 

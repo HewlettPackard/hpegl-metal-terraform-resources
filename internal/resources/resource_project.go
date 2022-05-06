@@ -149,7 +149,8 @@ func ProjectResource() *schema.Resource {
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,
 		},
-		Schema: projectSchema(),
+		Schema:      projectSchema(),
+		Description: "Provides Project resource. This allows creation, deletion and update of Metal projects.",
 	}
 }
 

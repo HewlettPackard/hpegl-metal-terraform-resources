@@ -1,11 +1,5 @@
 // (C) Copyright 2020-2022 Hewlett Packard Enterprise Development LP
 
-provider "hpegl" {
-  metal {
-    gl_token = false
-  }
-}
-
 data "hpegl_metal_available_images" "centos" {
   filter {
     name   = "flavor"
@@ -15,4 +9,8 @@ data "hpegl_metal_available_images" "centos" {
     name   = "version"
     values = ["7.6.*"] // al 7.6.XXXX image variants
   }
+}
+
+output "images" {
+  value = data.hpegl_metal_available_images.ubuntu.images
 }

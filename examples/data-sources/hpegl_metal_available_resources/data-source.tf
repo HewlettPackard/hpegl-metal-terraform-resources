@@ -1,7 +1,8 @@
+# (C) Copyright 2020-2022 Hewlett Packard Enterprise Development LP
 
-# output "infrastructure" {
-#   value = "${data.hpegl_metal_available_resources.physical}"
-# }
+data "hpegl_metal_available_resources" "physical" {
+
+}
 
 output "locations" {
   value = data.hpegl_metal_available_resources.physical.locations

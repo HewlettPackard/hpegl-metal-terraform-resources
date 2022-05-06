@@ -6,6 +6,10 @@ provider "hpegl" {
   }
 }
 
+variable "location" {
+  default = "USA:Central:V2DCC01"
+}
+
 resource "hpegl_metal_volume" "iscsi_volume" {
   name        = "iscsi-volume"
   size        = 5

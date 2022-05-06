@@ -241,7 +241,8 @@ func DataSourceUsage() *schema.Resource {
 			State: schema.ImportStatePassthrough,
 		},
 
-		Schema: usageSchema(),
+		Schema:      usageSchema(),
+		Description: "Get a usage report",
 	}
 }
 

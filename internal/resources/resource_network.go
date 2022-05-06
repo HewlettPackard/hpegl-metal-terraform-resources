@@ -190,7 +190,8 @@ func ProjectNetworkResource() *schema.Resource {
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,
 		},
-		Schema: networkSchema(),
+		Schema:      networkSchema(),
+		Description: "Provides Network resource. This allows creation, deletion and update of Metal networks.",
 	}
 }
 

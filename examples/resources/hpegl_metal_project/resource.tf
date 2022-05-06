@@ -1,11 +1,5 @@
 // (C) Copyright 2020-2022 Hewlett Packard Enterprise Development LP
 
-provider "hpegl" {
-  metal {
-    gl_token = false
-  }
-}
-
 resource "hpegl_metal_project" "project" {
   name = "blob"
   profile {

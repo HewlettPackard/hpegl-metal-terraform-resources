@@ -24,6 +24,7 @@ func DataSourceImage() *schema.Resource {
 			},
 			dsFilter: dataSourceFiltersSchema(),
 		},
+		Description: "Provides a list of available Image Services for a project.",
 	}
 
 }

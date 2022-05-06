@@ -1,8 +1,9 @@
 .idea/
-vendor/
-bin/
-build/
 *.tfstate*
 .gltform*
 .terraform/
 .terraform.lock*
+bin/
+build/
+docs/
+vendor/

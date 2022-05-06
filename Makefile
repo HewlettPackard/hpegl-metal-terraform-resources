@@ -90,5 +90,9 @@ install: build $(NAME)
 	cp build/$(NAME) $(LOCAL_LOCATION)
 .PHONY: install
 
+docs: vendor
+	go generate ./main.go
+.PHONY: docs
+
 all: lint test
 .PHONY: all

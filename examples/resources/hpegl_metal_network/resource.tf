@@ -6,6 +6,12 @@ provider "hpegl" {
   }
 }
 
+variable "location" {
+  // Provide a location at which to query for resources. 
+  // The format is country:region:data-center
+  default = "USA:Texas:AUSL2"
+}
+
 resource "hpegl_metal_network" "pnet" {
   name        = "pnet"
   description = "A description of pnet"

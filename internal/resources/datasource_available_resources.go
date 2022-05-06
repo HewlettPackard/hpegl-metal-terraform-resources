@@ -199,7 +199,8 @@ func existingVolumeResource() *schema.Resource {
 
 func DataSourceAvailableResources() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceAvailableResourcesRead,
+		Read:        dataSourceAvailableResourcesRead,
+		Description: "Provides a list of available resources in a project for creating Hosts and Volumes.",
 		Schema: map[string]*schema.Schema{
 			dsFilter: dataSourceFiltersSchema(),
 			avLocations: {

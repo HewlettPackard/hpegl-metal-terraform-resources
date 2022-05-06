@@ -41,8 +41,8 @@ func SshKeyResource() *schema.Resource {
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,
 		},
-
-		Schema: sshKeySchema(),
+		Schema:      sshKeySchema(),
+		Description: "Provides SSH resource. This allows creation, deletion and update of Metal SSHKeys",
 	}
 }
 

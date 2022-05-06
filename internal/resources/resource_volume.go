@@ -125,7 +125,8 @@ func VolumeResource() *schema.Resource {
 			State: schema.ImportStatePassthrough,
 		},
 
-		Schema: volumeSchema(),
+		Schema:      volumeSchema(),
+		Description: "Provides Volume resource. This allows creation, deletion and update of Metal volumes.",
 	}
 }
 
