@@ -1,30 +1,10 @@
 version: 2
-registries:
-  ecr-us-east-1:
-    type: docker-registry
-    url: 657273346644.dkr.ecr.us-east-1.amazonaws.com
-    username: ${{secrets.AWS_ACCESS_KEY_ID}}
-    password: ${{secrets.AWS_SECRET_ACCESS_KEY}}
-  ecr-us-west-2:
-    type: docker-registry
-    url: 657273346644.dkr.ecr.us-west-2.amazonaws.com
-    username: ${{secrets.AWS_ACCESS_KEY_ID}}
-    password: ${{secrets.AWS_SECRET_ACCESS_KEY}}
 updates:
-- package-ecosystem: docker
-  directory: /
-  registries:
-  - ecr-us-east-1
-  - ecr-us-west-2
-  schedule:
-    interval: daily
-- package-ecosystem: gomod
-  directory: /
-  registries: []
-  schedule:
-    interval: daily
-- package-ecosystem: terraform # https://github.com/hpe-hcss/terraform-dependabot
-  directory: /examples
-  registries: []
-  schedule:
-    interval: daily
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: daily
+  - package-ecosystem: gomod
+    directory: /
+    schedule:
+      interval: daily
