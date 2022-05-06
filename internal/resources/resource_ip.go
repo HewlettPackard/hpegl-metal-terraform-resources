@@ -50,7 +50,8 @@ func IPResource() *schema.Resource {
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
-		Schema: ipSchema(),
+		Schema:      ipSchema(),
+		Description: "Provides an IP resource. This allows allocation, deallocation of IP addresses from IP Pool. ",
 	}
 }
 
