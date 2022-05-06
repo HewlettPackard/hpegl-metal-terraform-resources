@@ -126,7 +126,7 @@ func VolumeResource() *schema.Resource {
 		},
 
 		Schema:      volumeSchema(),
-		Description: "Provides Volume resource. This allows creation, deletion and updation of Metal volumes.",
+		Description: "Provides Volume resource. This allows creation, deletion and update of Metal volumes.",
 	}
 }
 
