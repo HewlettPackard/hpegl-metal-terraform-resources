@@ -2,77 +2,79 @@
 
 run:
   deadline: 240s
-  tests: true
   skip-dirs:
     - vendor
-  build-tags: acceptance
+    - docs
+    - build
 
 linters-settings:
-  dupl:
-    threshold: 110
-  lll:
-    line-length: 128
-  goimports:
-    local-prefixes: 'github.com/hpe-hcss'
-  godox:
-    keywords:
-      - OPTIMIZE
   exhaustive:
     default-signifies-exhaustive: true
-  funlen:
-    lines: 90
-    statements: 60
 
-linters:
-  enable-all: true
-  disable:
-    - wsl
-    - gci
-    - goerr113
-    - godot
-    - gomnd
-    - gochecknoinits
-    - gochecknoglobals
-    - exhaustivestruct
-    - forbidigo
-    - testpackage
-    - nolintlint
-    # Temporarily disabling paralleltest
-    - paralleltest
-    #Temporarily disabling wrapcheck
-    - wrapcheck
-    # Disable the 'cyclop' cyclometric complexity linter. 'gocyclo' already
-    # covers cyclometric complexity, and 'cyclop' has no documentation to
-    # help with resolving the flagged lints
-    # - cyclop
+  wsl:
+    force-case-trailing-whitespace: 1
+
+  dupl:
+    threshold: 110
+
+  lll:
+    line-length: 128
+    # tab width in spaces. Default to 1.
+    tab-width: 1
 
 issues:
-  exclude-rules:
-    # Exclude lll issues for long lines with go:generate
-    - linters:
-        - lll
-      source: '^//go:generate '
+  new-from-rev: origin/master
 
-    # ignore function length for tests as look up tables typically exceed.
-    - linters:
-        - funlen
-        - goerr113
-      path: _test\.go
-
-    - linters:
-        - dupl
-      path: '.*generated.*go'
-
-    - linters:
-        - goconst
-      path: '.*generated.*go'
-
-    - linters:
-        - staticcheck
-      text: 'SA9003:'
-
-    - linters:
-        - stylecheck
-      text: 'ST1005:'
-
-  max-same-issues: 0
+linters:
+  # please, do not use `enable-all`: it's deprecated and will be removed soon.
+  disable-all: true
+  enable:
+    - asciicheck
+    - bodyclose
+    - deadcode
+    - dogsled
+    - dupl
+    - durationcheck
+    - errcheck
+    - exportloopref
+    - exhaustive
+    - forbidigo
+    - forcetypeassert
+    - funlen
+    - gci
+    - gochecknoglobals
+    - gochecknoinits
+    - goconst
+    - gocritic
+    - godot
+    - gofmt
+    - goimports
+    - gomnd
+    - goprintffuncname
+    - gosec
+    - gosimple
+    - govet
+    - ifshort
+    - ineffassign
+    - lll
+    - misspell
+    - nakedret
+    - nestif
+    - nlreturn
+    - nolintlint
+    - prealloc
+    - predeclared
+    - revive
+    - staticcheck
+    - structcheck
+    - stylecheck
+    - thelper
+    - tparallel
+    - typecheck
+    - unconvert
+    - unused
+    - varcheck
+    - wastedassign
+    - wrapcheck
+    - wsl
+    - whitespace
