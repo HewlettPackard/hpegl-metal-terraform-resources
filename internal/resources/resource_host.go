@@ -226,7 +226,7 @@ func HostResource() *schema.Resource {
 			State: schema.ImportStatePassthrough,
 		},
 		Schema:      hostSchema(),
-		Description: "Provides Host resource. This allows Metal Host creation, deletion and updation.",
+		Description: "Provides Host resource. This allows Metal Host creation, deletion and update.",
 	}
 }
 
