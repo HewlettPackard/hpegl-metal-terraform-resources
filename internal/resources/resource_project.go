@@ -150,7 +150,7 @@ func ProjectResource() *schema.Resource {
 			State: schema.ImportStatePassthrough,
 		},
 		Schema:      projectSchema(),
-		Description: "Provides Project resource. This allows creation, deletion and updation of Metal projects.",
+		Description: "Provides Project resource. This allows creation, deletion and update of Metal projects.",
 	}
 }
 
