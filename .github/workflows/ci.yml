@@ -20,9 +20,11 @@ jobs:
 
       - name: Build the code
         run: make build
+        continue-on-error: true
 
       - name: Install locally
         run: make install
+        continue-on-error: true
 
       - name: Verify document generation
         run: make docs
