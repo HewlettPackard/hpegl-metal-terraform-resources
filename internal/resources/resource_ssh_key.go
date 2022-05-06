@@ -42,7 +42,7 @@ func SshKeyResource() *schema.Resource {
 			State: schema.ImportStatePassthrough,
 		},
 		Schema:      sshKeySchema(),
-		Description: "Provides SSH resource. This allows creation, deletion and updation of Metal SSHKeys",
+		Description: "Provides SSH resource. This allows creation, deletion and update of Metal SSHKeys",
 	}
 }
 
