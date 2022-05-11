@@ -7,7 +7,7 @@ package main
 import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/plugin"
 
-	testutils "github.com/HewlettPackard/hpegl-metal-terraform-resources/internal/test-utils"
+	testutils "github.com/hewlettpackard/hpegl-metal-terraform-resources/internal/test-utils"
 )
 
 func main() {

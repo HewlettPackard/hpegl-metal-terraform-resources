@@ -6,7 +6,7 @@ import (
 	"os"
 	"testing"
 
-	testutils "github.com/HewlettPackard/hpegl-metal-terraform-resources/internal/test-utils"
+	testutils "github.com/hewlettpackard/hpegl-metal-terraform-resources/internal/test-utils"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	libUtils "github.com/hewlettpackard/hpegl-provider-lib/pkg/utils"
