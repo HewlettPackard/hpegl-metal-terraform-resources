@@ -33,7 +33,6 @@ const (
 	// For avNetworks each terraform block has these attributes.
 	nName        = "name"
 	nDescription = "description"
-	nKind        = "kind"
 	nHostUse     = "host_use"
 	nLocation    = "location"
 	nLocationID  = "location_id"
@@ -348,7 +347,6 @@ func addNetworks(p *configuration.Config, d *schema.ResourceData, available rest
 			"id":         net.ID,
 			nName:        net.Name,
 			nDescription: net.Description,
-			nKind:        net.Kind,
 			nHostUse:     net.HostUse,
 			nLocationID:  net.LocationID,
 			nIPPoolID:    net.IPPoolID,

@@ -16,6 +16,8 @@ import (
 
 const (
 	nIPPool = "ip_pool"
+	nVLAN   = "vlan"
+	nVNI    = "vni"
 
 	poolName         = "name"
 	poolDescription  = "description"
@@ -150,11 +152,6 @@ func networkSchema() map[string]*schema.Schema {
 			ForceNew:    true,
 			Description: "Textual representation of the location country:region:enter",
 		},
-		nKind: {
-			Type:        schema.TypeString,
-			Computed:    true,
-			Description: "Shared, Private or Custom",
-		},
 		nHostUse: {
 			Type:        schema.TypeString,
 			Optional:    true,
@@ -177,6 +174,16 @@ func networkSchema() map[string]*schema.Schema {
 				Schema: ipPoolSchema(),
 			},
 			Description: "Create the specified IP Pool to be used for the network",
+		},
+		nVLAN: {
+			Type:        schema.TypeInt,
+			Computed:    true,
+			Description: "The VLAN ID of the network",
+		},
+		nVNI: {
+			Type:        schema.TypeInt,
+			Computed:    true,
+			Description: "The VNI ID of the network",
 		},
 	}
 }
@@ -338,15 +345,19 @@ func resourceQuattroNetworkRead(d *schema.ResourceData, meta interface{}) (err e
 		return err
 	}
 
-	if err = d.Set(nKind, n.Kind); err != nil {
-		return err
-	}
-
 	if err = d.Set(nHostUse, n.HostUse); err != nil {
 		return err
 	}
 
 	if err = d.Set(nIPPoolID, n.IPPoolID); err != nil {
+		return err
+	}
+
+	if err = d.Set(nVLAN, n.VLAN); err != nil {
+		return err
+	}
+
+	if err = d.Set(nVNI, n.VNI); err != nil {
 		return err
 	}
 
