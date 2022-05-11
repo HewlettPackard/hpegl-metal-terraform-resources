@@ -5,7 +5,7 @@ package registration
 import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
-	"github.com/HewlettPackard/hpegl-metal-terraform-resources/internal/resources"
+	"github.com/hewlettpackard/hpegl-metal-terraform-resources/internal/resources"
 )
 
 const (

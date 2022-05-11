@@ -9,8 +9,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 
-	"github.com/hpe-hcss/quake-client/pkg/terraform/configuration"
-	rest "github.com/hpe-hcss/quake-client/v1/pkg/client"
+	rest "github.com/hewlettpackard/hpegl-metal-client/v1/pkg/client"
+	"github.com/hewlettpackard/hpegl-metal-terraform-resources/pkg/configuration"
 )
 
 func quatrroSSHKeyConfigBasic(name, publicSSHKey string) string {

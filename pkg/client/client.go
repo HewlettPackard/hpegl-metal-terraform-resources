@@ -10,9 +10,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hewlettpackard/hpegl-provider-lib/pkg/client"
 
-	rest "github.com/hpe-hcss/quake-client/v1/pkg/client"
-	"github.com/HewlettPackard/hpegl-metal-terraform-resources/pkg/configuration"
-	"github.com/HewlettPackard/hpegl-metal-terraform-resources/pkg/constants"
+	"github.com/hewlettpackard/hpegl-metal-terraform-resources/pkg/configuration"
+	"github.com/hewlettpackard/hpegl-metal-terraform-resources/pkg/constants"
+	rest "github.com/hewlettpackard/hpegl-metal-client/v1/pkg/client"
 )
 
 // Assert that InitialiseClient satisfies the client.Initialisation interface

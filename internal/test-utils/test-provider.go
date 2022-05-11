@@ -9,8 +9,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/plugin"
 
-	"github.com/HewlettPackard/hpegl-metal-terraform-resources/pkg/client"
-	"github.com/HewlettPackard/hpegl-metal-terraform-resources/pkg/registration"
+	"github.com/hewlettpackard/hpegl-metal-terraform-resources/pkg/client"
+	"github.com/hewlettpackard/hpegl-metal-terraform-resources/pkg/registration"
 	"github.com/hewlettpackard/hpegl-provider-lib/pkg/provider"
 )
 
