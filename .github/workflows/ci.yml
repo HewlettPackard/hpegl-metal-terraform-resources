@@ -17,15 +17,12 @@ jobs:
 
       - name: Run GO linters-settings
         run: make lint
-        continue-on-error: true
 
       - name: Build the code
         run: make build
-        continue-on-error: true
 
       - name: Install locally
         run: make install
-        continue-on-error: true
 
       - name: Verify document generation
         run: make docs
