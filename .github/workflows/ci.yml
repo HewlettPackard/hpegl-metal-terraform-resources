@@ -1,8 +1,7 @@
 #(C) Copyright 2022 Hewlett Packard Enterprise Development LP
 
 name: ci
-
-on: [push]
+on: [push, pull_request]
 jobs:
   ci:
     runs-on: ubuntu-20.04
