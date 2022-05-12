@@ -9,9 +9,9 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
-	"github.com/HewlettPackard/hpegl-metal-terraform-resources/pkg/client"
-	"github.com/HewlettPackard/hpegl-metal-terraform-resources/pkg/configuration"
-	rest "github.com/hpe-hcss/quake-client/v1/pkg/client"
+	"github.com/hewlettpackard/hpegl-metal-terraform-resources/pkg/client"
+	"github.com/hewlettpackard/hpegl-metal-terraform-resources/pkg/configuration"
+	rest "github.com/hewlettpackard/hpegl-metal-client/v1/pkg/client"
 )
 
 const (
@@ -33,7 +33,6 @@ const (
 	// For avNetworks each terraform block has these attributes.
 	nName        = "name"
 	nDescription = "description"
-	nKind        = "kind"
 	nHostUse     = "host_use"
 	nLocation    = "location"
 	nLocationID  = "location_id"
@@ -348,7 +347,6 @@ func addNetworks(p *configuration.Config, d *schema.ResourceData, available rest
 			"id":         net.ID,
 			nName:        net.Name,
 			nDescription: net.Description,
-			nKind:        net.Kind,
 			nHostUse:     net.HostUse,
 			nLocationID:  net.LocationID,
 			nIPPoolID:    net.IPPoolID,

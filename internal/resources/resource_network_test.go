@@ -9,7 +9,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 
-	"github.com/hpe-hcss/quake-client/pkg/terraform/configuration"
+	"github.com/hewlettpackard/hpegl-metal-terraform-resources/pkg/configuration"
 )
 
 func TestAccQuakeNetwork(t *testing.T) {

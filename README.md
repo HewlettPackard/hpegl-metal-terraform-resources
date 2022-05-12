@@ -26,7 +26,7 @@ to get started using the provider.
 ## Building the resources as stand-alone provider
 
 ```bash
-$ git clone https://github.com/HewlettPackard/hpegl-metal-terraform-resources.git
+$ git clone https://github.com/hewlettpackard/hpegl-metal-terraform-resources.git
 $ cd hpegl-metal-terraform-resources
 $ make build
 ```
