@@ -63,6 +63,10 @@ lint: vendor golangci-lint-config.yaml
 	golangci-lint run --config golangci-lint-config.yaml
 .PHONY: lint
 
+tools: vendor
+	@go install github.com/golangci/golangci-lint/cmd/golangci-lint
+.PHONY: tools
+
 testreport_dir := test-reports
 test:
 	go test -v ./...

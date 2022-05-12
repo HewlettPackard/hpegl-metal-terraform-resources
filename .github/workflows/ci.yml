@@ -15,8 +15,10 @@ jobs:
         with:
           go-version: 1.17
 
-      - name: Run GO linters-settings
-        run: make lint
+      - name: Run GO linters
+        run: |
+          make tools
+          make lint
 
       - name: Build the code
         run: make build
