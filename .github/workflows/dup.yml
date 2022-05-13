@@ -18,4 +18,7 @@ jobs:
           make tools
 
           TARGET_BRANCH=${{ github.base_ref }}        
+          if [[ ${TARGET_BRANCH} == "" ]]; then
+            TARGET_BRANCH='master'
+          fi
           echo "TARGET BRANCH is ${TARGET_BRANCH}"
