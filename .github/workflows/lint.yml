@@ -23,8 +23,9 @@ jobs:
           echo "Baseref is ${{ github.base_ref }} "
           make tools
           TARGET_BRANCH=${{ github.base_ref }}
-
+          echo "Before git fetch"
           git fetch origin master
+          echo "After git fetch"
 
           TARGET_SHA=`git merge-base -a HEAD origin/${TARGET_BRANCH}`
           echo Running lint on changes from branch ${TARGET_BRANCH} ${TARGET_SHA}
