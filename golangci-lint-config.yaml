@@ -22,9 +22,6 @@ linters-settings:
     # tab width in spaces. Default to 1.
     tab-width: 1
 
-issues:
-  new-from-rev: origin/master
-
 linters:
   # please, do not use `enable-all`: it's deprecated and will be removed soon.
   disable-all: true
