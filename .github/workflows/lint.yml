@@ -22,9 +22,10 @@ jobs:
         run: |
           echo "Baseref is ${{ github.base_ref }} "
           make tools
+          TARGET_BRANCH=${{ github.base_ref }}
+
           git fetch origin ${TARGET_BRANCH}
 
-          TARGET_BRANCH=${{ github.base_ref }}
           TARGET_SHA=`git merge-base -a HEAD origin/${TARGET_BRANCH}`
           echo Running lint on changes from branch ${TARGET_BRANCH} ${TARGET_SHA}
           golangci-lint version
