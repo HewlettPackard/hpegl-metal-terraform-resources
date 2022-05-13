@@ -7,5 +7,6 @@ package tools
 
 import (
 	// document generation
+	_ "github.com/golangci/golangci-lint/cmd/golangci-lint"
 	_ "github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs"
 )

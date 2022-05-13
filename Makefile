@@ -56,12 +56,15 @@ really-clean clean-all cleanall: clean
 .PHONY: really-clean clean-all cleanall
 
 procs := $(shell grep -c ^processor /proc/cpuinfo 2>/dev/null || echo 1)
-# TODO make --debug an option
 
 lint: vendor golangci-lint-config.yaml
 	@golangci-lint --version
-	golangci-lint run --config golangci-lint-config.yaml
+	golangci-lint run --config golangci-lint-config.yaml --new-from-rev origin/master --max-issues-per-linter 0 --max-same-issues 0
 .PHONY: lint
+
+tools: vendor
+	@go install github.com/golangci/golangci-lint/cmd/golangci-lint
+.PHONY: tools
 
 testreport_dir := test-reports
 test:
