@@ -57,9 +57,17 @@ really-clean clean-all cleanall: clean
 
 procs := $(shell grep -c ^processor /proc/cpuinfo 2>/dev/null || echo 1)
 
-lint: vendor golangci-lint-config.yaml
+go-lint: vendor golangci-lint-config.yaml
 	@golangci-lint --version
 	golangci-lint run --config golangci-lint-config.yaml --new-from-rev origin/master --max-issues-per-linter 0 --max-same-issues 0
+.PHONY: go-lint
+
+tf-lint:
+	@terraform fmt -check -recursive -diff || \
+		(echo "Some terraform files need to be formatted. Run 'terraform fmt -recursive' to fix them." && return false)
+.PHONY: tf-lint
+
+lint: go-lint tf-lint
 .PHONY: lint
 
 tools: vendor
