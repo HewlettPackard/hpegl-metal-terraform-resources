@@ -3,7 +3,9 @@
 # Inspiration from https://github.com/rightscale/go-boilerplate/blob/master/Makefile
 
 NAME=$(shell find cmd -name ".gitkeep_provider" -exec dirname {} \; | sort -u | sed -e 's|cmd/||')
-VERSION=0.0.1
+
+# version shouldn't have 'v' prefix for >= 0.13
+VERSION=$(shell cat ./version)
 # Change DUMMY_PROVIDER below to reflect the name of the service under development.  The
 # value of this variable is used in LOCAL_LOCATION, and is also used in the
 DUMMY_PROVIDER=metal
@@ -32,11 +34,14 @@ ifeq ($(UNAME_S),Darwin)
 endif
 TMPFILE := $(shell mktemp)
 
+GOOSALT ?= 'linux'
+GOOS='$(GOOSALT)'
+
 LOCALIZATION_FILES := $(shell find . -name \*.toml | grep -v vendor | grep -v ./bin)
 
 $(NAME): $(shell find . -name \*.go)
-	CGO_ENABLED=0 go build $(TAGS) -ldflags "$(VFLAG)" -o build/$@ .
-
+	CGO_ENABLED=0 GOOS=$(GOOS) GOARCH=amd64 go build $(TAGS) -ldflags "$(VFLAG)" -o build/$@ .
+	
 default: all
 .PHONY: default
 
