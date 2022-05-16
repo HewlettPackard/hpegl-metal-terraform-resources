@@ -24,6 +24,9 @@ jobs:
       - name: Install tools
         run: make tools
 
+      - name: Terraform-Lint
+        uses: actionshub/terraform-lint@1.0.0
+
       - name: Run GO linter checks
         run: |
           TARGET_BRANCH=${{ github.base_ref }}        
