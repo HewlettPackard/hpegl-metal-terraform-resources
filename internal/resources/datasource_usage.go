@@ -236,7 +236,7 @@ func usageSchema() map[string]*schema.Schema {
 
 func DataSourceUsage() *schema.Resource {
 	return &schema.Resource{
-		Read: resourceQuakeUsageRead,
+		Read: resourceMetalUsageRead,
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,
 		},
@@ -246,7 +246,7 @@ func DataSourceUsage() *schema.Resource {
 	}
 }
 
-func resourceQuakeUsageRead(d *schema.ResourceData, meta interface{}) (err error) {
+func resourceMetalUsageRead(d *schema.ResourceData, meta interface{}) (err error) {
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
 		if errors.As(err, &nErr) {

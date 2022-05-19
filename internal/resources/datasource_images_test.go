@@ -16,7 +16,7 @@ func TestAccImages_Basic(t *testing.T) {
 			{
 				Config: testOperatingSystemConfigBasic,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttrSet("data.quake_available_images.example", "id"),
+					resource.TestCheckResourceAttrSet("data.metal_available_images.example", "id"),
 				),
 			},
 		},
@@ -24,7 +24,7 @@ func TestAccImages_Basic(t *testing.T) {
 }
 
 const testOperatingSystemConfigBasic = `
-data "quake_available_images" "example" {
+data "metal_available_images" "example" {
 	filter {
 		name = "category"
 		values = ["linux"]

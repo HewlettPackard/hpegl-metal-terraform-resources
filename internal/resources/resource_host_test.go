@@ -10,7 +10,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
-func TestAccQuakeHost(t *testing.T) {
+func TestAccMetalHost(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
@@ -29,15 +29,15 @@ variable "location" {
 	# default = "USA:West Central:FTC DEV 4"  
 	default = "USA:Texas:AUSL2"
 }
-data "quake_available_resources" "compute" {
+data "metal_available_resources" "compute" {
 	
 }
-resource "quake_host" "test_host" {
+resource "metal_host" "test_host" {
   name               = "test"
-  image              = "${data.quake_available_resources.compute.images.0.image}"
+  image              = "${data.metal_available_resources.compute.images.0.image}"
   machine_size       = "Any"
   ssh                = ["User1 - Linux"]
-  networks           = [for net in "${data.quake_available_resources.compute.networks}": net.name if net.location == var.location]               
+  networks           = [for net in "${data.metal_available_resources.compute.networks}": net.name if net.location == var.location]               
   location           = var.location
   description        = "hello from Terraform"
 }
@@ -45,7 +45,7 @@ resource "quake_host" "test_host" {
 }
 
 func testAccCheckHostDestroy(t *testing.T, s *terraform.State) error {
-	//apiClient := testAccProvider.Meta().(*QuakeProvider)
+	//apiClient := testAccProvider.Meta().(*MetalProvider)
 	for _, rs := range s.RootModule().Resources {
 		if rs.Type != "test_host" {
 			continue

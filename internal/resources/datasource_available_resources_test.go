@@ -18,7 +18,7 @@ func TestAvailableResourcesBasic(t *testing.T) {
 			{
 				Config: testQuattroAvailableResourceBasic,
 				Check: resource.ComposeTestCheckFunc(
-					testImages("data.quake_available_resources.compute"),
+					testImages("data.metal_available_resources.compute"),
 				),
 			},
 		},
@@ -26,7 +26,7 @@ func TestAvailableResourcesBasic(t *testing.T) {
 }
 
 const testQuattroAvailableResourceBasic = `
-data "quake_available_resources" "compute" {
+data "metal_available_resources" "compute" {
 	
 }
 `

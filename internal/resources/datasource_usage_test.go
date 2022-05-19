@@ -16,7 +16,7 @@ func TestAccUsages_Basic(t *testing.T) {
 			{
 				Config: testUsageConfigBasic,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttrSet("data.quake_usage.used", "id"),
+					resource.TestCheckResourceAttrSet("data.metal_usage.used", "id"),
 				),
 			},
 		},
@@ -28,7 +28,7 @@ var testUsageConfigBasic string
 func init() {
 
 	testUsageConfigBasic = fmt.Sprintf(`
-data "quake_usage" "used" {
+data "metal_usage" "used" {
 	start = %q
 }
 `, time.Now().Format(time.RFC3339))

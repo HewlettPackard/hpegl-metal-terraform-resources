@@ -12,7 +12,7 @@ import (
 	"github.com/hewlettpackard/hpegl-metal-terraform-resources/pkg/configuration"
 )
 
-func TestAccQuakeNetwork(t *testing.T) {
+func TestAccMetalNetwork(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
@@ -31,7 +31,7 @@ variable "location" {
 	# default = "USA:West Central:FTC DEV 4"  
 	default = "USA:Texas:AUSL2"
 }
-resource "quake_network" "pnet" {
+resource "metal_network" "pnet" {
   name               = "pnet-test"              
   location           = var.location
   description        = "tf-net description"
