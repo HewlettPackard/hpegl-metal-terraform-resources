@@ -25,7 +25,7 @@ jobs:
         run: make tools
 
       - name: Terraform-Lint
-        uses: actionshub/terraform-lint@1.0.0
+        uses: actionshub/terraform-lint@2.0.1
 
       - name: Run GO linter checks
         run: |
