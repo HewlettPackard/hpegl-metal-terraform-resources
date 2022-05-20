@@ -15,7 +15,7 @@ import (
 
 func quatrroSSHKeyConfigBasic(name, publicSSHKey string) string {
 	return fmt.Sprintf(`
-resource "metal_ssh_key" "test" {
+resource "hpegl_metal_ssh_key" "test" {
     name       = %q
     public_key = %q
 }
@@ -41,8 +41,8 @@ func TestAccQuattroSSHKey_Basic(t *testing.T) {
 			{
 				Config: cfg,
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckQuattroSSHKeyExists("metal_ssh_key.test", &key),
-					resource.TestCheckResourceAttr("metal_ssh_key.test", "public_key", keyPublic),
+					testAccCheckQuattroSSHKeyExists("hpegl_metal_ssh_key.test", &key),
+					resource.TestCheckResourceAttr("hpegl_metal_ssh_key.test", "public_key", keyPublic),
 				),
 			},
 		},
@@ -78,7 +78,7 @@ func testAccCheckQuattroSSHKeyDestroy(s *terraform.State) error {
 	p := testAccProvider.Meta().(*configuration.Config)
 
 	for _, rs := range s.RootModule().Resources {
-		if rs.Type != "metal_ssh_key" {
+		if rs.Type != "hpegl_metal_ssh_key" {
 			continue
 		}
 

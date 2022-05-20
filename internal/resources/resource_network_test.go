@@ -31,7 +31,7 @@ variable "location" {
 	# default = "USA:West Central:FTC DEV 4"  
 	default = "USA:Texas:AUSL2"
 }
-resource "metal_network" "pnet" {
+resource "hpegl_metal_network" "pnet" {
   name               = "pnet-test"              
   location           = var.location
   description        = "tf-net description"

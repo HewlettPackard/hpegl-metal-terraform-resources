@@ -29,15 +29,15 @@ variable "location" {
 	# default = "USA:West Central:FTC DEV 4"  
 	default = "USA:Texas:AUSL2"
 }
-data "metal_available_resources" "compute" {
+data "hpegl_metal_available_resources" "compute" {
 	
 }
-resource "metal_host" "test_host" {
+resource "hpegl_metal_host" "test_host" {
   name               = "test"
-  image              = "${data.metal_available_resources.compute.images.0.image}"
+  image              = "${data.hpegl_metal_available_resources.compute.images.0.image}"
   machine_size       = "Any"
   ssh                = ["User1 - Linux"]
-  networks           = [for net in "${data.metal_available_resources.compute.networks}": net.name if net.location == var.location]               
+  networks           = [for net in "${data.hpegl_metal_available_resources.compute.networks}": net.name if net.location == var.location]               
   location           = var.location
   description        = "hello from Terraform"
 }

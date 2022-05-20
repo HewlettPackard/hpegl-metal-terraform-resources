@@ -22,7 +22,7 @@ func TestAccQuattroVolume(t *testing.T) {
 			{
 				Config: testAccCheckVolumeBasic(),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckVolumeExists("metal_volume.test_vol"),
+					testAccCheckVolumeExists("hpegl_metal_volume.test_vol"),
 				),
 			},
 		},
@@ -31,7 +31,7 @@ func TestAccQuattroVolume(t *testing.T) {
 
 func testAccCheckVolumeBasic() string {
 	return fmt.Sprintf(`
-resource "metal_volume" "test_vol" {
+resource "hpegl_metal_volume" "test_vol" {
   name        = "test.volume"
   size        = 10
   flavor      = "Fast"
@@ -43,7 +43,7 @@ resource "metal_volume" "test_vol" {
 
 func testAccCheckVolumeDestroy(t *testing.T, s *terraform.State) error {
 	for _, rs := range s.RootModule().Resources {
-		if rs.Type != "metal_volume" {
+		if rs.Type != "hpegl_metal_volume" {
 			continue
 		}
 		if rs.Primary.ID == "" {

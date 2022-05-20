@@ -18,7 +18,7 @@ func TestAvailableResourcesBasic(t *testing.T) {
 			{
 				Config: testQuattroAvailableResourceBasic,
 				Check: resource.ComposeTestCheckFunc(
-					testImages("data.metal_available_resources.compute"),
+					testImages("data.hpegl_metal_available_resources.compute"),
 				),
 			},
 		},
@@ -26,7 +26,7 @@ func TestAvailableResourcesBasic(t *testing.T) {
 }
 
 const testQuattroAvailableResourceBasic = `
-data "metal_available_resources" "compute" {
+data "hpegl_metal_available_resources" "compute" {
 	
 }
 `
