@@ -155,6 +155,7 @@ func networkSchema() map[string]*schema.Schema {
 		nHostUse: {
 			Type:        schema.TypeString,
 			Optional:    true,
+			Default:     rest.NETWORKHOSTUSE_OPTIONAL,
 			Description: "Required, Optional or Default",
 		},
 		nIPPoolID: {
