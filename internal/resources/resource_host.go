@@ -118,7 +118,6 @@ func hostSchema() map[string]*schema.Schema {
 		hNetworks: {
 			Type:     schema.TypeList,
 			Required: true,
-			ForceNew: true,
 			Elem: &schema.Schema{
 				Type: schema.TypeString,
 			},
