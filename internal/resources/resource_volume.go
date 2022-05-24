@@ -229,7 +229,6 @@ func resourceMetalVolumeCreate(d *schema.ResourceData, meta interface{}) (err er
 	return resourceMetalVolumeRead(d, meta)
 }
 
-//nolint: funlen    // Ignoring function length check on existing function
 func resourceMetalVolumeRead(d *schema.ResourceData, meta interface{}) (err error) {
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
@@ -269,7 +268,6 @@ func resourceMetalVolumeRead(d *schema.ResourceData, meta interface{}) (err erro
 	return nil
 }
 
-//nolint: funlen    // Ignoring function length check on existing function
 func resourceMetalVolumeUpdate(d *schema.ResourceData, meta interface{}) (err error) {
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
@@ -291,7 +289,7 @@ func deleteVAsForVolume(p *configuration.Config, volID string) error {
 	// Get all attachments
 	vas, _, err := p.Client.VolumeAttachmentsApi.List(ctx)
 	if err != nil {
-		return err
+		return fmt.Errorf("error listing volume attachments: %w", err)
 	}
 
 	// Initiate attachments deletion for this volume
@@ -299,7 +297,7 @@ func deleteVAsForVolume(p *configuration.Config, volID string) error {
 		if va.VolumeID == volID {
 			_, err = p.Client.VolumeAttachmentsApi.Delete(ctx, va.ID)
 			if err != nil {
-				return err
+				return fmt.Errorf("error deleting volume attachment %s: %w", va.ID, err)
 			}
 		}
 	}
@@ -312,7 +310,7 @@ func deleteVAsForVolume(p *configuration.Config, volID string) error {
 
 		volume, _, err := p.Client.VolumesApi.GetByID(ctx, volID)
 		if err != nil {
-			return err
+			return fmt.Errorf("error getting volume %s: %w", volID, err)
 		}
 
 		if volume.State != rest.VOLUMESTATE_VISIBLE {
