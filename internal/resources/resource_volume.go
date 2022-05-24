@@ -12,6 +12,7 @@ import (
 
 	rest "github.com/hewlettpackard/hpegl-metal-client/v1/pkg/client"
 	"github.com/hewlettpackard/hpegl-metal-terraform-resources/pkg/client"
+	"github.com/hewlettpackard/hpegl-metal-terraform-resources/pkg/configuration"
 )
 
 const (
@@ -117,10 +118,10 @@ func volumeSchema() map[string]*schema.Schema {
 
 func VolumeResource() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceQuatrroVolumeCreate,
-		Read:   resourceQuatrroVolumeRead,
-		Update: resourceQuatrroVolumeUpdate,
-		Delete: resourceQuatrroVolumeDelete,
+		Create: resourceMetalVolumeCreate,
+		Read:   resourceMetalVolumeRead,
+		Update: resourceMetalVolumeUpdate,
+		Delete: resourceMetalVolumeDelete,
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,
 		},
@@ -130,7 +131,8 @@ func VolumeResource() *schema.Resource {
 	}
 }
 
-func resourceQuatrroVolumeCreate(d *schema.ResourceData, meta interface{}) (err error) {
+//nolint: funlen    // Ignoring function length check on existing function
+func resourceMetalVolumeCreate(d *schema.ResourceData, meta interface{}) (err error) {
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
 		if errors.As(err, &nErr) {
@@ -222,11 +224,13 @@ func resourceQuatrroVolumeCreate(d *schema.ResourceData, meta interface{}) (err 
 	if err = p.RefreshAvailableResources(); err != nil {
 		return err
 	}
+
 	// Now populate additional volume fields.
-	return resourceQuatrroVolumeRead(d, meta)
+	return resourceMetalVolumeRead(d, meta)
 }
 
-func resourceQuatrroVolumeRead(d *schema.ResourceData, meta interface{}) (err error) {
+//nolint: funlen    // Ignoring function length check on existing function
+func resourceMetalVolumeRead(d *schema.ResourceData, meta interface{}) (err error) {
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
 		if errors.As(err, &nErr) {
@@ -234,6 +238,7 @@ func resourceQuatrroVolumeRead(d *schema.ResourceData, meta interface{}) (err er
 
 		}
 	}()
+
 	p, err := client.GetClientFromMetaMap(meta)
 	if err != nil {
 		return err
@@ -260,10 +265,12 @@ func resourceQuatrroVolumeRead(d *schema.ResourceData, meta interface{}) (err er
 	}
 	d.Set(vState, volume.State)
 	d.Set(vStatus, volume.Status)
+
 	return nil
 }
 
-func resourceQuatrroVolumeUpdate(d *schema.ResourceData, meta interface{}) (err error) {
+//nolint: funlen    // Ignoring function length check on existing function
+func resourceMetalVolumeUpdate(d *schema.ResourceData, meta interface{}) (err error) {
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
 		if errors.As(err, &nErr) {
@@ -271,11 +278,58 @@ func resourceQuatrroVolumeUpdate(d *schema.ResourceData, meta interface{}) (err 
 
 		}
 	}()
+
 	//@TODO - or not....?
-	return resourceQuatrroVolumeRead(d, meta)
+	return resourceMetalVolumeRead(d, meta)
 }
 
-func resourceQuatrroVolumeDelete(d *schema.ResourceData, meta interface{}) (err error) {
+// deleteVAsForVolume deletes all attachments for specified volume
+func deleteVAsForVolume(p *configuration.Config, volID string) error {
+
+	ctx := p.GetContext()
+
+	// Get all attachments
+	vas, _, err := p.Client.VolumeAttachmentsApi.List(ctx)
+	if err != nil {
+		return fmt.Errorf("error reading volume attachments information %v", err)
+	}
+
+	// Initiate attachments deletion for this volume
+	for _, va := range vas {
+		if va.VolumeID == volID {
+			_, err = p.Client.VolumeAttachmentsApi.Delete(ctx, va.ID)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	// Wait for attachments to be deleted, i.e. volume state to transition out of "visible"
+	pollCount := 0
+	for {
+		time.Sleep(pollInterval)
+
+		volume, _, err := p.Client.VolumesApi.GetByID(ctx, volID)
+		if err != nil {
+			return err
+		}
+
+		if volume.State != rest.VOLUMESTATE_VISIBLE {
+			break
+		}
+
+		// Fail if volume state hasn't changed after max polls
+		if pollCount++; pollCount > pollCountMax {
+			err = fmt.Errorf("waiting for volume state change has timed out")
+			return err
+		}
+	}
+
+	return nil
+}
+
+//nolint: funlen    // Ignoring function length check on existing function
+func resourceMetalVolumeDelete(d *schema.ResourceData, meta interface{}) (err error) {
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
 		if errors.As(err, &nErr) {
@@ -284,11 +338,12 @@ func resourceQuatrroVolumeDelete(d *schema.ResourceData, meta interface{}) (err 
 		}
 	}()
 
-	var volume rest.Volume
 	p, err := client.GetClientFromMetaMap(meta)
 	if err != nil {
 		return err
 	}
+	var volume rest.Volume
+
 	defer func() {
 		// This is the last in the deferred chain to fire. If there has been no
 		// preceding error we will refresh the available resources and return
@@ -335,9 +390,19 @@ func resourceQuatrroVolumeDelete(d *schema.ResourceData, meta interface{}) (err 
 	if err != nil {
 		return err
 	}
+
+	// Nothing to do if volume is already deleted
 	if volume.State == rest.VOLUMESTATE_DELETED {
 		d.SetId("")
 		return nil
+	}
+
+	// Delete attachments if volume is visible
+	if volume.State == rest.VOLUMESTATE_VISIBLE {
+		err = deleteVAsForVolume(p, d.Id())
+		if err != nil {
+			return err
+		}
 	}
 
 	_, err = p.Client.VolumesApi.Delete(ctx, d.Id())
