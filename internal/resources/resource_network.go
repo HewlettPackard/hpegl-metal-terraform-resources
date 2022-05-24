@@ -396,6 +396,7 @@ func resourceMetalNetworkUpdate(d *schema.ResourceData, meta interface{}) (err e
 	return resourceMetalNetworkRead(d, meta)
 }
 
+//nolint: dupl   // Ignoring issues in the existing code
 func resourceMetalNetworkDelete(d *schema.ResourceData, meta interface{}) (err error) {
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
