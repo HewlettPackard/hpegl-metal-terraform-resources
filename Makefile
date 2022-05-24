@@ -92,10 +92,8 @@ coverage: vendor
 	@echo "Generated $(coverage_dir)/html/main.html";
 .PHONY: coverage
 
-acceptance:
-	TF_ACC_CONFIG_PATH=$(shell pwd)	\
-	TF_ACC_CONFIG=prod \
-	TF_ACC=true go test -v -timeout=120s -cover ./...
+acceptance:	
+	TF_ACC=true go test -v -timeout=180s ./...
 
 build: vendor $(NAME)
 .PHONY: build

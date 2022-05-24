@@ -8,8 +8,8 @@ import (
 	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	rest "github.com/hewlettpackard/hpegl-metal-client/v1/pkg/client"
 
+	rest "github.com/hewlettpackard/hpegl-metal-client/v1/pkg/client"
 	"github.com/hewlettpackard/hpegl-metal-terraform-resources/pkg/client"
 )
 
@@ -142,10 +142,10 @@ func projectSchema() map[string]*schema.Schema {
 
 func ProjectResource() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceQuattroProjectCreate,
-		Read:   resourceQuattroProjectRead,
-		Delete: resourceQuattroProjectDelete,
-		Update: resourceQuattroProjectUpdate,
+		Create: resourceMetalProjectCreate,
+		Read:   resourceMetalProjectRead,
+		Delete: resourceMetalProjectDelete,
+		Update: resourceMetalProjectUpdate,
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,
 		},
@@ -154,7 +154,7 @@ func ProjectResource() *schema.Resource {
 	}
 }
 
-func resourceQuattroProjectCreate(d *schema.ResourceData, meta interface{}) (err error) {
+func resourceMetalProjectCreate(d *schema.ResourceData, meta interface{}) (err error) {
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
 		if errors.As(err, &nErr) {
@@ -200,7 +200,8 @@ func resourceQuattroProjectCreate(d *schema.ResourceData, meta interface{}) (err
 		return err
 	}
 	d.SetId(project.ID)
-	return resourceQuattroProjectRead(d, meta)
+
+	return resourceMetalProjectRead(d, meta)
 }
 
 func getProfile(profile interface{}) (p rest.Profile, err error) {
@@ -235,7 +236,7 @@ func getLimits(limits interface{}) (p rest.Limits, err error) {
 	}, nil
 }
 
-func resourceQuattroProjectRead(d *schema.ResourceData, meta interface{}) (err error) {
+func resourceMetalProjectRead(d *schema.ResourceData, meta interface{}) (err error) {
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
 		if errors.As(err, &nErr) {
@@ -286,7 +287,7 @@ func resourceQuattroProjectRead(d *schema.ResourceData, meta interface{}) (err e
 	return nil
 }
 
-func resourceQuattroProjectUpdate(d *schema.ResourceData, meta interface{}) (err error) {
+func resourceMetalProjectUpdate(d *schema.ResourceData, meta interface{}) (err error) {
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
 		if errors.As(err, &nErr) {
@@ -296,10 +297,10 @@ func resourceQuattroProjectUpdate(d *schema.ResourceData, meta interface{}) (err
 	}()
 
 	//p := meta.(*Config)
-	return resourceQuattroProjectRead(d, meta)
+	return resourceMetalProjectRead(d, meta)
 }
 
-func resourceQuattroProjectDelete(d *schema.ResourceData, meta interface{}) (err error) {
+func resourceMetalProjectDelete(d *schema.ResourceData, meta interface{}) (err error) {
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
 		if errors.As(err, &nErr) {

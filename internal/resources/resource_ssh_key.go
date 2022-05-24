@@ -8,8 +8,8 @@ import (
 	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	rest "github.com/hewlettpackard/hpegl-metal-client/v1/pkg/client"
 
+	rest "github.com/hewlettpackard/hpegl-metal-client/v1/pkg/client"
 	"github.com/hewlettpackard/hpegl-metal-terraform-resources/pkg/client"
 )
 
@@ -34,10 +34,10 @@ func sshKeySchema() map[string]*schema.Schema {
 
 func SshKeyResource() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceQuakeSSHKeyCreate,
-		Read:   resourceQuakeSSHKeyRead,
-		Update: resourceQuakeSSHKeyUpdate,
-		Delete: resourceQuakeSSHKeyDelete,
+		Create: resourceMetalSSHKeyCreate,
+		Read:   resourceMetalSSHKeyRead,
+		Update: resourceMetalSSHKeyUpdate,
+		Delete: resourceMetalSSHKeyDelete,
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,
 		},
@@ -46,7 +46,7 @@ func SshKeyResource() *schema.Resource {
 	}
 }
 
-func resourceQuakeSSHKeyCreate(d *schema.ResourceData, meta interface{}) (err error) {
+func resourceMetalSSHKeyCreate(d *schema.ResourceData, meta interface{}) (err error) {
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
 		if errors.As(err, &nErr) {
@@ -69,13 +69,15 @@ func resourceQuakeSSHKeyCreate(d *schema.ResourceData, meta interface{}) (err er
 		return err
 	}
 	d.SetId(key.ID)
+
 	if err = p.RefreshAvailableResources(); err != nil {
 		return err
 	}
-	return resourceQuakeSSHKeyRead(d, meta)
+
+	return resourceMetalSSHKeyRead(d, meta)
 }
 
-func resourceQuakeSSHKeyRead(d *schema.ResourceData, meta interface{}) (err error) {
+func resourceMetalSSHKeyRead(d *schema.ResourceData, meta interface{}) (err error) {
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
 		if errors.As(err, &nErr) {
@@ -99,7 +101,7 @@ func resourceQuakeSSHKeyRead(d *schema.ResourceData, meta interface{}) (err erro
 	return nil
 }
 
-func resourceQuakeSSHKeyUpdate(d *schema.ResourceData, meta interface{}) (err error) {
+func resourceMetalSSHKeyUpdate(d *schema.ResourceData, meta interface{}) (err error) {
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
 		if errors.As(err, &nErr) {
@@ -131,10 +133,12 @@ func resourceQuakeSSHKeyUpdate(d *schema.ResourceData, meta interface{}) (err er
 	if err != nil {
 		return err
 	}
-	return resourceQuakeSSHKeyRead(d, meta)
+
+	return resourceMetalSSHKeyRead(d, meta)
 }
 
-func resourceQuakeSSHKeyDelete(d *schema.ResourceData, meta interface{}) (err error) {
+//nolint: dupl   // Ignoring issues in the existing code
+func resourceMetalSSHKeyDelete(d *schema.ResourceData, meta interface{}) (err error) {
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
 		if errors.As(err, &nErr) {

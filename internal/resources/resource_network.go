@@ -9,8 +9,8 @@ import (
 	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	rest "github.com/hewlettpackard/hpegl-metal-client/v1/pkg/client"
 
+	rest "github.com/hewlettpackard/hpegl-metal-client/v1/pkg/client"
 	"github.com/hewlettpackard/hpegl-metal-terraform-resources/pkg/client"
 )
 
@@ -191,10 +191,10 @@ func networkSchema() map[string]*schema.Schema {
 
 func ProjectNetworkResource() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceQuattroNetworkCreate,
-		Read:   resourceQuattroNetworkRead,
-		Delete: resourceQuattroNetworkDelete,
-		Update: resourceQuattroNetworkUpdate,
+		Create: resourceMetalNetworkCreate,
+		Read:   resourceMetalNetworkRead,
+		Delete: resourceMetalNetworkDelete,
+		Update: resourceMetalNetworkUpdate,
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,
 		},
@@ -203,7 +203,7 @@ func ProjectNetworkResource() *schema.Resource {
 	}
 }
 
-func resourceQuattroNetworkCreate(d *schema.ResourceData, meta interface{}) (err error) {
+func resourceMetalNetworkCreate(d *schema.ResourceData, meta interface{}) (err error) {
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
 		if errors.As(err, &nErr) {
@@ -250,7 +250,7 @@ func resourceQuattroNetworkCreate(d *schema.ResourceData, meta interface{}) (err
 		return err
 	}
 
-	return resourceQuattroNetworkRead(d, meta)
+	return resourceMetalNetworkRead(d, meta)
 }
 
 func getIPPool(set *schema.Set) (ipPool *rest.NewIpPool) {
@@ -307,7 +307,7 @@ func getIPPool(set *schema.Set) (ipPool *rest.NewIpPool) {
 	return
 }
 
-func resourceQuattroNetworkRead(d *schema.ResourceData, meta interface{}) (err error) {
+func resourceMetalNetworkRead(d *schema.ResourceData, meta interface{}) (err error) {
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
 		if errors.As(err, &nErr) {
@@ -365,7 +365,7 @@ func resourceQuattroNetworkRead(d *schema.ResourceData, meta interface{}) (err e
 	return nil
 }
 
-func resourceQuattroNetworkUpdate(d *schema.ResourceData, meta interface{}) (err error) {
+func resourceMetalNetworkUpdate(d *schema.ResourceData, meta interface{}) (err error) {
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
 		if errors.As(err, &nErr) {
@@ -393,10 +393,11 @@ func resourceQuattroNetworkUpdate(d *schema.ResourceData, meta interface{}) (err
 		return err
 	}
 
-	return resourceQuattroNetworkRead(d, meta)
+	return resourceMetalNetworkRead(d, meta)
 }
 
-func resourceQuattroNetworkDelete(d *schema.ResourceData, meta interface{}) (err error) {
+//nolint: dupl   // Ignoring issues in the existing code
+func resourceMetalNetworkDelete(d *schema.ResourceData, meta interface{}) (err error) {
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
 		if errors.As(err, &nErr) {

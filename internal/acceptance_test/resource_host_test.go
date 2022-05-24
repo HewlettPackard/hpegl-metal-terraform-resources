@@ -1,16 +1,18 @@
 // (C) Copyright 2020-2022 Hewlett Packard Enterprise Development LP
 
-package resources
+package acceptance_test
 
 import (
-	"fmt"
 	"testing"
+	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
-func TestAccQuakeHost(t *testing.T) {
+const hostCreateWait = 1 * time.Minute
+
+func TestAccResourceHost_Basic(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
@@ -18,48 +20,62 @@ func TestAccQuakeHost(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckHostBasic(),
+				Check:  testWaitUntilHostCreated(),
 			},
 		},
 	})
 }
 
 func testAccCheckHostBasic() string {
-	return fmt.Sprintf(`
+	return `
+provider "hpegl" {
+	metal {
+	}
+}
+
 variable "location" {
-	# default = "USA:West Central:FTC DEV 4"  
-	default = "USA:Texas:AUSL2"
+	default = "USA:Central:V2DCC01"
 }
-data "quake_available_resources" "compute" {
-	
+
+data "hpegl_metal_available_resources" "compute" {
 }
-resource "quake_host" "test_host" {
+
+locals  {
+	host_os_flavor = "${data.hpegl_metal_available_resources.compute.images.0.flavor}"
+	host_os_version = "${data.hpegl_metal_available_resources.compute.images.0.version}"
+	networks = ([for net in "${data.hpegl_metal_available_resources.compute.networks}": 
+		net.name if net.location == var.location] )
+}
+
+resource "hpegl_metal_host" "test_host" {
   name               = "test"
-  image              = "${data.quake_available_resources.compute.images.0.image}"
-  machine_size       = "Any"
+  image              = join("@",[local.host_os_flavor, local.host_os_version])
+  machine_size       = "${data.hpegl_metal_available_resources.compute.machine_sizes.0.name}"
   ssh                = ["User1 - Linux"]
-  networks           = [for net in "${data.quake_available_resources.compute.networks}": net.name if net.location == var.location]               
+  networks           = sort(local.networks)
   location           = var.location
   description        = "hello from Terraform"
 }
-`)
+`
+}
+
+func testWaitUntilHostCreated() resource.TestCheckFunc {
+	return func(s *terraform.State) error {
+		// TODO
+		// 1. Poll the state instead of fixed wait time
+		time.Sleep(hostCreateWait)
+
+		return nil
+	}
 }
 
 func testAccCheckHostDestroy(t *testing.T, s *terraform.State) error {
-	//apiClient := testAccProvider.Meta().(*QuakeProvider)
+	t.Helper()
+
 	for _, rs := range s.RootModule().Resources {
 		if rs.Type != "test_host" {
 			continue
 		}
-
-		// _, err := apiClient.GetItem(rs.Primary.ID)
-		// if err == nil {
-		// 	return fmt.Errorf("Alert still exists")
-		// }
-		// notFoundErr := "not found"
-		// expectedErr := regexp.MustCompile(notFoundErr)
-		// if !expectedErr.Match([]byte(err.Error())) {
-		// 	return fmt.Errorf("expected %s, got %s", notFoundErr, err)
-		// }
 	}
 
 	return nil

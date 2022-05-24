@@ -1,6 +1,6 @@
-// (C) Copyright 2020-2022 Hewlett Packard Enterprise Development LP.
+// (C) Copyright 2020-2022 Hewlett Packard Enterprise Development LP
 
-package resources
+package acceptance_test
 
 import (
 	"fmt"
@@ -9,10 +9,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 
-	"github.com/hewlettpackard/hpegl-metal-terraform-resources/pkg/configuration"
+	"github.com/hewlettpackard/hpegl-metal-terraform-resources/pkg/client"
 )
 
-func TestAccQuakeNetwork(t *testing.T) {
+func TestAccResourceNetwork_Basic(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
@@ -26,27 +26,38 @@ func TestAccQuakeNetwork(t *testing.T) {
 }
 
 func testAccCheckNetworkBasic() string {
-	return fmt.Sprintf(`
-variable "location" {
-	# default = "USA:West Central:FTC DEV 4"  
-	default = "USA:Texas:AUSL2"
+	return `
+provider "hpegl" {
+	metal {
+	}
 }
-resource "quake_network" "pnet" {
+
+variable "location" {
+	default = "USA:Central:V2DCC01"
+}
+
+resource "hpegl_metal_network" "pnet" {
   name               = "pnet-test"              
   location           = var.location
   description        = "tf-net description"
-}
-`)
+}`
 }
 
 func testAccCheckNetworkDestroy(t *testing.T, s *terraform.State) error {
-	p := testAccProvider.Meta().(*configuration.Config)
+	t.Helper()
+
+	p, err := client.GetClientFromMetaMap(testAccProvider.Meta())
+	if err != nil {
+		return fmt.Errorf("Error retrieving Metal client: %v", err)
+	}
+
 	for _, rs := range s.RootModule().Resources {
 		if rs.Type != "pnet" {
 			continue
 		}
 
 		ctx := p.GetContext()
+
 		_, _, err := p.Client.NetworksApi.GetByID(ctx, rs.Primary.ID)
 		if err == nil {
 			return fmt.Errorf("Alert pnet still exists")

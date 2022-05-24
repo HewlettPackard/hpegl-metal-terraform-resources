@@ -47,3 +47,6 @@ jobs:
 
       - name: Verify document generation
         run: make docs
+
+      - name: Run unit tests
+        run: make test

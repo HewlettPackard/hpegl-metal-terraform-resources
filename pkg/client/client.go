@@ -8,11 +8,11 @@ import (
 	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/hewlettpackard/hpegl-provider-lib/pkg/client"
 
+	rest "github.com/hewlettpackard/hpegl-metal-client/v1/pkg/client"
 	"github.com/hewlettpackard/hpegl-metal-terraform-resources/pkg/configuration"
 	"github.com/hewlettpackard/hpegl-metal-terraform-resources/pkg/constants"
-	rest "github.com/hewlettpackard/hpegl-metal-client/v1/pkg/client"
+	"github.com/hewlettpackard/hpegl-provider-lib/pkg/client"
 )
 
 // Assert that InitialiseClient satisfies the client.Initialisation interface
@@ -47,19 +47,19 @@ func (i InitialiseClient) NewClient(r *schema.ResourceData) (interface{}, error)
 	}
 
 	// Initialize the metal client
-	quakeConfig, err := configuration.NewConfig("", configuration.WithGLToken(metalMap["gl_token"].(bool)))
+	metalConfig, err := configuration.NewConfig("", configuration.WithGLToken(metalMap["gl_token"].(bool)))
 	if err != nil {
 		return nil, fmt.Errorf("error in creating metal client: %s", err)
 	}
 
 	// Cache Available Resources in a project when the scope is Project level
-	if !quakeConfig.IsHosterContext() {
-		if err := quakeConfig.RefreshAvailableResources(); err != nil {
+	if !metalConfig.IsHosterContext() {
+		if err := metalConfig.RefreshAvailableResources(); err != nil {
 			return nil, fmt.Errorf("error in refreshing available resources for metal: %s", err)
 		}
 	}
 
-	return quakeConfig, nil
+	return metalConfig, nil
 }
 
 // ServiceName is used to return the value of MetalClientMapKey, for use by hpegl

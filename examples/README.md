@@ -15,7 +15,7 @@ the portal under the `Downloads` section.
 ```
 
 The provider must be installed where Terraform can locate it. The easiest location is to install the provider 
-to `~/.terraform.d/plugins/terraform-provider-quake_vx.x.x`.
+to `~/.terraform.d/plugins/terraform-provider-hpegl_vx.x.x`.
 
 The provider maybe used with the Metal portal simulator for test purposes. If the test portal is restarted all
 simulated resources are lost. In this case, it is important to ensure that all dangling terraform state information

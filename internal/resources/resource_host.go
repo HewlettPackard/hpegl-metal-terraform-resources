@@ -10,23 +10,12 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
-	"github.com/hewlettpackard/hpegl-metal-terraform-resources/pkg/client"
 	rest "github.com/hewlettpackard/hpegl-metal-client/v1/pkg/client"
+	"github.com/hewlettpackard/hpegl-metal-terraform-resources/pkg/client"
 )
 
 const (
-	// field names for a Quattro host. These are referenceable from some terraform source
-	//    resource "quattro_host" "test_host" {
-	//       name              = "test"
-	//       description       = "hello from Terraform"
-	//       image             = "coreos@1800.6.0"
-	//       # flavor and version can also be provided as below
-	//       # image           = "coreos@1800.6.0"
-	//       machie_size       = "Very Small"
-	//       ssh               = ["Chuck's Mac as Team One member"]
-	//       networks          = ["Private", "Public"]
-	//       location          = "Demo Pod" //"USA:Austin:Demo1"
-	//    }
+	// field names for a Metal host. These are referenceable from some terraform source.
 	hName                 = "name"
 	hDescription          = "description"
 	hImage                = "image"
@@ -217,10 +206,10 @@ func hostSchema() map[string]*schema.Schema {
 
 func HostResource() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceQuattroHostCreate,
-		Read:   resourceQuattroHostRead,
-		Delete: resourceQuattroHostDelete,
-		Update: resourceQuattroHostUpdate,
+		Create: resourceMetalHostCreate,
+		Read:   resourceMetalHostRead,
+		Delete: resourceMetalHostDelete,
+		Update: resourceMetalHostUpdate,
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,
 		},
@@ -229,7 +218,8 @@ func HostResource() *schema.Resource {
 	}
 }
 
-func resourceQuattroHostCreate(d *schema.ResourceData, meta interface{}) (err error) {
+//nolint: funlen    // Ignoring function length check on existing function
+func resourceMetalHostCreate(d *schema.ResourceData, meta interface{}) (err error) {
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
 		if errors.As(err, &nErr) {
@@ -406,7 +396,7 @@ func resourceQuattroHostCreate(d *schema.ResourceData, meta interface{}) (err er
 		host.VolumeIDs = append(host.VolumeIDs, id)
 	}
 
-	// PreAllocatedIP addreses
+	// PreAllocatedIP addresses
 	if ips, ok := d.Get(hPreAllocatedIPs).([]interface{}); ok {
 		host.PreAllocatedIPs = convertStringArr(ips)
 	}
@@ -420,10 +410,11 @@ func resourceQuattroHostCreate(d *schema.ResourceData, meta interface{}) (err er
 	}
 	d.SetId(h.ID)
 
-	return resourceQuattroHostRead(d, meta)
+	return resourceMetalHostRead(d, meta)
 }
 
-func resourceQuattroHostRead(d *schema.ResourceData, meta interface{}) (err error) {
+//nolint: funlen    // Ignoring function length check on existing function
+func resourceMetalHostRead(d *schema.ResourceData, meta interface{}) (err error) {
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
 		if errors.As(err, &nErr) {
@@ -514,7 +505,8 @@ func getVAsForHost(hostID string, vas []rest.VolumeAttachment) []rest.VolumeInfo
 	return hostvas
 }
 
-func resourceQuattroHostUpdate(d *schema.ResourceData, meta interface{}) (err error) {
+//nolint: funlen    // Ignoring function length check on existing function
+func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err error) {
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
 		if errors.As(err, &nErr) {
@@ -584,10 +576,11 @@ func resourceQuattroHostUpdate(d *schema.ResourceData, meta interface{}) (err er
 		}
 	}
 
-	return resourceQuattroHostRead(d, meta)
+	return resourceMetalHostRead(d, meta)
 }
 
-func resourceQuattroHostDelete(d *schema.ResourceData, meta interface{}) (err error) {
+//nolint: funlen    // Ignoring function length check on existing function
+func resourceMetalHostDelete(d *schema.ResourceData, meta interface{}) (err error) {
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
 		if errors.As(err, &nErr) {

@@ -22,6 +22,16 @@ linters-settings:
     # tab width in spaces. Default to 1.
     tab-width: 1
 
+  gci:
+    # Group all projects under hewlettpackard together and separate from internal and 3rd party
+    sections:
+      - Standard
+      - Default
+      - 'prefix(github.com/hewlettpackard)'
+
+  goimports:
+    local-prefixes: github.com/hewlettpackard
+
 linters:
   # please, do not use `enable-all`: it's deprecated and will be removed soon.
   disable-all: true

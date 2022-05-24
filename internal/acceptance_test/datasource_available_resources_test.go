@@ -1,6 +1,6 @@
-// (C) Copyright 2020-2022 Hewlett Packard Enterprise Development LP.
+// (C) Copyright 2020-2022 Hewlett Packard Enterprise Development LP
 
-package resources
+package acceptance_test
 
 import (
 	"fmt"
@@ -10,24 +10,28 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
-func TestAvailableResourcesBasic(t *testing.T) {
+func TestAccDataSourceAvailableResources_Basic(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testQuattroAvailableResourceBasic,
+				Config: testAvailableResourceBasic,
 				Check: resource.ComposeTestCheckFunc(
-					testImages("data.quake_available_resources.compute"),
+					testImages("data.hpegl_metal_available_resources.compute"),
 				),
 			},
 		},
 	})
 }
 
-const testQuattroAvailableResourceBasic = `
-data "quake_available_resources" "compute" {
-	
+const testAvailableResourceBasic = `
+provider "hpegl" {
+	metal {
+	}
+}
+
+data "hpegl_metal_available_resources" "compute" {
 }
 `
 
@@ -38,13 +42,13 @@ func testImages(name string) resource.TestCheckFunc {
 		if !ok {
 			return fmt.Errorf("Resource not found: %s", name)
 		}
-		imagesLen, _ := rs.Primary.Attributes["images.#"]
-		if !ok {
-			return fmt.Errorf("No attribute 'images' in resource: %s", name)
-		}
+
+		imagesLen := rs.Primary.Attributes["images.#"]
+
 		if imagesLen == "0" {
 			return fmt.Errorf("No 'images.#' found in resource: %s", name)
 		}
+
 		return nil
 	}
 }
