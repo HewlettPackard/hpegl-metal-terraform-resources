@@ -283,7 +283,6 @@ func resourceMetalVolumeUpdate(d *schema.ResourceData, meta interface{}) (err er
 
 // deleteVAsForVolume deletes all attachments for specified volume.
 func deleteVAsForVolume(p *configuration.Config, volID string) error {
-
 	ctx := p.GetContext()
 
 	// Get all attachments
