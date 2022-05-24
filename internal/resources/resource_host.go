@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	// field names for a Metal host. These are referenceable from some terraform source
+	// field names for a Metal host. These are referenceable from some terraform source.
 	hName                 = "name"
 	hDescription          = "description"
 	hImage                = "image"
@@ -218,6 +218,7 @@ func HostResource() *schema.Resource {
 	}
 }
 
+//nolint: funlen    // Ignoring function length check on existing function
 func resourceMetalHostCreate(d *schema.ResourceData, meta interface{}) (err error) {
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
@@ -395,7 +396,7 @@ func resourceMetalHostCreate(d *schema.ResourceData, meta interface{}) (err erro
 		host.VolumeIDs = append(host.VolumeIDs, id)
 	}
 
-	// PreAllocatedIP addreses
+	// PreAllocatedIP addresses
 	if ips, ok := d.Get(hPreAllocatedIPs).([]interface{}); ok {
 		host.PreAllocatedIPs = convertStringArr(ips)
 	}
@@ -412,6 +413,7 @@ func resourceMetalHostCreate(d *schema.ResourceData, meta interface{}) (err erro
 	return resourceMetalHostRead(d, meta)
 }
 
+//nolint: funlen    // Ignoring function length check on existing function
 func resourceMetalHostRead(d *schema.ResourceData, meta interface{}) (err error) {
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
@@ -503,6 +505,7 @@ func getVAsForHost(hostID string, vas []rest.VolumeAttachment) []rest.VolumeInfo
 	return hostvas
 }
 
+//nolint: funlen    // Ignoring function length check on existing function
 func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err error) {
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
@@ -576,6 +579,7 @@ func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err erro
 	return resourceMetalHostRead(d, meta)
 }
 
+//nolint: funlen    // Ignoring function length check on existing function
 func resourceMetalHostDelete(d *schema.ResourceData, meta interface{}) (err error) {
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}

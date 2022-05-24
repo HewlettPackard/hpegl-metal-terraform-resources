@@ -69,9 +69,11 @@ func resourceMetalSSHKeyCreate(d *schema.ResourceData, meta interface{}) (err er
 		return err
 	}
 	d.SetId(key.ID)
+
 	if err = p.RefreshAvailableResources(); err != nil {
 		return err
 	}
+
 	return resourceMetalSSHKeyRead(d, meta)
 }
 
@@ -131,6 +133,7 @@ func resourceMetalSSHKeyUpdate(d *schema.ResourceData, meta interface{}) (err er
 	if err != nil {
 		return err
 	}
+
 	return resourceMetalSSHKeyRead(d, meta)
 }
 

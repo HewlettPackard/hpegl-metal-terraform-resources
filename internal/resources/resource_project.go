@@ -200,6 +200,7 @@ func resourceMetalProjectCreate(d *schema.ResourceData, meta interface{}) (err e
 		return err
 	}
 	d.SetId(project.ID)
+
 	return resourceMetalProjectRead(d, meta)
 }
 

@@ -246,6 +246,7 @@ func DataSourceUsage() *schema.Resource {
 	}
 }
 
+//nolint: funlen    // Ignoring function length check on existing function
 func resourceMetalUsageRead(d *schema.ResourceData, meta interface{}) (err error) {
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
@@ -289,20 +290,17 @@ func resourceMetalUsageRead(d *schema.ResourceData, meta interface{}) (err error
 			uHostName:        use.HostName,
 			uMachineSizeName: use.MachineSizeName,
 			uMachineSizeID:   use.MachineSizeID,
-			//uRateHourly:   use.RateHourly,
-			//uRateMonthly:  use.RateMonthly,
-			//uCost:         use.Cost,
-			uUsageHours: use.UsageHours,
-			uProjectID:  use.ProjectID,
-			uLocationID: use.LocationID,
-			uUsageStart: use.UsageStart.Format(time.RFC3339),
-			uUsageEnd:   use.UsageEnd.Format(time.RFC3339),
-			uAllocated:  use.Allocated.Format(time.RFC3339),
-			uFreed:      use.Freed.Format(time.RFC3339),
-			uReady:      use.Ready.Format(time.RFC3339),
-			uError:      use.Error,
+			uUsageHours:      use.UsageHours,
+			uProjectID:       use.ProjectID,
+			uLocationID:      use.LocationID,
+			uUsageStart:      use.UsageStart.Format(time.RFC3339),
+			uUsageEnd:        use.UsageEnd.Format(time.RFC3339),
+			uAllocated:       use.Allocated.Format(time.RFC3339),
+			uFreed:           use.Freed.Format(time.RFC3339),
+			uReady:           use.Ready.Format(time.RFC3339),
+			uError:           use.Error,
 		}
-		// Patch up zero times to be emptry strings
+		// Patch up zero times to be empty strings
 		if use.Freed.IsZero() {
 			uData[uFreed] = ""
 		}
@@ -323,9 +321,6 @@ func resourceMetalUsageRead(d *schema.ResourceData, meta interface{}) (err error
 			uCapacity:   use.Capacity,
 			uFlavorID:   use.FlavorID,
 			uFlavorName: use.FlavorName,
-			//uRateHourly:     use.RateHourly,
-			//uRateMonthly:    use.RateMonthly,
-			//uCost:       use.Cost,
 			uUsageHours: use.UsageHours,
 			uProjectID:  use.ProjectID,
 			uLocationID: use.LocationID,
@@ -336,7 +331,7 @@ func resourceMetalUsageRead(d *schema.ResourceData, meta interface{}) (err error
 			uReady:      use.Ready.Format(time.RFC3339),
 			uError:      use.Error,
 		}
-		// Patch up zero times to be emptry strings
+		// Patch up zero times to be empty strings
 		if use.Freed.IsZero() {
 			uData[uFreed] = ""
 		}
