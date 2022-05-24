@@ -283,7 +283,7 @@ func resourceMetalVolumeUpdate(d *schema.ResourceData, meta interface{}) (err er
 	return resourceMetalVolumeRead(d, meta)
 }
 
-// deleteVAsForVolume deletes all attachments for specified volume
+// deleteVAsForVolume deletes all attachments for specified volume.
 func deleteVAsForVolume(p *configuration.Config, volID string) error {
 
 	ctx := p.GetContext()
@@ -291,7 +291,7 @@ func deleteVAsForVolume(p *configuration.Config, volID string) error {
 	// Get all attachments
 	vas, _, err := p.Client.VolumeAttachmentsApi.List(ctx)
 	if err != nil {
-		return fmt.Errorf("error reading volume attachments information %v", err)
+		return err
 	}
 
 	// Initiate attachments deletion for this volume
@@ -306,6 +306,7 @@ func deleteVAsForVolume(p *configuration.Config, volID string) error {
 
 	// Wait for attachments to be deleted, i.e. volume state to transition out of "visible"
 	pollCount := 0
+
 	for {
 		time.Sleep(pollInterval)
 
@@ -320,8 +321,7 @@ func deleteVAsForVolume(p *configuration.Config, volID string) error {
 
 		// Fail if volume state hasn't changed after max polls
 		if pollCount++; pollCount > pollCountMax {
-			err = fmt.Errorf("waiting for volume state change has timed out")
-			return err
+			return fmt.Errorf("waiting for volume state change has timed out")
 		}
 	}
 
@@ -330,6 +330,8 @@ func deleteVAsForVolume(p *configuration.Config, volID string) error {
 
 //nolint: funlen    // Ignoring function length check on existing function
 func resourceMetalVolumeDelete(d *schema.ResourceData, meta interface{}) (err error) {
+	var volume rest.Volume
+
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
 		if errors.As(err, &nErr) {
@@ -342,7 +344,6 @@ func resourceMetalVolumeDelete(d *schema.ResourceData, meta interface{}) (err er
 	if err != nil {
 		return err
 	}
-	var volume rest.Volume
 
 	defer func() {
 		// This is the last in the deferred chain to fire. If there has been no
