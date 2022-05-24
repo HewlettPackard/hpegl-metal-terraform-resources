@@ -76,16 +76,6 @@ func testAccCheckHostDestroy(t *testing.T, s *terraform.State) error {
 		if rs.Type != "test_host" {
 			continue
 		}
-
-		// _, err := apiClient.GetItem(rs.Primary.ID)
-		// if err == nil {
-		// 	return fmt.Errorf("Alert still exists")
-		// }
-		// notFoundErr := "not found"
-		// expectedErr := regexp.MustCompile(notFoundErr)
-		// if !expectedErr.Match([]byte(err.Error())) {
-		// 	return fmt.Errorf("expected %s, got %s", notFoundErr, err)
-		// }
 	}
 
 	return nil

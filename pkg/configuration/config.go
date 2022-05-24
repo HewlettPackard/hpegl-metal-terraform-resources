@@ -9,11 +9,10 @@ import (
 	"os"
 	"strings"
 
+	rest "github.com/hewlettpackard/hpegl-metal-client/v1/pkg/client"
+	"github.com/hewlettpackard/hpegl-metal-terraform-resources/pkg/constants"
 	"github.com/hewlettpackard/hpegl-provider-lib/pkg/gltform"
 	"github.com/hewlettpackard/hpegl-provider-lib/pkg/token/retrieve"
-
-	"github.com/hewlettpackard/hpegl-metal-terraform-resources/pkg/constants"
-	rest "github.com/hewlettpackard/hpegl-metal-client/v1/pkg/client"
 )
 
 // KeyForGLClientMap is used by the GL terraform provider to set the key in the

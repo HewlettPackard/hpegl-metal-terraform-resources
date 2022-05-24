@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+
 	testutils "github.com/hewlettpackard/hpegl-metal-terraform-resources/internal/test-utils"
 )
 

@@ -9,9 +9,9 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
+	rest "github.com/hewlettpackard/hpegl-metal-client/v1/pkg/client"
 	"github.com/hewlettpackard/hpegl-metal-terraform-resources/pkg/client"
 	"github.com/hewlettpackard/hpegl-metal-terraform-resources/pkg/configuration"
-	rest "github.com/hewlettpackard/hpegl-metal-client/v1/pkg/client"
 )
 
 const (
