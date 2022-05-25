@@ -1,0 +1,30 @@
+name: Run tests
+
+on: [push]
+
+jobs:
+  ecr_login:
+    runs-on: ubuntu-latest
+    outputs:
+      ecr_password: ${{ steps.retrieve_password.outputs.ecr_password }}
+    steps:
+      - name: Set up AWS CLI
+        uses: chrislennon/action-aws-cli@1.1
+      - id: retrieve_password
+        name: Retrieve ECR password and store as secret
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: us-east-1
+        run: echo "::set-output name=ecr_password::$(aws ecr get-login-password)"
+
+  test:
+    needs: ecr_login
+    runs-on: ubuntu-latest
+    container:
+      image: 657273346644.dkr.ecr.us-west-2.amazonaws.com/hpe-hcss/quake:master-simulator
+      credentials:
+        username: AWS
+        password: ${{ needs.ecr_login.outputs.ecr_password }}
+    steps:
+      - run: echo "Running my tests inside a container pulled from ECR \o/"
