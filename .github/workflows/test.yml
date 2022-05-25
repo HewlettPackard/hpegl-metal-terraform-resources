@@ -22,7 +22,7 @@ jobs:
     needs: ecr_login
     runs-on: ubuntu-latest
     container:
-      image: 657273346644.dkr.ecr.us-west-2.amazonaws.com/hpe-hcss/quake:master-simulator
+      image: 657273346644.dkr.ecr.us-east-1.amazonaws.com/hpe-hcss/quake:master-simulator
       credentials:
         username: AWS
         password: ${{ needs.ecr_login.outputs.ecr_password }}
