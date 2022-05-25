@@ -288,7 +288,7 @@ func deleteVAsForVolume(p *configuration.Config, volID string) error {
 	// Get all attachments
 	vas, _, err := p.Client.VolumeAttachmentsApi.List(ctx)
 	if err != nil {
-		return fmt.Errorf("error listing volume attachments: %w", err)
+		return fmt.Errorf("list volume attachments: %w", err)
 	}
 
 	// Initiate attachments deletion for this volume
@@ -296,7 +296,7 @@ func deleteVAsForVolume(p *configuration.Config, volID string) error {
 		if va.VolumeID == volID {
 			_, err = p.Client.VolumeAttachmentsApi.Delete(ctx, va.ID)
 			if err != nil {
-				return fmt.Errorf("error deleting volume attachment %s: %w", va.ID, err)
+				return fmt.Errorf("delete volume attachment %s: %w", va.ID, err)
 			}
 		}
 	}
@@ -309,7 +309,7 @@ func deleteVAsForVolume(p *configuration.Config, volID string) error {
 
 		volume, _, err := p.Client.VolumesApi.GetByID(ctx, volID)
 		if err != nil {
-			return fmt.Errorf("error getting volume %s: %w", volID, err)
+			return fmt.Errorf("get volume %s: %w", volID, err)
 		}
 
 		if volume.State != rest.VOLUMESTATE_VISIBLE {
