@@ -27,6 +27,8 @@ jobs:
 
         ports:
           - 3002:3002
+          - 80:80
+          - 8204:8204
 
         env:
           AUTH0_ID: ${{ secrets.SIM_AUTH0 }}
