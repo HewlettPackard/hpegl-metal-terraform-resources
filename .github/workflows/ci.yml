@@ -64,29 +64,8 @@ jobs:
         with:
           go-version: 1.17
 
-      - name: Install tools
-        run: make tools
-
-      - name: Terraform-Lint
-        uses: actionshub/terraform-lint@2.0.1
-
-      - name: Run GO linter checks
-        run: |
-          TARGET_BRANCH=${{ github.base_ref }}        
-          if [[ ${TARGET_BRANCH} == "" ]]; then
-            TARGET_BRANCH='master'
-          fi
-                
-          TARGET_SHA=`git merge-base -a HEAD origin/${TARGET_BRANCH}`
-
-          echo "Running lint on changes from branch ${TARGET_BRANCH} ${TARGET_SHA}"
-          golangci-lint run --config golangci-lint-config.yaml --new-from-rev ${TARGET_SHA} --verbose --max-issues-per-linter 0 --max-same-issues 0
-
       - name: Build and Install Plugin
         run: make install
-
-      - name: Verify document generation
-        run: make docs
 
       - name: Adding sleep
         run: sleep 60s
