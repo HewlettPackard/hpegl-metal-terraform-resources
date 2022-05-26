@@ -22,9 +22,9 @@ jobs:
           EMAIL: ${{ secrets.SIM_USER }}
           PORTAL_URL: localhost
         options: >-
-          --health-timeout 60s
-          --health-start-period 60s
-          --health-cmd ps -aef | grep steeld
+          --health-timeout=60s
+          --health-start-period=60s
+          --health-cmd 'ps -aef | grep steeld'
     steps:
       - name: test with curl
         run: |
