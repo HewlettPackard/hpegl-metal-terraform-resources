@@ -61,6 +61,9 @@ jobs:
       - name: Terraform-Lint
         uses: actionshub/terraform-lint@2.0.1
 
+      - name: Verify document generation
+        run: make docs
+
       - name: Build and Install plugin
         run: make install
 
