@@ -3,6 +3,31 @@ name: Run tests
 on: [push]
 
 jobs:
+  test:
+    needs: ecr_login
+    runs-on: ubuntu-latest
+    services:
+      simulator:
+        image: 657273346644.dkr.ecr.us-east-1.amazonaws.com/hpe-hcss/quake:master-simulator
+        credentials:
+          username: AWS
+          password: ${{ needs.ecr_login.outputs.ecr_password }}
+        ports:
+          - 8204:8204
+          - 80:80
+          - 3002:3002
+        env:
+          AUTH0_ID: ${{ secrets.SIM_AUTH0 }}
+          PASSWD: ${{ secrets.SIM_PASSWD }}
+          EMAIL: ${{ secrets.SIM_USER }}
+          PORTAL_URL: localhost
+        options: >-
+    steps:
+      - name: test with curl
+        run: |
+          sleep 60s
+          curl -k http://localhost:3002/info/time
+
   ecr_login:
     runs-on: ubuntu-latest
     outputs:
@@ -17,14 +42,3 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: us-east-1
         run: echo "::set-output name=ecr_password::$(aws ecr get-login-password)"
-
-  test:
-    needs: ecr_login
-    runs-on: ubuntu-latest
-    container:
-      image: 657273346644.dkr.ecr.us-east-1.amazonaws.com/hpe-hcss/quake:master-simulator
-      credentials:
-        username: AWS
-        password: ${{ needs.ecr_login.outputs.ecr_password }}
-    steps:
-      - run: echo "Running my tests inside a container pulled from ECR \o/"
