@@ -34,7 +34,7 @@ jobs:
       - name: Copy qctl
         run: |
           mkdir -p /tmp/bin
-          docker cp a4c920297a5f@/var/local/quake/downloads/qctl/linux/qctl /tmp/bin
+          docker cp SimPortal:/var/local/quake/downloads/qctl/linux/qctl /tmp/bin
           chmod +x /tmp/bin/qctl
           /tmp/bin/qctl -v
 
