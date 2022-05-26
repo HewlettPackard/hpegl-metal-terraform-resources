@@ -26,9 +26,9 @@ jobs:
           EMAIL: ${{ secrets.SIM_USER }}
           PORTAL_URL: localhost
         options: >-
-          --health-timeout=60s
+          --health-timeout=30s
           --health-start-period=60s
-          --health-cmd="ps -aef | grep steeld"
+          --health-cmd="curl -k http://localhost:3002/info/time"
           --name SimPortal
     steps:
       - name: test with curl
