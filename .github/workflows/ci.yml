@@ -14,42 +14,36 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      SIM_TAG: master-simulator
       BIN_PATH: /tmp/bin
       METAL_PROJECT: TestTeam1
       METAL_PROJECT_ROLE: project_owner
-      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION}}
-      SIM_CONTAINER_NAME: SimPortal
 
     services:
       simulator:
-        image: 657273346644.dkr.ecr.${{ env.AWS_DEFAULT_REGION }}.amazonaws.com/hpe-hcss/quake:${SIM_TAG}
+        image: 657273346644.dkr.ecr.us-east-1.amazonaws.com/hpe-hcss/quake:master-simulator
         credentials:
           username: AWS
           password: ${{ needs.ecr_login.outputs.ecr_password }}
 
         ports:
-          - 8204:8204
-          - 80:80
           - 3002:3002
 
         env:
           AUTH0_ID: ${{ secrets.SIM_AUTH0 }}
           PASSWD: ${{ secrets.SIM_PASSWD }}
           EMAIL: ${{ secrets.SIM_USER }}
-          PORTAL_URL: localhost
 
         options: >-
           --health-timeout=10s
           --health-start-period=90s
           --health-cmd="curl -k http://localhost:3002/info/time"
-          --name ${{ env.SIM_CONTAINER_NAME }}
+          --name SimPortal
 
     steps:
       - name: Fetch qctl from Simulator instance
         run: |
           mkdir -p ${BIN_PATH}
-          docker cp ${{env.SIM_CONTAINER_NAME}}:/var/local/quake/downloads/qctl/linux/qctl ${BIN_PATH}
+          docker cp SimPortal:/var/local/quake/downloads/qctl/linux/qctl ${BIN_PATH}
           chmod +x ${BIN_PATH}/qctl
           ${BIN_PATH}/qctl -v
 
@@ -115,5 +109,5 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+          AWS_DEFAULT_REGION: us-east-1
         run: echo "::set-output name=ecr_password::$(aws ecr get-login-password)"
