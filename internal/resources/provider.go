@@ -10,6 +10,7 @@ import (
 
 const (
 	pollInterval = 3 * time.Second
+	pollCountMax = 100
 )
 
 var (
