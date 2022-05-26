@@ -21,7 +21,6 @@ jobs:
           PASSWD: ${{ secrets.SIM_PASSWD }}
           EMAIL: ${{ secrets.SIM_USER }}
           PORTAL_URL: localhost
-        options: >-
     steps:
       - name: test with curl
         run: |
