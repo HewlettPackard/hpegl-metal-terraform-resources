@@ -190,8 +190,6 @@ func NewConfig(portalURL string, opts ...CreateOpt) (*Config, error) {
 		cfg.AddDefaultHeader("Membership", config.user)
 	}
 
-	cfg.Debug = true
-
 	// get new API Client with basepath and auth credentials setup in configuration and Context
 	config.context = ctx
 	config.Client = rest.NewAPIClient(cfg)
