@@ -94,11 +94,17 @@ jobs:
           PASSWD=${{ secrets.SIM_PASSWD }}
           EMAIL=${{ secrets.SIM_USER }}
 
-          ${BIN_PATH}/qctl login --portal http://localhost:3002 -u ${EMAIL} -p ${PASSWD} -m ${METAL_PROJECT} -r ${METAL_PROJECT_ROLE}
-
           sleep 60s
 
           docker logs SimPortal
+
+          ${BIN_PATH}/qctl login --portal http://localhost:3002 -u ${EMAIL} -p ${PASSWD} -m 'TestTeam1' -r 'hoster_owner'
+
+          ${BIN_PATH}/qctl machines list --fmt yaml
+
+          ${BIN_PATH}/qctl login --portal http://localhost:3002 -u ${EMAIL} -p ${PASSWD} -m ${METAL_PROJECT} -r ${METAL_PROJECT_ROLE}
+
+
 
           export TF_LOG=debug
 
