@@ -57,7 +57,7 @@ jobs:
         run: |
           PASSWD=${{ secrets.SIM_PASSWD }}
           EMAIL=${{ secrets.SIM_USER }}
-          /tmp/bin/qctl login --portal http://locahost:3002 -u ${EMAIL} -p ${PASSWD} -m 'TestTeam1' -r 'portal_owner'
+          /tmp/bin/qctl login --portal http://localhost:3002 -u ${EMAIL} -p ${PASSWD} -m 'TestTeam1' -r 'portal_owner'
           export HPEGL_METAL_GL_TOKEN=false
           make acceptance
 
