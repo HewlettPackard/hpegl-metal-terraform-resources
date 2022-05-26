@@ -33,15 +33,10 @@ jobs:
           PORTAL_URL: localhost
         options: >-
           --health-timeout=30s
-          --health-start-period=60s
+          --health-start-period=120s
           --health-cmd="curl -k http://localhost:3002/info/time"
           --name SimPortal
     steps:
-      - name: test with curl
-        run: |
-          sleep 60s
-          curl -k http://localhost:3002/info/time
-
       - name: Fetch qctl from Simulator instance
         run: |
           mkdir -p ${BIN_PATH}
