@@ -8,10 +8,6 @@ on:
     branches:
       - 'master'
 
-env:
-  AWS_REGION: us-east-1
-  SIM_CONTAINER_NAME: SimPortal
-
 jobs:
   deploy_simportal:
     needs: ecr_login
@@ -22,10 +18,12 @@ jobs:
       BIN_PATH: /tmp/bin
       METAL_PROJECT: TestTeam1
       METAL_PROJECT_ROLE: project_owner
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION}}
+      SIM_CONTAINER_NAME: SimPortal
 
     services:
       simulator:
-        image: 657273346644.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/hpe-hcss/quake:${SIM_TAG}
+        image: 657273346644.dkr.ecr.${{ env.AWS_DEFAULT_REGION }}.amazonaws.com/hpe-hcss/quake:${SIM_TAG}
         credentials:
           username: AWS
           password: ${{ needs.ecr_login.outputs.ecr_password }}
@@ -117,5 +115,5 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: ${{ env.AWS_REGION }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
         run: echo "::set-output name=ecr_password::$(aws ecr get-login-password)"
