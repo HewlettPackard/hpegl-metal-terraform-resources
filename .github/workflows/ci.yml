@@ -98,6 +98,10 @@ jobs:
 
           sleep 60s
 
+          docker logs SimPortal
+
+          export TF_LOG=debug
+
           export HPEGL_METAL_GL_TOKEN=false
           make acceptance
 
