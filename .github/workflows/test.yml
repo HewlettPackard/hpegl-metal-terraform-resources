@@ -24,7 +24,7 @@ jobs:
         options: >-
           --health-timeout=60s
           --health-start-period=60s
-          --health-cmd 'ps -aef | grep steeld'
+          --health-cmd="ps -aef | grep steeld"
     steps:
       - name: test with curl
         run: |
