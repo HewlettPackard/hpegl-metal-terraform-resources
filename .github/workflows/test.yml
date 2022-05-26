@@ -22,6 +22,11 @@ jobs:
       - name: Build and Install Plugin
         run: make install
 
+      - name: Run tests
+        run: |
+          export HPEGL_METAL_GL_TOKEN=false
+          make acceptance
+
   deploy_simportal:
     needs: ecr_login
     runs-on: ubuntu-latest
