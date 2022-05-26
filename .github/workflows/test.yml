@@ -3,33 +3,6 @@ name: Run tests
 on: [push]
 
 jobs:
-  test:
-    needs: deploy_simportal
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout workspace
-        uses: actions/checkout@v3
-
-      - uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.1.7
-
-      - name: Set up Go
-        uses: actions/setup-go@v3
-        with:
-          go-version: 1.17
-
-      - name: Build and Install Plugin
-        run: make install
-
-      - name: Run tests
-        run: |
-          PASSWD=${{ secrets.SIM_PASSWD }}
-          EMAIL=${{ secrets.SIM_USER }}
-          /tmp/bin/qctl login --portal http://locahost:3002 -u ${EMAIL} -p ${PASSWD} -m 'TestTeam1' -r 'portal_owner'
-          export HPEGL_METAL_GL_TOKEN=false
-          make acceptance
-
   deploy_simportal:
     needs: ecr_login
     runs-on: ubuntu-latest
@@ -64,6 +37,29 @@ jobs:
           docker cp SimPortal:/var/local/quake/downloads/qctl/linux/qctl /tmp/bin
           chmod +x /tmp/bin/qctl
           /tmp/bin/qctl -v
+
+      - name: Checkout workspace
+        uses: actions/checkout@v3
+
+      - uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.1.7
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.17
+
+      - name: Build and Install Plugin
+        run: make install
+
+      - name: Run tests
+        run: |
+          PASSWD=${{ secrets.SIM_PASSWD }}
+          EMAIL=${{ secrets.SIM_USER }}
+          /tmp/bin/qctl login --portal http://locahost:3002 -u ${EMAIL} -p ${PASSWD} -m 'TestTeam1' -r 'portal_owner'
+          export HPEGL_METAL_GL_TOKEN=false
+          make acceptance
 
   ecr_login:
     runs-on: ubuntu-latest
