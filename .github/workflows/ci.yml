@@ -98,7 +98,7 @@ jobs:
 
           docker logs SimPortal
 
-          ${BIN_PATH}/qctl login --portal http://localhost:3002 -u ${EMAIL} -p ${PASSWD} -m 'TestTeam1' -r 'hoster_owner'
+          ${BIN_PATH}/qctl login --portal http://localhost:3002 -u ${EMAIL} -p ${PASSWD} -m 'TestHoster1' -r 'hoster_owner'
 
           ${BIN_PATH}/qctl machines list --fmt yaml
 
