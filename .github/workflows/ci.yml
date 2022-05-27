@@ -1,4 +1,6 @@
-name: CI
+#(C) Copyright 2022 Hewlett Packard Enterprise Development LP
+
+name: ci
 
 on:
   pull_request:
@@ -7,7 +9,7 @@ on:
       - 'master'
 
 jobs:
-  verify:
+  ci:
     needs: ecr_login
     runs-on: ubuntu-20.04
 
@@ -56,7 +58,7 @@ jobs:
       - name: Verify document generation
         run: make docs
 
-      - name: Build and Install plugin
+      - name: Build and Install TF plugin
         run: make install
 
       - name: Terraform-Lint
@@ -90,6 +92,7 @@ jobs:
           PASSWD=${{ secrets.SIM_PASSWD }}
           EMAIL=${{ secrets.SIM_USER }}
 
+          # generate .qjwt file required by the Metal provider
           ${BIN_PATH}/qctl login --portal http://localhost:3002 -u ${EMAIL} -p ${PASSWD} -m ${METAL_PROJECT} -r ${METAL_PROJECT_ROLE}
 
           export HPEGL_METAL_GL_TOKEN=false
