@@ -39,7 +39,7 @@ Note: For debugging the provider please refer to the
 
 ## Using GreenLake tokens
 
-If you are using GreenLake tokens, the required information is required to be provided in a .gltform file. This file can be written in home or in the directory from which terraform is run.  
+If you are using GreenLake tokens, the required information is to be provided in a `.gltform` file. This file can be written in home or in the directory from which terraform is run.  
 
 The file contents:
  
@@ -55,7 +55,7 @@ projects.
 
 ## Using Metal tokens
 
-The terraform provider is also capable of using Metal tokens. The provider reads the required details- Bearer Token, URL, and membership from the file  _**~/.qjwt**_.
+The terraform provider is also capable of using Metal tokens. The provider reads the required details - Bearer Token, URL, and membership from the file  _**~/.qjwt**_.
 
 The file contents:
 
