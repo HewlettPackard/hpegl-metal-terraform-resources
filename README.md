@@ -37,6 +37,46 @@ $ make build
 Note: For debugging the provider please refer to the
 [debugging guide](https://medium.com/@gandharva666/debugging-terraform-using-jetbrains-goland-f9a7e992cb1d)
 
+## Using GreenLake tokens
+
+If you are using GreenLake tokens, the required information is required to be provided in a .gltform file. This file can be written in home or in the directory from which terraform is run.  
+
+The file contents:
+ 
+```yaml
+space_name: <...>
+rest_url: http://localhost:3002
+project_id: 65c82181-fefc-4ea7-870e-628225fe7664
+access_token: <...>
+```
+
+The first field `space_name` is optional, and is only required if the terraform provider is going to be used to create
+projects.  
+
+## Using Metal tokens
+
+The terraform provider is also capable of using Metal tokens. The provider reads the required details- Bearer Token, URL, and membership from the file  _**~/.qjwt**_.
+
+The file contents:
+
+```yaml
+rest_url: http://172.25.0.2:3002
+user: h1@hpe.com
+jwt: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlJFTk.dlfkjsj.dfsdf
+member_id: 835590C1-AFF7-438B-BBBD-D6184157CB41
+```
+
+To make the provider use Metal tokens - i.e. use the information in the .qjwt file - the gl_token field must be set
+to `false` in the provider definition stanza:
+
+```hcl
+provider "hpegl" {
+  metal {
+     gl_token = false
+  }
+}
+```
+
 ## Testing stand-alone provider
 
 ### Unit tests
