@@ -9,7 +9,7 @@ require (
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.17.0
 	github.com/hewlettpackard/hpegl-metal-client v1.4.0
 	github.com/hewlettpackard/hpegl-provider-lib v0.0.12
-	github.com/stretchr/testify v1.7.1
+	github.com/stretchr/testify v1.7.2
 	gopkg.in/yaml.v2 v2.4.0
 )
 
@@ -208,7 +208,7 @@ require (
 	google.golang.org/grpc v1.46.0 // indirect
 	google.golang.org/protobuf v1.28.0 // indirect
 	gopkg.in/ini.v1 v1.66.4 // indirect
-	gopkg.in/yaml.v3 v3.0.0 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 	honnef.co/go/tools v0.3.1 // indirect
 	mvdan.cc/gofumpt v0.3.1 // indirect
 	mvdan.cc/interfacer v0.0.0-20180901003855-c20040233aed // indirect
