@@ -5,6 +5,8 @@
   - [Requirements](#requirements)
   - [Usage](#usage)
   - [Building the resources as a stand-alone provider](#building-the-resources-as-a-stand-alone-provider)
+  - [Using GreenLake tokens](#using-greenlake-tokens)
+  - [Using Metal tokens](#using-metal-tokens)
   - [Testing stand-alone provider](#testing-stand-alone-provider)
     - [Unit tests](#unit-tests)
     - [Acceptance tests](#acceptance-tests)
@@ -39,7 +41,11 @@ Note: For debugging the provider please refer to the
 
 ## Using GreenLake tokens
 
-If you are using GreenLake tokens, the required information is to be provided in a `.gltform` file. This file can be written in home or in the directory from which terraform is run.  
+**NOTE**: The below steps are applicable only when using stand-alone provider. If you are using [hpegl provider](https://registry.terraform.io/providers/HPE/hpegl/latest/docs),
+then follow the steps explained on that page to specify the parameters.
+   
+When using GreenLake tokens, the required parameters is to be provided in a `.gltform` file.  
+This file can be written in home or in the directory from which terraform is run.  
 
 The file contents:
  
@@ -50,23 +56,25 @@ project_id: 65c82181-fefc-4ea7-870e-628225fe7664
 access_token: <...>
 ```
 
-The first field `space_name` is optional, and is only required if the terraform provider is going to be used to create
-projects.  
+`space_name` is optional, and is only required if the terraform provider is going to be used to create projects.  
+Access token may be obtained by logging into HPE GreenLake Central and then clicking **API Access** on the User menu. 
+
 
 ## Using Metal tokens
 
-The terraform provider is also capable of using Metal tokens. The provider reads the required details - Bearer Token, URL, and membership from the file  _**~/.qjwt**_.
+The terraform provider is also capable of using Metal tokens. The provider reads the required details - Bearer Token, URL, and membership from the file `~/.qjwt`.
+The easiest way to create `~/.qjwt` is by using `qctl` CLI tool. Log into the GL Metal Operator portal using `qctl`. Note that you must login as a Project member in order to run TF.
 
 The file contents:
 
 ```yaml
 rest_url: http://172.25.0.2:3002
-user: h1@hpe.com
+user: projectuser1@hpe.com
 jwt: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlJFTk.dlfkjsj.dfsdf
 member_id: 835590C1-AFF7-438B-BBBD-D6184157CB41
 ```
 
-To make the provider use Metal tokens - i.e. use the information in the .qjwt file - the gl_token field must be set
+To make the provider use Metal tokens - i.e. use the information in the .qjwt file - the `gl_token` field must be set
 to `false` in the provider definition stanza:
 
 ```hcl
@@ -76,6 +84,8 @@ provider "hpegl" {
   }
 }
 ```
+
+`gl_token` fieldcan also be set or overridden through the `HPEGL_METAL_GL_TOKEN` env-var.
 
 ## Testing stand-alone provider
 
