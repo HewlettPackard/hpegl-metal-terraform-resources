@@ -85,7 +85,7 @@ provider "hpegl" {
 }
 ```
 
-`gl_token` fieldcan also be set or overridden through the `HPEGL_METAL_GL_TOKEN` env-var.
+`gl_token` field can also be set or overridden through the `HPEGL_METAL_GL_TOKEN` env-var.
 
 ## Testing stand-alone provider
 
