@@ -326,6 +326,8 @@ func resourceMetalNetworkRead(d *schema.ResourceData, meta interface{}) (err err
 
 		if errors.As(err, &nErr) {
 			err = fmt.Errorf("failed to read network %s: %w", strings.Trim(nErr.Message(), "\n "), err)
+		} else if err != nil {
+			err = fmt.Errorf("failed to read network %w", err)
 		}
 	}()
 
