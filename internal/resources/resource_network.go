@@ -326,8 +326,6 @@ func resourceMetalNetworkRead(d *schema.ResourceData, meta interface{}) (err err
 		if errors.As(err, &nErr) {
 			err = fmt.Errorf("failed to read network %s: %w", strings.Trim(nErr.Message(), "\n "), err)
 
-		} else {
-			err = fmt.Errorf("failed to read network %w", err)
 		}
 	}()
 
@@ -366,6 +364,7 @@ func resourceMetalNetworkRead(d *schema.ResourceData, meta interface{}) (err err
 	}
 
 	if err = d.Set(nPurpose, n.Purpose); err != nil {
+		// nolint:wrapcheck // defer func is wrapping the error.
 		return err
 	}
 
