@@ -161,7 +161,7 @@ func networkSchema() map[string]*schema.Schema {
 		nPurpose: {
 			Type:        schema.TypeString,
 			Optional:    true,
-			Description: getSupportedNetworkPurpose(),
+			Description: "Purpose of the network. Allowed values: " + getSupportedNetworkPurpose(),
 		},
 		nIPPoolID: {
 			Type:        schema.TypeString,
