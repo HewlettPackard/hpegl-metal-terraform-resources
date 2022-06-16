@@ -158,6 +158,11 @@ func networkSchema() map[string]*schema.Schema {
 			Default:     rest.NETWORKHOSTUSE_OPTIONAL,
 			Description: "Required, Optional or Default",
 		},
+		nPurpose: {
+			Type:        schema.TypeString,
+			Optional:    true,
+			Description: getSupportedNetworkPurpose(),
+		},
 		nIPPoolID: {
 			Type:        schema.TypeString,
 			Computed:    true,
@@ -232,6 +237,16 @@ func resourceMetalNetworkCreate(d *schema.ResourceData, meta interface{}) (err e
 		Description: d.Get(nDescription).(string),
 		LocationID:  locationID,
 		NewIPPool:   ippool,
+	}
+
+	hostUseIntf := d.Get(nHostUse)
+	if hostUseIntf != nil {
+		newNetwork.HostUse = rest.NetworkHostUse(hostUseIntf.(string))
+	}
+
+	purposeIntf := d.Get(nPurpose)
+	if purposeIntf != nil {
+		newNetwork.Purpose = rest.NetworkPurpose(purposeIntf.(string))
 	}
 
 	ctx := p.GetContext()
@@ -350,6 +365,10 @@ func resourceMetalNetworkRead(d *schema.ResourceData, meta interface{}) (err err
 		return err
 	}
 
+	if err = d.Set(nPurpose, n.Purpose); err != nil {
+		return err
+	}
+
 	if err = d.Set(nIPPoolID, n.IPPoolID); err != nil {
 		return err
 	}
@@ -388,6 +407,16 @@ func resourceMetalNetworkUpdate(d *schema.ResourceData, meta interface{}) (err e
 	n.Name = d.Get(nName).(string)
 	n.Description = d.Get(nDescription).(string)
 
+	hostUse := d.Get(nHostUse)
+	if hostUse != nil {
+		n.HostUse = rest.NetworkHostUse(hostUse.(string))
+	}
+
+	purpose := d.Get(nPurpose)
+	if purpose != nil {
+		n.Purpose = rest.NetworkPurpose(purpose.(string))
+	}
+
 	_, _, err = p.Client.NetworksApi.Update(ctx, n.ID, n)
 	if err != nil {
 		return err
@@ -419,4 +448,18 @@ func resourceMetalNetworkDelete(d *schema.ResourceData, meta interface{}) (err e
 	d.SetId("")
 
 	return p.RefreshAvailableResources()
+}
+
+// getSupportedNetworkPurpose returns a string containing supported network purpose values.
+func getSupportedNetworkPurpose() string {
+	return fmt.Sprintf("%v, %v, %v, %v, %v, %v, %v, %v or %v",
+		rest.NETWORKPURPOSE_BACKUP,
+		rest.NETWORKPURPOSE_STORAGE,
+		rest.NETWORKPURPOSE_VM_KERNEL,
+		rest.NETWORKPURPOSE_VM_NSX_T,
+		rest.NETWORKPURPOSE_V_MOTION,
+		rest.NETWORKPURPOSE_V_CHA,
+		rest.NETWORKPURPOSE_VM_FT,
+		rest.NETWORKPURPOSE_I_SCSI_A,
+		rest.NETWORKPURPOSE_I_SCSI_B)
 }

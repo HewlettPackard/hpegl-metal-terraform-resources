@@ -25,6 +25,19 @@ func TestAccResourceNetwork_Basic(t *testing.T) {
 	})
 }
 
+func TestAccResourceNetwork_OptFields(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: resource.TestCheckFunc(func(s *terraform.State) error { return testAccCheckNetworkDestroy(t, s) }),
+		Steps: []resource.TestStep{
+			{
+				Config: testAccCheckNetworkOptFields(),
+			},
+		},
+	})
+}
+
 func testAccCheckNetworkBasic() string {
 	return `
 provider "hpegl" {
@@ -40,6 +53,26 @@ resource "hpegl_metal_network" "pnet" {
   name               = "pnet-test"              
   location           = var.location
   description        = "tf-net description"
+}`
+}
+
+func testAccCheckNetworkOptFields() string {
+	return `
+provider "hpegl" {
+	metal {
+	}
+}
+
+variable "location" {
+	default = "USA:Central:V2DCC01"
+}
+
+resource "hpegl_metal_network" "pnet" {
+  name               = "pnet-test"              
+  location           = var.location
+  description        = "tf-net description"
+  host_use           = "Default"
+  purpose            = "Storage"
 }`
 }
 
