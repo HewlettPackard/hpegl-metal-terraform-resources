@@ -239,14 +239,12 @@ func resourceMetalNetworkCreate(d *schema.ResourceData, meta interface{}) (err e
 		NewIPPool:   ippool,
 	}
 
-	hostUseIntf := d.Get(nHostUse)
-	if hostUseIntf != nil {
-		newNetwork.HostUse = rest.NetworkHostUse(hostUseIntf.(string))
+	if hostUse, ok := d.Get(nHostUse).(string); ok {
+		newNetwork.HostUse = rest.NetworkHostUse(hostUse)
 	}
 
-	purposeIntf := d.Get(nPurpose)
-	if purposeIntf != nil {
-		newNetwork.Purpose = rest.NetworkPurpose(purposeIntf.(string))
+	if purpose, ok := d.Get(nPurpose).(string); ok {
+		newNetwork.Purpose = rest.NetworkPurpose(purpose)
 	}
 
 	ctx := p.GetContext()
@@ -407,14 +405,12 @@ func resourceMetalNetworkUpdate(d *schema.ResourceData, meta interface{}) (err e
 	n.Name = d.Get(nName).(string)
 	n.Description = d.Get(nDescription).(string)
 
-	hostUse := d.Get(nHostUse)
-	if hostUse != nil {
-		n.HostUse = rest.NetworkHostUse(hostUse.(string))
+	if hostUse, ok := d.Get(nHostUse).(string); ok {
+		n.HostUse = rest.NetworkHostUse(hostUse)
 	}
 
-	purpose := d.Get(nPurpose)
-	if purpose != nil {
-		n.Purpose = rest.NetworkPurpose(purpose.(string))
+	if purpose, ok := d.Get(nPurpose).(string); ok {
+		n.Purpose = rest.NetworkPurpose(purpose)
 	}
 
 	_, _, err = p.Client.NetworksApi.Update(ctx, n.ID, n)
