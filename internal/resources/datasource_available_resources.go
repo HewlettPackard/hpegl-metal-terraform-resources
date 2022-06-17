@@ -34,6 +34,7 @@ const (
 	nName        = "name"
 	nDescription = "description"
 	nHostUse     = "host_use"
+	nPurpose     = "purpose"
 	nLocation    = "location"
 	nLocationID  = "location_id"
 	nIPPoolID    = "ip_pool_id"
@@ -348,6 +349,7 @@ func addNetworks(p *configuration.Config, d *schema.ResourceData, available rest
 			nName:        net.Name,
 			nDescription: net.Description,
 			nHostUse:     net.HostUse,
+			nPurpose:     net.Purpose,
 			nLocationID:  net.LocationID,
 			nIPPoolID:    net.IPPoolID,
 		}

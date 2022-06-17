@@ -158,6 +158,11 @@ func networkSchema() map[string]*schema.Schema {
 			Default:     rest.NETWORKHOSTUSE_OPTIONAL,
 			Description: "Required, Optional or Default",
 		},
+		nPurpose: {
+			Type:        schema.TypeString,
+			Optional:    true,
+			Description: "Purpose of the network. Allowed values: " + getSupportedNetworkPurpose(),
+		},
 		nIPPoolID: {
 			Type:        schema.TypeString,
 			Computed:    true,
@@ -232,6 +237,14 @@ func resourceMetalNetworkCreate(d *schema.ResourceData, meta interface{}) (err e
 		Description: d.Get(nDescription).(string),
 		LocationID:  locationID,
 		NewIPPool:   ippool,
+	}
+
+	if hostUse, ok := d.Get(nHostUse).(string); ok {
+		newNetwork.HostUse = rest.NetworkHostUse(hostUse)
+	}
+
+	if purpose, ok := d.Get(nPurpose).(string); ok {
+		newNetwork.Purpose = rest.NetworkPurpose(purpose)
 	}
 
 	ctx := p.GetContext()
@@ -310,9 +323,11 @@ func getIPPool(set *schema.Set) (ipPool *rest.NewIpPool) {
 func resourceMetalNetworkRead(d *schema.ResourceData, meta interface{}) (err error) {
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
+
 		if errors.As(err, &nErr) {
 			err = fmt.Errorf("failed to read network %s: %w", strings.Trim(nErr.Message(), "\n "), err)
-
+		} else if err != nil {
+			err = fmt.Errorf("failed to read network %w", err)
 		}
 	}()
 
@@ -347,6 +362,11 @@ func resourceMetalNetworkRead(d *schema.ResourceData, meta interface{}) (err err
 	}
 
 	if err = d.Set(nHostUse, n.HostUse); err != nil {
+		return err
+	}
+
+	if err = d.Set(nPurpose, n.Purpose); err != nil {
+		// nolint:wrapcheck // defer func is wrapping the error.
 		return err
 	}
 
@@ -388,6 +408,14 @@ func resourceMetalNetworkUpdate(d *schema.ResourceData, meta interface{}) (err e
 	n.Name = d.Get(nName).(string)
 	n.Description = d.Get(nDescription).(string)
 
+	if hostUse, ok := d.Get(nHostUse).(string); ok {
+		n.HostUse = rest.NetworkHostUse(hostUse)
+	}
+
+	if purpose, ok := d.Get(nPurpose).(string); ok {
+		n.Purpose = rest.NetworkPurpose(purpose)
+	}
+
 	_, _, err = p.Client.NetworksApi.Update(ctx, n.ID, n)
 	if err != nil {
 		return err
@@ -419,4 +447,18 @@ func resourceMetalNetworkDelete(d *schema.ResourceData, meta interface{}) (err e
 	d.SetId("")
 
 	return p.RefreshAvailableResources()
+}
+
+// getSupportedNetworkPurpose returns a string containing supported network purpose values.
+func getSupportedNetworkPurpose() string {
+	return fmt.Sprintf("%v, %v, %v, %v, %v, %v, %v, %v or %v",
+		rest.NETWORKPURPOSE_BACKUP,
+		rest.NETWORKPURPOSE_STORAGE,
+		rest.NETWORKPURPOSE_VM_KERNEL,
+		rest.NETWORKPURPOSE_VM_NSX_T,
+		rest.NETWORKPURPOSE_V_MOTION,
+		rest.NETWORKPURPOSE_V_CHA,
+		rest.NETWORKPURPOSE_VM_FT,
+		rest.NETWORKPURPOSE_I_SCSI_A,
+		rest.NETWORKPURPOSE_I_SCSI_B)
 }
