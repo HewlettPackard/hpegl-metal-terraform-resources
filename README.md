@@ -9,7 +9,7 @@
   - [Using Metal tokens](#using-metal-tokens)
   - [Testing stand-alone provider](#testing-stand-alone-provider)
     - [Unit tests](#unit-tests)
-    - [Acceptance tests](#acceptance-tests)
+    - [Acceptance tests](#acceptance-tests)   
 
 # Terraform resources for HPEGL Metal
 
