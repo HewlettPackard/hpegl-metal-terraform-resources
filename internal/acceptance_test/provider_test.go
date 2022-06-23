@@ -187,7 +187,7 @@ func getDefaultMetalConfigPath() (string, error) {
 		return "", fmt.Errorf("%v", err)
 	}
 
-	return filepath.Clean(filepath.Join(dir, filename)), nil
+	return filepath.Join(dir, filename), nil
 }
 
 func getDefaultIAMConfigPath() (string, error) {
@@ -198,7 +198,7 @@ func getDefaultIAMConfigPath() (string, error) {
 		return "", fmt.Errorf("%v", err)
 	}
 
-	return filepath.Clean(filepath.Join(dir, filename)), nil
+	return filepath.Join(dir, filename), nil
 }
 
 func writeToYAMLFile(d map[string]string, filePath string) error {
