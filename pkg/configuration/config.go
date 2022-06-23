@@ -24,14 +24,13 @@ func KeyForGLClientMap() string {
 
 // Config holds all the information required to talk to the portal.
 type Config struct {
-	restURL          string
-	token            string
-	user             string
-	space            string
-	terraformVersion string
-	trf              retrieve.TokenRetrieveFuncCtx
-	useGLToken       bool
-	context          context.Context
+	restURL    string
+	token      string
+	user       string
+	space      string
+	trf        retrieve.TokenRetrieveFuncCtx
+	useGLToken bool
+	context    context.Context
 	// Exported fields
 	PortalURL string
 	Client    *rest.APIClient
@@ -144,7 +143,7 @@ func NewConfig(portalURL string, opts ...CreateOpt) (*Config, error) {
 		// Use GetGLConfig from gltform
 		glconfig, err := gltform.GetGLConfig()
 		if err != nil {
-			return nil, fmt.Errorf("Error reading GL token file:  %w", err)
+			return nil, fmt.Errorf("error reading GL token file:  %w", err)
 		}
 
 		config.restURL = glconfig.RestURL
@@ -154,7 +153,7 @@ func NewConfig(portalURL string, opts ...CreateOpt) (*Config, error) {
 	} else {
 		qtoken, err := getQConfig()
 		if err != nil {
-			return nil, fmt.Errorf("Error reading Q token file:  %w", err)
+			return nil, fmt.Errorf("error reading Metal token file:  %w", err)
 		}
 
 		if portalURL != "" && portalURL != qtoken.OriginalURL {
@@ -174,6 +173,10 @@ func NewConfig(portalURL string, opts ...CreateOpt) (*Config, error) {
 	cfg.BasePath = config.restURL + "/rest/v1"
 
 	if config.useGLToken || config.trf != nil {
+		if err := validateGLConfig(*config); err != nil {
+			return config, fmt.Errorf("configuration error: %v", err)
+		}
+
 		// Add required headers if GL authentication method
 		if config.user != "" {
 			cfg.AddDefaultHeader("Project", config.user)
@@ -183,10 +186,11 @@ func NewConfig(portalURL string, opts ...CreateOpt) (*Config, error) {
 			cfg.AddDefaultHeader("Space", config.space)
 		}
 	} else {
-		// Add membership field to header if Q authentication method
-		if config.user == "" {
-			return config, fmt.Errorf("no valid memberid found for Q access token")
+		if err := validateMetalConfig(*config); err != nil {
+			return config, fmt.Errorf("configuration error: %v", err)
 		}
+
+		// Add membership field to header if Q authentication method
 		cfg.AddDefaultHeader("Membership", config.user)
 	}
 
@@ -194,6 +198,36 @@ func NewConfig(portalURL string, opts ...CreateOpt) (*Config, error) {
 	config.context = ctx
 	config.Client = rest.NewAPIClient(cfg)
 	return config, nil
+}
+
+func validateMetalConfig(config Config) error {
+	if config.restURL == "" {
+		return fmt.Errorf("rest_url is not set")
+	}
+
+	if config.user == "" {
+		return fmt.Errorf("member_id is not set")
+	}
+
+	if config.token == "" {
+		return fmt.Errorf(("jwt is not set"))
+	}
+
+	return nil
+}
+
+func validateGLConfig(config Config) error {
+	if config.restURL == "" {
+		return fmt.Errorf("rest_url is not set")
+	}
+
+	// when token retrieval function is registered, then token isn't required as config param, which
+	// is the case when initialized from hpegl.
+	if config.trf == nil && config.token == "" {
+		return fmt.Errorf("access_token is not set")
+	}
+
+	return nil
 }
 
 func getQConfig() (qjwt *Qjwt, err error) {
