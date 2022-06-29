@@ -8,6 +8,13 @@ run:
     - build
 
 linters-settings:
+  goheader:
+    template: '{{ copy }}'
+    values:
+      regexp: 
+        range: (([0-9]{4}(,\s?|-))*{{ year }})
+        copy: ^\(C\) Copyright {{ range }} Hewlett Packard Enterprise Development LP$
+        
   exhaustive:
     default-signifies-exhaustive: true
 
@@ -55,6 +62,7 @@ linters:
     - gocritic
     - godot
     - gofmt
+    - goheader
     - goimports
     - gomnd
     - goprintffuncname
