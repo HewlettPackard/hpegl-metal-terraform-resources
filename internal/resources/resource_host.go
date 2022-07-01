@@ -151,6 +151,7 @@ func hostSchema() map[string]*schema.Schema {
 		},
 		hInitiatorName: {
 			Type:        schema.TypeString,
+			Optional:    true,
 			Computed:    true,
 			Description: "The iSCSI initiator name for this host.",
 		},
@@ -509,9 +510,11 @@ func getVAsForHost(hostID string, vas []rest.VolumeAttachment) []rest.VolumeInfo
 func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err error) {
 	defer func() {
 		var nErr = rest.GenericOpenAPIError{}
+
 		if errors.As(err, &nErr) {
 			err = fmt.Errorf("failed to update host %s: %w", strings.Trim(nErr.Message(), "\n "), err)
-
+		} else if err != nil {
+			err = fmt.Errorf("failed to update host %w", err)
 		}
 	}()
 
@@ -574,6 +577,19 @@ func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err erro
 		if err != nil {
 			return err
 		}
+	}
+
+	// initiator name
+	updInitiatorName := d.Get(hInitiatorName).(string)
+	if updInitiatorName != "" && updInitiatorName != host.ISCSIConfig.InitiatorName {
+		host.ISCSIConfig.InitiatorName = d.Get(hInitiatorName).(string)
+	}
+
+	// Update.
+	ctx = p.GetContext()
+	_, _, err = p.Client.HostsApi.Update(ctx, host.ID, host)
+	if err != nil {
+		return err
 	}
 
 	return resourceMetalHostRead(d, meta)
