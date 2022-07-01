@@ -580,15 +580,17 @@ func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err erro
 	}
 
 	// initiator name
-	updInitiatorName := d.Get(hInitiatorName).(string)
-	if updInitiatorName != "" && updInitiatorName != host.ISCSIConfig.InitiatorName {
-		host.ISCSIConfig.InitiatorName = d.Get(hInitiatorName).(string)
+	updInitiatorName, ok := d.Get(hInitiatorName).(string)
+	if ok && updInitiatorName != "" && updInitiatorName != host.ISCSIConfig.InitiatorName {
+		host.ISCSIConfig.InitiatorName = updInitiatorName
 	}
 
 	// Update.
 	ctx = p.GetContext()
+
 	_, _, err = p.Client.HostsApi.Update(ctx, host.ID, host)
 	if err != nil {
+		// nolint:wrapcheck // defer func is wrapping the error.
 		return err
 	}
 
