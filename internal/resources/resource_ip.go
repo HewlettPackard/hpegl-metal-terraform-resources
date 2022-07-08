@@ -3,8 +3,6 @@
 package resources
 
 import (
-	"errors"
-	"fmt"
 	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -56,12 +54,7 @@ func IPResource() *schema.Resource {
 }
 
 func resourceIPCreate(d *schema.ResourceData, meta interface{}) (err error) {
-	defer func() {
-		var nErr = rest.GenericOpenAPIError{}
-		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to create IP resources %s: %w", strings.Trim(nErr.Message(), "\n "), err)
-		}
-	}()
+	defer wrapResourceError(&err, "failed to create IP resources")
 
 	p, err := client.GetClientFromMetaMap(meta)
 	if err != nil {
@@ -100,12 +93,7 @@ func resourceIPCreate(d *schema.ResourceData, meta interface{}) (err error) {
 }
 
 func resourceIPRead(d *schema.ResourceData, meta interface{}) (err error) {
-	defer func() {
-		var nErr = rest.GenericOpenAPIError{}
-		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to read IP resources %s: %w", strings.Trim(nErr.Message(), "\n "), err)
-		}
-	}()
+	defer wrapResourceError(&err, "failed to read IP resources")
 
 	p, err := client.GetClientFromMetaMap(meta)
 	if err != nil {
@@ -146,12 +134,7 @@ func resourceIPRead(d *schema.ResourceData, meta interface{}) (err error) {
 }
 
 func resourceIPDelete(d *schema.ResourceData, meta interface{}) (err error) {
-	defer func() {
-		var nErr = rest.GenericOpenAPIError{}
-		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to delete IP resources %s: %w", strings.Trim(nErr.Message(), "\n "), err)
-		}
-	}()
+	defer wrapResourceError(&err, "failed to delete IP resources")
 
 	p, err := client.GetClientFromMetaMap(meta)
 	if err != nil {

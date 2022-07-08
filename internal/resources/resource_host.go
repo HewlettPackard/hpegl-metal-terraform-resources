@@ -3,7 +3,6 @@
 package resources
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -221,13 +220,7 @@ func HostResource() *schema.Resource {
 
 //nolint: funlen    // Ignoring function length check on existing function
 func resourceMetalHostCreate(d *schema.ResourceData, meta interface{}) (err error) {
-	defer func() {
-		var nErr = rest.GenericOpenAPIError{}
-		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to create host %s: %w", strings.Trim(nErr.Message(), "\n "), err)
-
-		}
-	}()
+	defer wrapResourceError(&err, "failed to create host")
 
 	p, err := client.GetClientFromMetaMap(meta)
 	if err != nil {
@@ -416,13 +409,7 @@ func resourceMetalHostCreate(d *schema.ResourceData, meta interface{}) (err erro
 
 //nolint: funlen    // Ignoring function length check on existing function
 func resourceMetalHostRead(d *schema.ResourceData, meta interface{}) (err error) {
-	defer func() {
-		var nErr = rest.GenericOpenAPIError{}
-		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to query host %s: %w", strings.Trim(nErr.Message(), "\n "), err)
-
-		}
-	}()
+	defer wrapResourceError(&err, "failed to query host")
 
 	p, err := client.GetClientFromMetaMap(meta)
 	if err != nil {
@@ -508,15 +495,7 @@ func getVAsForHost(hostID string, vas []rest.VolumeAttachment) []rest.VolumeInfo
 
 //nolint: funlen    // Ignoring function length check on existing function
 func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err error) {
-	defer func() {
-		var nErr = rest.GenericOpenAPIError{}
-
-		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to update host %s: %w", strings.Trim(nErr.Message(), "\n "), err)
-		} else if err != nil {
-			err = fmt.Errorf("failed to update host %w", err)
-		}
-	}()
+	defer wrapResourceError(&err, "failed to update host")
 
 	p, err := client.GetClientFromMetaMap(meta)
 	if err != nil {
@@ -599,13 +578,7 @@ func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err erro
 
 //nolint: funlen    // Ignoring function length check on existing function
 func resourceMetalHostDelete(d *schema.ResourceData, meta interface{}) (err error) {
-	defer func() {
-		var nErr = rest.GenericOpenAPIError{}
-		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to delete host %s: %w", strings.Trim(nErr.Message(), "\n "), err)
-
-		}
-	}()
+	defer wrapResourceError(&err, "failed to delete host")
 
 	p, err := client.GetClientFromMetaMap(meta)
 	if err != nil {

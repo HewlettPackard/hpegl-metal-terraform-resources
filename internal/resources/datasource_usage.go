@@ -3,9 +3,6 @@
 package resources
 
 import (
-	"errors"
-	"fmt"
-	"strings"
 	"time"
 
 	"github.com/antihax/optional"
@@ -248,13 +245,7 @@ func DataSourceUsage() *schema.Resource {
 
 //nolint: funlen    // Ignoring function length check on existing function
 func resourceMetalUsageRead(d *schema.ResourceData, meta interface{}) (err error) {
-	defer func() {
-		var nErr = rest.GenericOpenAPIError{}
-		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to get usage %s: %w", strings.Trim(nErr.Message(), "\n "), err)
-
-		}
-	}()
+	defer wrapResourceError(&err, "failed to get usage")
 
 	p, err := client.GetClientFromMetaMap(meta)
 	if err != nil {
