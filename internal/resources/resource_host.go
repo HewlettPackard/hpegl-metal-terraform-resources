@@ -11,6 +11,7 @@ import (
 
 	rest "github.com/hewlettpackard/hpegl-metal-client/v1/pkg/client"
 	"github.com/hewlettpackard/hpegl-metal-terraform-resources/pkg/client"
+	"github.com/hewlettpackard/hpegl-metal-terraform-resources/pkg/configuration"
 )
 
 const (
@@ -558,10 +559,26 @@ func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err erro
 		}
 	}
 
+	// description
+	updDesc, ok := d.Get(hDescription).(string)
+	if ok && updDesc != host.Description {
+		host.Description = updDesc
+	}
+
 	// initiator name
 	updInitiatorName, ok := d.Get(hInitiatorName).(string)
 	if ok && updInitiatorName != "" && updInitiatorName != host.ISCSIConfig.InitiatorName {
 		host.ISCSIConfig.InitiatorName = updInitiatorName
+	}
+
+	// set the network ids
+	if host.NetworkIDs, err = getNetworkIDs(d, p, &host); err != nil {
+		return err
+	}
+
+	// set the network for default route
+	if host.NetworkForDefaultRoute, err = getNetworkDefRoute(d, p, &host); err != nil {
+		return err
 	}
 
 	// Update.
@@ -700,4 +717,83 @@ func isVolumeAvailable(vID string, availVols []rest.VolumeInfo) (string, bool) {
 	}
 
 	return "", false
+}
+
+// getNetworkIDs returns the network ids specified in the request.
+func getNetworkIDs(d *schema.ResourceData, p *configuration.Config, host *rest.Host) (netIds []string, err error) {
+	netIds = []string{}
+
+	nIDMap, nNameMap := getAvailableNetworkMaps(p, host.LocationID)
+	if len(nIDMap) == 0 {
+		return netIds, fmt.Errorf("no available networks for location %s", host.LocationID)
+	}
+
+	// networks can be listed with ids or names
+	// requests are sent with network ids
+	netsList, ok := d.Get(hNetworks).([]interface{})
+	if !ok {
+		// networks list is a required field
+		return netIds, fmt.Errorf("%s - could not determine network ids", hNetworks)
+	}
+
+	nets := convertStringArr(netsList)
+	for _, net := range nets {
+		if _, ok := nIDMap[net]; ok {
+			netIds = append(netIds, net)
+
+			continue
+		}
+
+		if nID, ok := nNameMap[net]; ok {
+			netIds = append(netIds, nID)
+
+			continue
+		}
+
+		return []string{}, fmt.Errorf("network %s is not available for location %s", net, host.LocationID)
+	}
+
+	return netIds, nil
+}
+
+// getNetworkDefRoute returns the network for default route specified in the request or
+// the current value maintained in the state.
+func getNetworkDefRoute(d *schema.ResourceData, p *configuration.Config, host *rest.Host) (nDefRoute string, err error) {
+	nDefRoute, ok := d.Get(hNetForDefaultRoute).(string)
+	if !ok {
+		// network for default route is optional
+		// return the current value
+		return host.NetworkForDefaultRoute, nil
+	}
+
+	nIDMap, nNameMap := getAvailableNetworkMaps(p, host.LocationID)
+	if len(nIDMap) == 0 {
+		return nDefRoute, fmt.Errorf("no available networks for location %s", host.LocationID)
+	}
+
+	if _, ok := nIDMap[nDefRoute]; ok {
+		return nDefRoute, nil
+	}
+
+	if id, ok := nNameMap[nDefRoute]; ok {
+		return id, nil
+	}
+
+	return nDefRoute, fmt.Errorf("network for default route %s does not match any available network for location %s",
+		nDefRoute, host.LocationID)
+}
+
+// getAvailableNetworkMaps returns available network name and ID maps based on location.
+func getAvailableNetworkMaps(p *configuration.Config, loc string) (nIDMap map[string]string, nNameMap map[string]string) {
+	nIDMap = make(map[string]string)
+	nNameMap = make(map[string]string)
+
+	for _, net := range p.AvailableResources.Networks {
+		if net.LocationID == loc {
+			nNameMap[net.Name] = net.ID
+			nIDMap[net.ID] = net.Name
+		}
+	}
+
+	return nIDMap, nNameMap
 }
