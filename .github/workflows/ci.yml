@@ -86,6 +86,19 @@ jobs:
           docker cp SimPortal:/var/local/quake/downloads/qctl/linux/qctl ${BIN_PATH}
           chmod +x ${BIN_PATH}/qctl
           ${BIN_PATH}/qctl -v
+      
+      - name: Wait for Machines to become available 
+        run: |
+          PASSWD=${{ secrets.SIM_PASSWD }}
+          EMAIL=${{ secrets.SIM_USER }}
+
+          ${BIN_PATH}/qctl login --portal http://localhost:3002 -u ${EMAIL} -p ${PASSWD} -m ${METAL_PROJECT} -r 'hoster_member'
+
+          count=`${BIN_PATH}/qctl machines list --format json | jq '.[] | select(.state == "Available")' | wc -l`
+          if [[ $count -le 0 ]]; then
+            echo "Machines not available yet"
+            exit
+          fi      
 
       - name: Run tests
         run: |
