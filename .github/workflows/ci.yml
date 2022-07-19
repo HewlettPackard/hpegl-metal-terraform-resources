@@ -19,6 +19,8 @@ jobs:
       METAL_PROJECT_ROLE: project_owner
       METAL_HOSTER: TestHoster1
       METAL_HOSTER_ROLE: hoster_owner
+      MACHINES_CHECK_INTERVAL: 30s
+      MACHINES_CHECK_ATTEMPTS: 20
 
     services:
       simulator:
@@ -89,16 +91,17 @@ jobs:
           chmod +x ${BIN_PATH}/qctl
           ${BIN_PATH}/qctl -v
       
-      - name: Wait for Machines to become available 
+      - name: Wait for machines to become available 
         run: |
           PASSWD=${{ secrets.SIM_PASSWD }}
           EMAIL=${{ secrets.SIM_USER }}
 
           ${BIN_PATH}/qctl login --portal http://localhost:3002 -u ${EMAIL} -p ${PASSWD} -m ${METAL_HOSTER} -r ${METAL_HOSTER_ROLE}
 
-          total_attempts=30
+          total_attempts=$MACHINES_CHECK_ATTEMPTS
           remaining=$total_attempts
           count=0
+
           while [ $remaining -gt 0 ]; do 
             # count of available machines
             count=`${BIN_PATH}/qctl machines list --format json | jq '.[] | select(.state == "Available")' \
@@ -110,8 +113,9 @@ jobs:
             fi    
            
             remaining=$(($remaining-1))
+            echo "Remaining attempts: $remaining"
 
-            sleep 30s
+            sleep $MACHINES_CHECK_INTERVAL
           done
 
           if [[ $remaining -eq 0 ]]; then
