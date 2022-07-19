@@ -4,6 +4,7 @@ package acceptance_test
 
 import (
 	"fmt"
+	"net/http"
 	"testing"
 	"time"
 
@@ -28,49 +29,19 @@ func TestAccResourceHost_Basic(t *testing.T) {
 			// host create step
 			{
 				Config: testAccCheckHostBasic(),
-				Check:  testWaitUntiHostReady("hpegl_metal_host.test_host"),
+				Check:  testWaitUntilHostReady("hpegl_metal_host.test_host"),
 			},
 			// host update step
 			{
 				Config: testAccHostUpdateConfig(),
-				Check:  testWaitUntiHostReady("hpegl_metal_host.test_host"),
+				Check:  testWaitUntilHostReady("hpegl_metal_host.test_host"),
 			},
 		},
 	})
 }
 
 func testAccCheckHostBasic() string {
-	return `
-provider "hpegl" {
-	metal {
-	}
-}
-
-variable "location" {
-	default = "USA:Central:V2DCC01"
-}
-
-data "hpegl_metal_available_resources" "compute" {
-}
-
-locals  {
-	host_os_flavor = "${data.hpegl_metal_available_resources.compute.images.0.flavor}"
-	host_os_version = "${data.hpegl_metal_available_resources.compute.images.0.version}"
-	networks = ([for net in "${data.hpegl_metal_available_resources.compute.networks}": 
-		net.name if net.location == var.location] )
-}
-
-resource "hpegl_metal_host" "test_host" {
-  name               = "test"
-  image              = join("@",[local.host_os_flavor, local.host_os_version])
-  machine_size       = "${data.hpegl_metal_available_resources.compute.machine_sizes.0.name}"
-  ssh                = ["User1 - Linux"]
-  networks           = sort(local.networks)
-  network_route      = "Public"
-  location           = var.location
-  description        = "hello from Terraform"
-}
-`
+	return hostConfig("create")
 }
 
 // testAccHostUpdateConfig updates the terraform config by updating
@@ -79,7 +50,13 @@ resource "hpegl_metal_host" "test_host" {
 //   - last network removed from sorted list of networks
 // Updated config is compared against config specified in testAccCheckHostBasic.
 func testAccHostUpdateConfig() string {
-	return `
+	return hostConfig("update")
+}
+
+// hostConfig returns the host config to apply for the specified operation.
+func hostConfig(op string) string {
+	// common config for create/update
+	common := `
 provider "hpegl" {
 	metal {
 	}
@@ -101,23 +78,36 @@ locals  {
 	updated_networks_length = length(local.sorted_networks) - 1
 	updated_networks = ([for i, net in local.sorted_networks : net if i < local.updated_networks_length])
 }
+`
+	// description, networks
+	desc := `"hello from Terraform"`
+	nets := `local.sorted_networks`
 
+	if "update" == op {
+		desc = `"hello from Terraform (updated)"`
+		nets = `local.updated_networks`
+	}
+
+	// host block
+	host := fmt.Sprintf(`
 resource "hpegl_metal_host" "test_host" {
 	name               = "test"
 	image              = join("@",[local.host_os_flavor, local.host_os_version])
 	machine_size       = "${data.hpegl_metal_available_resources.compute.machine_sizes.0.name}"
 	ssh                = ["User1 - Linux"]
-	networks           = local.updated_networks
+	networks           = %s
 	network_route      = "Public"
 	location           = var.location
-	description        = "hello from Terraform (updated)"
-}
-`
+	description        = %s
+}	
+`, nets, desc)
+
+	return common + host
 }
 
-// testWaitUntiHostReady checks if the host was created successfully and
+// testWaitUntilHostReady checks if the host was created successfully and
 // is in the 'Ready' state.
-func testWaitUntiHostReady(rsrc string) resource.TestCheckFunc {
+func testWaitUntilHostReady(rsrc string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[rsrc]
 		if !ok {
@@ -139,12 +129,13 @@ func testWaitUntiHostReady(rsrc string) resource.TestCheckFunc {
 
 		hostState := rest.HOSTSTATE_NEW
 		for i := 0; i < hostStatePollCount && hostState != rest.HOSTSTATE_READY; i++ {
-			host, _, err := p.Client.HostsApi.GetByID(ctx, hostID)
+			time.Sleep(hostStateReadyWait)
+
+			host, resp, err := p.Client.HostsApi.GetByID(ctx, hostID)
 			if err != nil {
 				return fmt.Errorf("Host: %q not found: %s", hostID, err)
 			}
-
-			time.Sleep(hostStateReadyWait)
+			defer resp.Body.Close()
 
 			hostState = host.State
 		}
@@ -178,9 +169,14 @@ func testAccCheckHostDestroy(t *testing.T, s *terraform.State) error {
 
 		ctx := p.GetContext()
 
-		host, _, err := p.Client.HostsApi.GetByID(ctx, hostID)
-		if err == nil && host.State != rest.HOSTSTATE_DELETED {
-			return fmt.Errorf("Host: %s still exists", hostID)
+		_, resp, err := p.Client.HostsApi.GetByID(ctx, hostID)
+		if err != nil {
+			return fmt.Errorf("Error retrieving host %s: %v", hostID, err)
+		}
+		defer resp.Body.Close()
+
+		if resp.StatusCode != http.StatusNotFound {
+			return fmt.Errorf("Host %s exists. Response code: %d", hostID, resp.StatusCode)
 		}
 	}
 
