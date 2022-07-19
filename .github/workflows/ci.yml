@@ -92,7 +92,7 @@ jobs:
           PASSWD=${{ secrets.SIM_PASSWD }}
           EMAIL=${{ secrets.SIM_USER }}
 
-          ${BIN_PATH}/qctl login --portal http://localhost:3002 -u ${EMAIL} -p ${PASSWD} -m 'TestHoster1' -r 'hoster_member'
+          ${BIN_PATH}/qctl login --portal http://localhost:3002 -u ${EMAIL} -p ${PASSWD} -m 'TestHoster1' -r 'hoster_owner'
 
           count=`${BIN_PATH}/qctl machines list --format json | jq '.[] | select(.state == "Available")' | wc -l`
           if [[ $count -le 0 ]]; then
