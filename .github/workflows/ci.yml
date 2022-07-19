@@ -17,6 +17,8 @@ jobs:
       BIN_PATH: /tmp/bin
       METAL_PROJECT: TestTeam1
       METAL_PROJECT_ROLE: project_owner
+      METAL_HOSTER: TestHoster1
+      METAL_HOSTER_ROLE: hoster_owner
 
     services:
       simulator:
@@ -92,13 +94,29 @@ jobs:
           PASSWD=${{ secrets.SIM_PASSWD }}
           EMAIL=${{ secrets.SIM_USER }}
 
-          ${BIN_PATH}/qctl login --portal http://localhost:3002 -u ${EMAIL} -p ${PASSWD} -m 'TestHoster1' -r 'hoster_owner'
+          ${BIN_PATH}/qctl login --portal http://localhost:3002 -u ${EMAIL} -p ${PASSWD} -m ${METAL_HOSTER} -r ${METAL_HOSTER_ROLE}
 
-          count=`${BIN_PATH}/qctl machines list --format json | jq '.[] | select(.state == "Available")' | wc -l`
-          if [[ $count -le 0 ]]; then
-            echo "Machines not available yet"
-            exit
-          fi      
+          total_attempts=30
+          remaining=$total_attempts
+          count=0
+          while [ $remaining -gt 0 ]; do 
+            # count of available machines
+            count=`${BIN_PATH}/qctl machines list --format json | jq '.[] | select(.state == "Available")' \
+               | jq `.[].state` |  wc -l`
+            
+            # atleast 1 available
+            if [[ $count -gt 0 ]]; then
+              break
+            fi    
+           
+            remaining=$(($remaining-1))
+            sleep 30s
+          done
+
+          if [[ $remaining -eq 0 ]]; then
+           echo "machines didn't become available within the wait duration"
+           exit 1
+          fi            
 
       - name: Run tests
         run: |
