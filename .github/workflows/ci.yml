@@ -102,14 +102,15 @@ jobs:
           while [ $remaining -gt 0 ]; do 
             # count of available machines
             count=`${BIN_PATH}/qctl machines list --format json | jq '.[] | select(.state == "Available")' \
-               | jq `.[].state` |  wc -l`
+               | jq '.[].state' |  wc -l`
             
-            # atleast 1 available
+            # atleast 1 available?
             if [[ $count -gt 0 ]]; then
               break
             fi    
            
             remaining=$(($remaining-1))
+            
             sleep 30s
           done
 
