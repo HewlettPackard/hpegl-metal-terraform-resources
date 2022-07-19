@@ -83,7 +83,7 @@ locals  {
 	desc := `"hello from Terraform"`
 	nets := `local.sorted_networks`
 
-	if "update" == op {
+	if op == "update" {
 		desc = `"hello from Terraform (updated)"`
 		nets = `local.updated_networks`
 	}
