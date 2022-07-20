@@ -138,13 +138,17 @@ func difference(a, b []string) []string {
 
 // wrapResourceError ensures that any non-nil error is wrapped.
 func wrapResourceError(err *error, msg string) {
-	if err != nil && *err != nil {
-		var nErr = rest.GenericOpenAPIError{}
-
-		if errors.As(*err, &nErr) {
-			*err = fmt.Errorf("%s %s: %w", msg, strings.Trim(nErr.Message(), "\n "), *err)
-		} else {
-			*err = fmt.Errorf("%s %w", msg, *err)
-		}
+	if err == nil || *err == nil {
+	   return
 	}
+	
+	nErr := rest.GenericOpenAPIError{}
+
+	if errors.As(*err, &nErr) {
+	    *err = fmt.Errorf("%s %s: %w", msg, strings.Trim(nErr.Message(), "\n "), *err)
+	    
+	    return
+	}
+	
+	*err = fmt.Errorf("%s %w", msg, *err)
 }
