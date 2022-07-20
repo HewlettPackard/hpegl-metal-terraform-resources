@@ -174,7 +174,7 @@ func testAccCheckHostDestroy(t *testing.T, s *terraform.State) error {
 		if err != nil {
 			return fmt.Errorf("Error retrieving host %s: %v", hostID, err)
 		}
-		
+
 		resp.Body.Close()
 
 		if resp.StatusCode != http.StatusNotFound {
