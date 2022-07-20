@@ -135,7 +135,7 @@ func testWaitUntilHostReady(rsrc string) resource.TestCheckFunc {
 			if err != nil {
 				return fmt.Errorf("Host: %q not found: %s", hostID, err)
 			}
-			defer resp.Body.Close()
+			resp.Body.Close()
 
 			hostState = host.State
 		}
@@ -173,7 +173,7 @@ func testAccCheckHostDestroy(t *testing.T, s *terraform.State) error {
 		if err != nil {
 			return fmt.Errorf("Error retrieving host %s: %v", hostID, err)
 		}
-		defer resp.Body.Close()
+		resp.Body.Close()
 
 		if resp.StatusCode != http.StatusNotFound {
 			return fmt.Errorf("Host %s exists. Response code: %d", hostID, resp.StatusCode)

@@ -560,8 +560,7 @@ func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err erro
 	}
 
 	// description
-	updDesc, ok := d.Get(hDescription).(string)
-	if ok && updDesc != host.Description {
+	if updDesc, ok := d.Get(hDescription).(string); ok {
 		host.Description = updDesc
 	}
 
@@ -779,7 +778,7 @@ func getNetworkDefRoute(d *schema.ResourceData, p *configuration.Config, host *r
 		return id, nil
 	}
 
-	return nDefRoute, fmt.Errorf("network for default route %s does not match any available network for location %s",
+	return "", fmt.Errorf("network for default route %s does not match any available network for location %s",
 		nDefRoute, host.LocationID)
 }
 
