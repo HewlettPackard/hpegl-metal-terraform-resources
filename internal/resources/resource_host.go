@@ -3,7 +3,6 @@
 package resources
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -12,6 +11,7 @@ import (
 
 	rest "github.com/hewlettpackard/hpegl-metal-client/v1/pkg/client"
 	"github.com/hewlettpackard/hpegl-metal-terraform-resources/pkg/client"
+	"github.com/hewlettpackard/hpegl-metal-terraform-resources/pkg/configuration"
 )
 
 const (
@@ -221,13 +221,7 @@ func HostResource() *schema.Resource {
 
 //nolint: funlen    // Ignoring function length check on existing function
 func resourceMetalHostCreate(d *schema.ResourceData, meta interface{}) (err error) {
-	defer func() {
-		var nErr = rest.GenericOpenAPIError{}
-		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to create host %s: %w", strings.Trim(nErr.Message(), "\n "), err)
-
-		}
-	}()
+	defer wrapResourceError(&err, "failed to create host")
 
 	p, err := client.GetClientFromMetaMap(meta)
 	if err != nil {
@@ -416,13 +410,7 @@ func resourceMetalHostCreate(d *schema.ResourceData, meta interface{}) (err erro
 
 //nolint: funlen    // Ignoring function length check on existing function
 func resourceMetalHostRead(d *schema.ResourceData, meta interface{}) (err error) {
-	defer func() {
-		var nErr = rest.GenericOpenAPIError{}
-		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to query host %s: %w", strings.Trim(nErr.Message(), "\n "), err)
-
-		}
-	}()
+	defer wrapResourceError(&err, "failed to query host")
 
 	p, err := client.GetClientFromMetaMap(meta)
 	if err != nil {
@@ -508,15 +496,7 @@ func getVAsForHost(hostID string, vas []rest.VolumeAttachment) []rest.VolumeInfo
 
 //nolint: funlen    // Ignoring function length check on existing function
 func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err error) {
-	defer func() {
-		var nErr = rest.GenericOpenAPIError{}
-
-		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to update host %s: %w", strings.Trim(nErr.Message(), "\n "), err)
-		} else if err != nil {
-			err = fmt.Errorf("failed to update host %w", err)
-		}
-	}()
+	defer wrapResourceError(&err, "failed to update host")
 
 	p, err := client.GetClientFromMetaMap(meta)
 	if err != nil {
@@ -579,10 +559,25 @@ func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err erro
 		}
 	}
 
+	// description
+	if updDesc, ok := d.Get(hDescription).(string); ok {
+		host.Description = updDesc
+	}
+
 	// initiator name
 	updInitiatorName, ok := d.Get(hInitiatorName).(string)
 	if ok && updInitiatorName != "" && updInitiatorName != host.ISCSIConfig.InitiatorName {
 		host.ISCSIConfig.InitiatorName = updInitiatorName
+	}
+
+	// set the network ids
+	if host.NetworkIDs, err = getNetworkIDs(d, p, &host); err != nil {
+		return err
+	}
+
+	// set the network for default route
+	if host.NetworkForDefaultRoute, err = getNetworkDefRoute(d, p, &host); err != nil {
+		return err
 	}
 
 	// Update.
@@ -599,13 +594,7 @@ func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err erro
 
 //nolint: funlen    // Ignoring function length check on existing function
 func resourceMetalHostDelete(d *schema.ResourceData, meta interface{}) (err error) {
-	defer func() {
-		var nErr = rest.GenericOpenAPIError{}
-		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to delete host %s: %w", strings.Trim(nErr.Message(), "\n "), err)
-
-		}
-	}()
+	defer wrapResourceError(&err, "failed to delete host")
 
 	p, err := client.GetClientFromMetaMap(meta)
 	if err != nil {
@@ -727,4 +716,83 @@ func isVolumeAvailable(vID string, availVols []rest.VolumeInfo) (string, bool) {
 	}
 
 	return "", false
+}
+
+// getNetworkIDs returns the network ids specified in the request.
+func getNetworkIDs(d *schema.ResourceData, p *configuration.Config, host *rest.Host) (netIds []string, err error) {
+	netIds = []string{}
+
+	nIDMap, nNameMap := getAvailableNetworkMaps(p, host.LocationID)
+	if len(nIDMap) == 0 {
+		return netIds, fmt.Errorf("no available networks for location %s", host.LocationID)
+	}
+
+	// networks can be listed with ids or names
+	// requests are sent with network ids
+	netsList, ok := d.Get(hNetworks).([]interface{})
+	if !ok {
+		// networks list is a required field
+		return netIds, fmt.Errorf("%s - could not determine network ids", hNetworks)
+	}
+
+	nets := convertStringArr(netsList)
+	for _, net := range nets {
+		if _, ok := nIDMap[net]; ok {
+			netIds = append(netIds, net)
+
+			continue
+		}
+
+		if nID, ok := nNameMap[net]; ok {
+			netIds = append(netIds, nID)
+
+			continue
+		}
+
+		return []string{}, fmt.Errorf("network %s is not available for location %s", net, host.LocationID)
+	}
+
+	return netIds, nil
+}
+
+// getNetworkDefRoute returns the network for default route specified in the request or
+// the current value maintained in the state.
+func getNetworkDefRoute(d *schema.ResourceData, p *configuration.Config, host *rest.Host) (nDefRoute string, err error) {
+	nDefRoute, ok := d.Get(hNetForDefaultRoute).(string)
+	if !ok {
+		// network for default route is optional
+		// return the current value
+		return host.NetworkForDefaultRoute, nil
+	}
+
+	nIDMap, nNameMap := getAvailableNetworkMaps(p, host.LocationID)
+	if len(nIDMap) == 0 {
+		return nDefRoute, fmt.Errorf("no available networks for location %s", host.LocationID)
+	}
+
+	if _, ok := nIDMap[nDefRoute]; ok {
+		return nDefRoute, nil
+	}
+
+	if id, ok := nNameMap[nDefRoute]; ok {
+		return id, nil
+	}
+
+	return "", fmt.Errorf("network for default route %s does not match any available network for location %s",
+		nDefRoute, host.LocationID)
+}
+
+// getAvailableNetworkMaps returns available network name and ID maps based on location.
+func getAvailableNetworkMaps(p *configuration.Config, loc string) (nIDMap map[string]string, nNameMap map[string]string) {
+	nIDMap = make(map[string]string)
+	nNameMap = make(map[string]string)
+
+	for _, net := range p.AvailableResources.Networks {
+		if net.LocationID == loc {
+			nNameMap[net.Name] = net.ID
+			nIDMap[net.ID] = net.Name
+		}
+	}
+
+	return nIDMap, nNameMap
 }

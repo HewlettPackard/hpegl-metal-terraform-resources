@@ -3,9 +3,7 @@
 package resources
 
 import (
-	"errors"
 	"fmt"
-	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
@@ -155,13 +153,7 @@ func ProjectResource() *schema.Resource {
 }
 
 func resourceMetalProjectCreate(d *schema.ResourceData, meta interface{}) (err error) {
-	defer func() {
-		var nErr = rest.GenericOpenAPIError{}
-		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to create project %s: %w", strings.Trim(nErr.Message(), "\n "), err)
-
-		}
-	}()
+	defer wrapResourceError(&err, "failed to create project")
 
 	p, err := client.GetClientFromMetaMap(meta)
 	if err != nil {
@@ -237,13 +229,7 @@ func getLimits(limits interface{}) (p rest.Limits, err error) {
 }
 
 func resourceMetalProjectRead(d *schema.ResourceData, meta interface{}) (err error) {
-	defer func() {
-		var nErr = rest.GenericOpenAPIError{}
-		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to read project %s: %w", strings.Trim(nErr.Message(), "\n "), err)
-
-		}
-	}()
+	defer wrapResourceError(&err, "failed to read project")
 
 	p, err := client.GetClientFromMetaMap(meta)
 	if err != nil {
@@ -288,26 +274,14 @@ func resourceMetalProjectRead(d *schema.ResourceData, meta interface{}) (err err
 }
 
 func resourceMetalProjectUpdate(d *schema.ResourceData, meta interface{}) (err error) {
-	defer func() {
-		var nErr = rest.GenericOpenAPIError{}
-		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to update project %s: %w", strings.Trim(nErr.Message(), "\n "), err)
-
-		}
-	}()
+	defer wrapResourceError(&err, "failed to update project")
 
 	//p := meta.(*Config)
 	return resourceMetalProjectRead(d, meta)
 }
 
 func resourceMetalProjectDelete(d *schema.ResourceData, meta interface{}) (err error) {
-	defer func() {
-		var nErr = rest.GenericOpenAPIError{}
-		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to delete project %s: %w", strings.Trim(nErr.Message(), "\n "), err)
-
-		}
-	}()
+	defer wrapResourceError(&err, "failed to delete project")
 
 	p, err := client.GetClientFromMetaMap(meta)
 	if err != nil {

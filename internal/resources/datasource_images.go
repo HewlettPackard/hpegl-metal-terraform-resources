@@ -3,13 +3,8 @@
 package resources
 
 import (
-	"errors"
-	"fmt"
-	"strings"
-
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
-	rest "github.com/hewlettpackard/hpegl-metal-client/v1/pkg/client"
 	"github.com/hewlettpackard/hpegl-metal-terraform-resources/pkg/client"
 )
 
@@ -30,13 +25,7 @@ func DataSourceImage() *schema.Resource {
 }
 
 func dataSourceImageRead(d *schema.ResourceData, meta interface{}) (err error) {
-	defer func() {
-		var nErr = rest.GenericOpenAPIError{}
-		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to read images %s: %w", strings.Trim(nErr.Message(), "\n "), err)
-
-		}
-	}()
+	defer wrapResourceError(&err, "failed to read images")
 
 	p, err := client.GetClientFromMetaMap(meta)
 	if err != nil {

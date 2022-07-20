@@ -3,9 +3,7 @@
 package resources
 
 import (
-	"errors"
 	"fmt"
-	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
@@ -254,13 +252,7 @@ func DataSourceAvailableResources() *schema.Resource {
 }
 
 func dataSourceAvailableResourcesRead(d *schema.ResourceData, meta interface{}) (err error) {
-	defer func() {
-		var nErr = rest.GenericOpenAPIError{}
-		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to read available resources %s: %w", strings.Trim(nErr.Message(), "\n "), err)
-
-		}
-	}()
+	defer wrapResourceError(&err, "failed to read available resources")
 
 	p, err := client.GetClientFromMetaMap(meta)
 	if err != nil {

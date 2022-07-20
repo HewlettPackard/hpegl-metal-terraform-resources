@@ -3,10 +3,8 @@
 package resources
 
 import (
-	"errors"
 	"fmt"
 	"reflect"
-	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
@@ -209,13 +207,7 @@ func ProjectNetworkResource() *schema.Resource {
 }
 
 func resourceMetalNetworkCreate(d *schema.ResourceData, meta interface{}) (err error) {
-	defer func() {
-		var nErr = rest.GenericOpenAPIError{}
-		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to create network resources %s: %w", strings.Trim(nErr.Message(), "\n "), err)
-
-		}
-	}()
+	defer wrapResourceError(&err, "failed to create network resources")
 
 	p, err := client.GetClientFromMetaMap(meta)
 	if err != nil {
@@ -321,15 +313,7 @@ func getIPPool(set *schema.Set) (ipPool *rest.NewIpPool) {
 }
 
 func resourceMetalNetworkRead(d *schema.ResourceData, meta interface{}) (err error) {
-	defer func() {
-		var nErr = rest.GenericOpenAPIError{}
-
-		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to read network %s: %w", strings.Trim(nErr.Message(), "\n "), err)
-		} else if err != nil {
-			err = fmt.Errorf("failed to read network %w", err)
-		}
-	}()
+	defer wrapResourceError(&err, "failed to read network")
 
 	p, err := client.GetClientFromMetaMap(meta)
 	if err != nil {
@@ -386,13 +370,7 @@ func resourceMetalNetworkRead(d *schema.ResourceData, meta interface{}) (err err
 }
 
 func resourceMetalNetworkUpdate(d *schema.ResourceData, meta interface{}) (err error) {
-	defer func() {
-		var nErr = rest.GenericOpenAPIError{}
-		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to update network %s: %w", strings.Trim(nErr.Message(), "\n "), err)
-
-		}
-	}()
+	defer wrapResourceError(&err, "failed to update network")
 
 	p, err := client.GetClientFromMetaMap(meta)
 	if err != nil {
@@ -426,13 +404,7 @@ func resourceMetalNetworkUpdate(d *schema.ResourceData, meta interface{}) (err e
 
 //nolint: dupl   // Ignoring issues in the existing code
 func resourceMetalNetworkDelete(d *schema.ResourceData, meta interface{}) (err error) {
-	defer func() {
-		var nErr = rest.GenericOpenAPIError{}
-		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to delete network %s: %w", strings.Trim(nErr.Message(), "\n "), err)
-
-		}
-	}()
+	defer wrapResourceError(&err, "failed to delete network")
 
 	p, err := client.GetClientFromMetaMap(meta)
 	if err != nil {

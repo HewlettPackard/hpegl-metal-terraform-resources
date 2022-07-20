@@ -3,10 +3,6 @@
 package resources
 
 import (
-	"errors"
-	"fmt"
-	"strings"
-
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 	rest "github.com/hewlettpackard/hpegl-metal-client/v1/pkg/client"
@@ -47,13 +43,7 @@ func SshKeyResource() *schema.Resource {
 }
 
 func resourceMetalSSHKeyCreate(d *schema.ResourceData, meta interface{}) (err error) {
-	defer func() {
-		var nErr = rest.GenericOpenAPIError{}
-		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to create ssh_key %s: %w", strings.Trim(nErr.Message(), "\n "), err)
-
-		}
-	}()
+	defer wrapResourceError(&err, "failed to create ssh_key")
 
 	p, err := client.GetClientFromMetaMap(meta)
 	if err != nil {
@@ -78,13 +68,7 @@ func resourceMetalSSHKeyCreate(d *schema.ResourceData, meta interface{}) (err er
 }
 
 func resourceMetalSSHKeyRead(d *schema.ResourceData, meta interface{}) (err error) {
-	defer func() {
-		var nErr = rest.GenericOpenAPIError{}
-		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to read ssh_key %s: %w", strings.Trim(nErr.Message(), "\n "), err)
-
-		}
-	}()
+	defer wrapResourceError(&err, "failed to read ssh_key")
 
 	p, err := client.GetClientFromMetaMap(meta)
 	if err != nil {
@@ -102,13 +86,7 @@ func resourceMetalSSHKeyRead(d *schema.ResourceData, meta interface{}) (err erro
 }
 
 func resourceMetalSSHKeyUpdate(d *schema.ResourceData, meta interface{}) (err error) {
-	defer func() {
-		var nErr = rest.GenericOpenAPIError{}
-		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to update ssh_key %s: %w", strings.Trim(nErr.Message(), "\n "), err)
-
-		}
-	}()
+	defer wrapResourceError(&err, "failed to update ssh_key")
 
 	p, err := client.GetClientFromMetaMap(meta)
 	if err != nil {
@@ -139,13 +117,7 @@ func resourceMetalSSHKeyUpdate(d *schema.ResourceData, meta interface{}) (err er
 
 //nolint: dupl   // Ignoring issues in the existing code
 func resourceMetalSSHKeyDelete(d *schema.ResourceData, meta interface{}) (err error) {
-	defer func() {
-		var nErr = rest.GenericOpenAPIError{}
-		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to delete ssh_key %s: %w", strings.Trim(nErr.Message(), "\n "), err)
-
-		}
-	}()
+	defer wrapResourceError(&err, "failed to delete ssh_key")
 
 	p, err := client.GetClientFromMetaMap(meta)
 	if err != nil {

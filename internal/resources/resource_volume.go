@@ -3,7 +3,6 @@
 package resources
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -133,13 +132,7 @@ func VolumeResource() *schema.Resource {
 
 //nolint: funlen    // Ignoring function length check on existing function
 func resourceMetalVolumeCreate(d *schema.ResourceData, meta interface{}) (err error) {
-	defer func() {
-		var nErr = rest.GenericOpenAPIError{}
-		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to create volume %s: %w", strings.Trim(nErr.Message(), "\n "), err)
-
-		}
-	}()
+	defer wrapResourceError(&err, "failed to create volume")
 
 	p, err := client.GetClientFromMetaMap(meta)
 	if err != nil {
@@ -230,13 +223,7 @@ func resourceMetalVolumeCreate(d *schema.ResourceData, meta interface{}) (err er
 }
 
 func resourceMetalVolumeRead(d *schema.ResourceData, meta interface{}) (err error) {
-	defer func() {
-		var nErr = rest.GenericOpenAPIError{}
-		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to read volume %s: %w", strings.Trim(nErr.Message(), "\n "), err)
-
-		}
-	}()
+	defer wrapResourceError(&err, "failed to read volume")
 
 	p, err := client.GetClientFromMetaMap(meta)
 	if err != nil {
@@ -269,13 +256,7 @@ func resourceMetalVolumeRead(d *schema.ResourceData, meta interface{}) (err erro
 }
 
 func resourceMetalVolumeUpdate(d *schema.ResourceData, meta interface{}) (err error) {
-	defer func() {
-		var nErr = rest.GenericOpenAPIError{}
-		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to update volume %s: %w", strings.Trim(nErr.Message(), "\n "), err)
-
-		}
-	}()
+	defer wrapResourceError(&err, "failed to update volume")
 
 	//@TODO - or not....?
 	return resourceMetalVolumeRead(d, meta)
@@ -329,13 +310,7 @@ func deleteVAsForVolume(p *configuration.Config, volID string) error {
 func resourceMetalVolumeDelete(d *schema.ResourceData, meta interface{}) (err error) {
 	var volume rest.Volume
 
-	defer func() {
-		var nErr = rest.GenericOpenAPIError{}
-		if errors.As(err, &nErr) {
-			err = fmt.Errorf("failed to delete volume %s: %w", strings.Trim(nErr.Message(), "\n "), err)
-
-		}
-	}()
+	defer wrapResourceError(&err, "failed to delete volume")
 
 	p, err := client.GetClientFromMetaMap(meta)
 	if err != nil {

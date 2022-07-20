@@ -3,10 +3,14 @@
 package resources
 
 import (
+	"errors"
 	"fmt"
 	"regexp"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+
+	rest "github.com/hewlettpackard/hpegl-metal-client/v1/pkg/client"
 )
 
 const dsFilter = "filter"
@@ -130,4 +134,21 @@ func difference(a, b []string) []string {
 	}
 
 	return diff
+}
+
+// wrapResourceError ensures that any non-nil error is wrapped.
+func wrapResourceError(err *error, msg string) {
+	if err == nil || *err == nil {
+		return
+	}
+
+	nErr := rest.GenericOpenAPIError{}
+
+	if errors.As(*err, &nErr) {
+		*err = fmt.Errorf("%s %s: %w", msg, strings.Trim(nErr.Message(), "\n "), *err)
+
+		return
+	}
+
+	*err = fmt.Errorf("%s %w", msg, *err)
 }
