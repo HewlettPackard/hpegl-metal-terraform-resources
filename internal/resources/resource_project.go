@@ -15,6 +15,7 @@ const (
 	pName    = "name"
 	pProfile = "profile"
 	pLimits  = "limits"
+	pSites   = "sites"
 
 	pProjectName        = "project_name"
 	pProjectDescription = "project_description"
@@ -135,6 +136,15 @@ func projectSchema() map[string]*schema.Schema {
 				Schema: limitsSchema(),
 			},
 		},
+		pSites: {
+			Type:        schema.TypeSet,
+			Optional:    true,
+			ForceNew:    true,
+			Description: "List of Permitted Site IDs",
+			Elem: &schema.Schema{
+				Type: schema.TypeString,
+			},
+		},
 	}
 }
 
@@ -178,6 +188,25 @@ func resourceMetalProjectCreate(d *schema.ResourceData, meta interface{}) (err e
 		}
 	} else {
 		return fmt.Errorf("failed to create project %s: only 1 limit block is allowed", np.Name)
+	}
+
+	if f, ok := d.GetOk(pSites); ok {
+		s, ok := f.(*schema.Set)
+		if !ok {
+			err = fmt.Errorf("sites list not in the expected format")
+			return err
+		}
+
+		sites := make([]string, 0, s.Len())
+
+		for _, v := range s.List() {
+			val, ok := v.(string)
+			if ok {
+				sites = append(sites, val)
+			}
+		}
+
+		np.PermittedSites = sites
 	}
 
 	ctx := p.GetContext()
@@ -270,6 +299,19 @@ func resourceMetalProjectRead(d *schema.ResourceData, meta interface{}) (err err
 	if err = d.Set(pLimits, []interface{}{lData}); err != nil {
 		return err
 	}
+
+	if len(project.PermittedSites) > 0 {
+		sites := make([]interface{}, 0, len(project.PermittedSites))
+
+		for _, v := range project.PermittedSites {
+			sites = append(sites, v)
+		}
+
+		if err = d.Set(pSites, schema.NewSet(schema.HashString, sites)); err != nil {
+			return err // nolint:wrapcheck // defer func is wrapping the error.
+		}
+	}
+
 	return nil
 }
 
