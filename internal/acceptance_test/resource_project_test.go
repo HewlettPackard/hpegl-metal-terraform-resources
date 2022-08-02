@@ -116,13 +116,13 @@ func testAccCheckProjectExists(resource string) resource.TestCheckFunc {
 
 		ret, res, err := p.Client.ProjectsApi.GetByID(ctx, ProjectID)
 		if err != nil {
-			return fmt.Errorf("Project: %q not found: %s", ProjectID, err)
+			return fmt.Errorf("Project %v not found: %s", ProjectID, err)
 		}
 
 		res.Body.Close()
 
 		if ret.ID != ProjectID {
-			return fmt.Errorf("SSHKey not found: %v - %v", rs.Primary.ID, ret)
+			return fmt.Errorf("Project not found: %v - %v", rs.Primary.ID, ret)
 		}
 
 		return nil
