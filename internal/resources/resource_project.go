@@ -193,20 +193,12 @@ func resourceMetalProjectCreate(d *schema.ResourceData, meta interface{}) (err e
 	if f, ok := d.GetOk(pSites); ok {
 		s, ok := f.(*schema.Set)
 		if !ok {
-			err = fmt.Errorf("sites list not in the expected format")
+			err = fmt.Errorf("sites list is not in the expected format")
+
 			return err
 		}
 
-		sites := make([]string, 0, s.Len())
-
-		for _, v := range s.List() {
-			val, ok := v.(string)
-			if ok {
-				sites = append(sites, val)
-			}
-		}
-
-		np.PermittedSites = sites
+		np.PermittedSites = expandStringList(s.List())
 	}
 
 	ctx := p.GetContext()
@@ -301,12 +293,7 @@ func resourceMetalProjectRead(d *schema.ResourceData, meta interface{}) (err err
 	}
 
 	if len(project.PermittedSites) > 0 {
-		sites := make([]interface{}, 0, len(project.PermittedSites))
-
-		for _, v := range project.PermittedSites {
-			sites = append(sites, v)
-		}
-
+		sites := flattenStringList(project.PermittedSites)
 		if err = d.Set(pSites, schema.NewSet(schema.HashString, sites)); err != nil {
 			return err // nolint:wrapcheck // defer func is wrapping the error.
 		}
