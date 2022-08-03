@@ -122,7 +122,7 @@ func testAccCheckProjectExists(resource string) resource.TestCheckFunc {
 		res.Body.Close()
 
 		if ret.ID != ProjectID {
-			return fmt.Errorf("Project not found: %v - %v", rs.Primary.ID, ret)
+			return fmt.Errorf("Project not found: %v - %v", rs.Primary.ID, ret.ID)
 		}
 
 		return nil
