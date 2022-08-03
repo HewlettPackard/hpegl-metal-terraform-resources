@@ -1,4 +1,4 @@
-// (C) Copyright 2020-2022 Hewlett Packard Enterprise Development LP.
+// (C) Copyright 2020-2022 Hewlett Packard Enterprise Development LP
 
 package resources
 
@@ -151,4 +151,28 @@ func wrapResourceError(err *error, msg string) {
 	}
 
 	*err = fmt.Errorf("%s %w", msg, *err)
+}
+
+// expandStringList takes []interfaces and returns []strings.
+func expandStringList(list []interface{}) []string {
+	vs := make([]string, 0, len(list))
+
+	for _, v := range list {
+		val, ok := v.(string)
+		if ok {
+			vs = append(vs, val)
+		}
+	}
+
+	return vs
+}
+
+// flattenStringList takes []strings and returns []interfaces.
+func flattenStringList(list []string) []interface{} {
+	vs := make([]interface{}, 0, len(list))
+	for _, v := range list {
+		vs = append(vs, v)
+	}
+
+	return vs
 }

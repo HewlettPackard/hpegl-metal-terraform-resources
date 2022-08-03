@@ -117,17 +117,9 @@ func TestAccProvider_IAMAuthError(t *testing.T) {
 		t.Fatalf("Failed to get default .gltform file path: %v", err)
 	}
 
-	filePathOrig := filePath + ".orig"
-
-	// ignoring error if file doesn't exist
-	err = os.Rename(filePath, filePathOrig)
-	if err == nil {
-		defer func() {
-			if err := os.Rename(filePathOrig, filePath); err != nil {
-				t.Logf("igoring error: %v", err)
-			}
-		}()
-	}
+	defer func() {
+		os.Remove(filePath)
+	}()
 
 	glTokenEnvOrig := os.Getenv("HPEGL_METAL_GL_TOKEN")
 
