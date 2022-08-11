@@ -202,7 +202,9 @@ func resourceMetalVolumeCreate(d *schema.ResourceData, meta interface{}) (err er
 	}
 
 	// add tags
-	volume.Labels = convertMap(d.Get(vLabels).(map[string]interface{}))
+	if m, ok := d.Get(vLabels).(map[string]interface{}); ok {
+		volume.Labels = convertMap(m)
+	}
 
 	ctx := p.GetContext()
 	v, _, err := p.Client.VolumesApi.Add(ctx, volume)

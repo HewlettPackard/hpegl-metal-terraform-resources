@@ -191,5 +191,4 @@ func flattenStringList(list []string) []interface{} {
 	}
 
 	return vs
-
 }

@@ -403,7 +403,9 @@ func resourceMetalHostCreate(d *schema.ResourceData, meta interface{}) (err erro
 	}
 
 	// add tags
-	host.Labels = convertMap(d.Get(hLabels).(map[string]interface{}))
+	if m, ok := (d.Get(hLabels).(map[string]interface{})); ok {
+		host.Labels = convertMap(m)
+	}
 
 	// Create it
 	ctx := p.GetContext()
@@ -490,7 +492,7 @@ func resourceMetalHostRead(d *schema.ResourceData, meta interface{}) (err error)
 	}
 
 	if err := d.Set(hLabels, tags); err != nil {
-		return err
+		return fmt.Errorf("set labels: %v", err)
 	}
 
 	return nil
