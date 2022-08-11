@@ -155,7 +155,7 @@ func wrapResourceError(err *error, msg string) {
 
 // convertMap returns map of string key to string value.
 func convertMap(in map[string]interface{}) map[string]string {
-	ret := make(map[string]string)
+	ret := make(map[string]string, len(in))
 	if len(in) == 0 {
 		return ret
 	}
