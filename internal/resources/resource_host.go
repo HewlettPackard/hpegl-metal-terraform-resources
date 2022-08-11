@@ -41,6 +41,7 @@ const (
 	hSubState             = "sub_state"
 	hPortalCommOkay       = "portal_comm_okay"
 	hPwrState             = "power_state"
+	hLabels               = "labels"
 
 	// allowedImageLength is number of Image related attributes that can be provided in the from of 'image@version'.
 	allowedImageLength = 2
@@ -201,6 +202,11 @@ func hostSchema() map[string]*schema.Schema {
 			Elem: &schema.Resource{
 				Schema: volumeInfoSchema(),
 			},
+		},
+		hLabels: {
+			Type:        schema.TypeMap,
+			Optional:    true,
+			Description: "map of label name to label value for this host",
 		},
 	}
 }
@@ -396,6 +402,11 @@ func resourceMetalHostCreate(d *schema.ResourceData, meta interface{}) (err erro
 		host.PreAllocatedIPs = convertStringArr(ips)
 	}
 
+	// add tags
+	if m, ok := (d.Get(hLabels).(map[string]interface{})); ok {
+		host.Labels = convertMap(m)
+	}
+
 	// Create it
 	ctx := p.GetContext()
 
@@ -472,6 +483,16 @@ func resourceMetalHostRead(d *schema.ResourceData, meta interface{}) (err error)
 	d.Set(hInitiatorName, host.ISCSIConfig.InitiatorName)
 	if err = d.Set(hNetForDefaultRouteID, host.NetworkForDefaultRoute); err != nil {
 		return err
+	}
+
+	tags := make(map[string]string, len(host.Labels))
+
+	for k, v := range host.Labels {
+		tags[k] = v
+	}
+
+	if err := d.Set(hLabels, tags); err != nil {
+		return fmt.Errorf("set labels: %v", err)
 	}
 
 	return nil

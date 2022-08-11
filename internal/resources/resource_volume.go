@@ -25,6 +25,7 @@ const (
 	vShareable   = "shareable"
 	vState       = "state"
 	vStatus      = "status"
+	vLabels      = "labels"
 
 	// volume Info constants.
 	vID          = "id"
@@ -112,6 +113,11 @@ func volumeSchema() map[string]*schema.Schema {
 			Computed:    true,
 			Description: "The volume provisioning status.",
 		},
+		vLabels: {
+			Type:        schema.TypeMap,
+			Optional:    true,
+			Description: "volume labels as (name, value) pairs",
+		},
 	}
 }
 
@@ -195,6 +201,11 @@ func resourceMetalVolumeCreate(d *schema.ResourceData, meta interface{}) (err er
 		return fmt.Errorf("location %q not found in %q", targetLocation, locations)
 	}
 
+	// add tags
+	if m, ok := d.Get(vLabels).(map[string]interface{}); ok {
+		volume.Labels = convertMap(m)
+	}
+
 	ctx := p.GetContext()
 	v, _, err := p.Client.VolumesApi.Add(ctx, volume)
 	if err != nil {
@@ -251,6 +262,16 @@ func resourceMetalVolumeRead(d *schema.ResourceData, meta interface{}) (err erro
 	}
 	d.Set(vState, volume.State)
 	d.Set(vStatus, volume.Status)
+
+	tags := make(map[string]string, len(volume.Labels))
+
+	for k, v := range volume.Labels {
+		tags[k] = v
+	}
+
+	if err := d.Set(vLabels, tags); err != nil {
+		return fmt.Errorf("set labels: %v", err)
+	}
 
 	return nil
 }

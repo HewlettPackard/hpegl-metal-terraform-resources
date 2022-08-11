@@ -153,6 +153,22 @@ func wrapResourceError(err *error, msg string) {
 	*err = fmt.Errorf("%s %w", msg, *err)
 }
 
+// convertMap returns map of string key to string value.
+func convertMap(in map[string]interface{}) map[string]string {
+	ret := make(map[string]string, len(in))
+	if len(in) == 0 {
+		return ret
+	}
+
+	for k, v := range in {
+		if s, ok := v.(string); ok {
+			ret[k] = s
+		}
+	}
+
+	return ret
+}
+
 // expandStringList takes []interfaces and returns []strings.
 func expandStringList(list []interface{}) []string {
 	vs := make([]string, 0, len(list))

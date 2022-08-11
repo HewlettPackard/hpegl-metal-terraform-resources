@@ -70,4 +70,5 @@ resource "hpegl_metal_host" "terra_host_new_ssh" {
   network_route = "Public"
   location      = var.location
   description   = "Hello from Terraform"
+  labels        = { "ServiceType" = "BMaaS" }
 }
