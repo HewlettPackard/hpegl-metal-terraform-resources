@@ -153,9 +153,8 @@ func wrapResourceError(err *error, msg string) {
 	*err = fmt.Errorf("%s %w", msg, *err)
 }
 
-
-// converMap returns map of string key to string value.
-func converMap(in map[string]interface{}) map[string]string {
+// convertMap returns map of string key to string value.
+func convertMap(in map[string]interface{}) map[string]string {
 	ret := make(map[string]string)
 	if len(in) == 0 {
 		return ret

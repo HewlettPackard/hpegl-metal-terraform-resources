@@ -402,11 +402,8 @@ func resourceMetalHostCreate(d *schema.ResourceData, meta interface{}) (err erro
 		host.PreAllocatedIPs = convertStringArr(ips)
 	}
 
-	host.Labels = make(map[string]string)
 	// add tags
-	for key, val := range converMap(d.Get(hLabels).(map[string]interface{})) {
-		host.Labels[key] = val
-	}
+	host.Labels = convertMap(d.Get(hLabels).(map[string]interface{}))
 
 	// Create it
 	ctx := p.GetContext()
@@ -486,7 +483,7 @@ func resourceMetalHostRead(d *schema.ResourceData, meta interface{}) (err error)
 		return err
 	}
 
-	tags := make(map[string]string)
+	tags := make(map[string]string, len(host.Labels))
 
 	for k, v := range host.Labels {
 		tags[k] = v

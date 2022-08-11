@@ -202,9 +202,7 @@ func resourceMetalVolumeCreate(d *schema.ResourceData, meta interface{}) (err er
 	}
 
 	// add tags
-	for key, val := range converMap(d.Get(vLabels).(map[string]interface{})) {
-		volume.Labels[key] = val
-	}
+	volume.Labels = convertMap(d.Get(vLabels).(map[string]interface{}))
 
 	ctx := p.GetContext()
 	v, _, err := p.Client.VolumesApi.Add(ctx, volume)
@@ -263,7 +261,7 @@ func resourceMetalVolumeRead(d *schema.ResourceData, meta interface{}) (err erro
 	d.Set(vState, volume.State)
 	d.Set(vStatus, volume.Status)
 
-	tags := make(map[string]string)
+	tags := make(map[string]string, len(volume.Labels))
 
 	for k, v := range volume.Labels {
 		tags[k] = v
