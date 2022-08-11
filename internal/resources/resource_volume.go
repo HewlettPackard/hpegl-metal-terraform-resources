@@ -269,6 +269,10 @@ func resourceMetalVolumeRead(d *schema.ResourceData, meta interface{}) (err erro
 		tags[k] = v
 	}
 
+	if err := d.Set(vLabels, tags); err != nil {
+		return fmt.Errorf("set labels: %v", err)
+	}
+
 	return nil
 }
 
