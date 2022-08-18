@@ -26,7 +26,15 @@ func TestAccResourceProject_Basic(t *testing.T) {
 		CheckDestroy: resource.TestCheckFunc(func(s *terraform.State) error { return testAccCheckProjectDestroy(t, s) }),
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckProjectBasic(),
+				// create step
+				Config: testAccCheckProjectCreateBasic(),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckProjectExists("hpegl_metal_project.project1"),
+				),
+			},
+			{
+				// update step
+				Config: testAccCheckProjectUpdateBasic(),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckProjectExists("hpegl_metal_project.project1"),
 				),
@@ -35,31 +43,52 @@ func TestAccResourceProject_Basic(t *testing.T) {
 	})
 }
 
-func testAccCheckProjectBasic() string {
-	return `
-provider "hpegl" {
-	metal {
-	}
+func testAccCheckProjectCreateBasic() string {
+	return projectBasic("create")
 }
 
-resource "hpegl_metal_project" "project1" {
-	name = "TestHoster1-SimProject1"
-	profile {
-	  company             = "ACME"
-	  address             = "Area51"
-	  email               = "acme@intergalactic.universe"
-	  phone_number        = "+112 234 1245 3245"
-	  project_description = "Primitive Life"
-	  project_name        = "Umbrella Corporation"
+func testAccCheckProjectUpdateBasic() string {
+	return projectBasic("update")
+}
+
+func projectBasic(op string) string {
+	common := `
+	provider "hpegl" {
+		metal {
+		}
+	}`
+
+	name := `"TestHoster1-SimProject1"`
+	company := `"HPE"`
+	hosts := 10
+
+	if op == "update" {
+		name = `"TestHoster1-SimProject1-Update"`
+		company = `"HPE-Update"`
+		hosts = 5
 	}
-	limits {
-	  hosts            = 10
-	  volumes          = 10
-	  volume_capacity  = 300
-	  private_networks = 30
-	}
-	sites=["1ad98170-993e-4bfc-8b84-e689ea9a429b"]	
-}`
+
+	res := fmt.Sprintf(`
+	resource "hpegl_metal_project" "project1" {
+		name = %s
+		profile {
+		company             = %s
+		address             = "Area51"
+		email               = "acme@intergalactic.universe"
+		phone_number        = "+112 234 1245 3245"
+		project_description = "Primitive Life"
+		project_name        = "Umbrella Corporation"
+		}
+		limits {
+		hosts            = %d
+		volumes          = 10
+		volume_capacity  = 300
+		private_networks = 30
+		}
+		sites=["1ad98170-993e-4bfc-8b84-e689ea9a429b"]	
+	}`, name, company, hosts)
+
+	return common + res
 }
 
 func testAccCheckProjectDestroy(t *testing.T, s *terraform.State) error {
