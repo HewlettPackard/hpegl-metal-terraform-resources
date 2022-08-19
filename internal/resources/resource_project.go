@@ -305,7 +305,46 @@ func resourceMetalProjectRead(d *schema.ResourceData, meta interface{}) (err err
 func resourceMetalProjectUpdate(d *schema.ResourceData, meta interface{}) (err error) {
 	defer wrapResourceError(&err, "failed to update project")
 
-	//p := meta.(*Config)
+	p, err := client.GetClientFromMetaMap(meta)
+	if err != nil {
+		return
+	}
+
+	ctx := p.GetContext()
+
+	project, _, err := p.Client.ProjectsApi.GetByID(ctx, d.Id())
+	if err != nil {
+		return
+	}
+
+	name, ok := d.Get(pName).(string)
+	if !ok {
+		return fmt.Errorf("name is not in the expected format")
+	}
+
+	project.Name = name
+
+	if list, ok := d.Get(pProfile).([]interface{}); ok && len(list) == 1 {
+		if project.Profile, err = getProfile(list[0]); err != nil {
+			return
+		}
+	} else {
+		return fmt.Errorf("only 1 profile block is allowed")
+	}
+
+	if list, ok := d.Get(pLimits).([]interface{}); ok && len(list) == 1 {
+		if project.Limits, err = getLimits(list[0]); err != nil {
+			return
+		}
+	} else {
+		return fmt.Errorf("only 1 limit block is allowed")
+	}
+
+	_, _, err = p.Client.ProjectsApi.Update(ctx, project.ID, project)
+	if err != nil {
+		return
+	}
+
 	return resourceMetalProjectRead(d, meta)
 }
 
