@@ -30,6 +30,7 @@ const (
 	pVolumes         = "volumes"
 	pVolumeCapacity  = "volume_capacity"
 	pPrivateNetworks = "private_networks"
+	pInstanceTypes   = "instance_types"
 )
 
 func limitsSchema() map[string]*schema.Schema {
@@ -53,6 +54,14 @@ func limitsSchema() map[string]*schema.Schema {
 			Type:        schema.TypeInt,
 			Optional:    true,
 			Description: "Maximum number of private networks allowed in the team.",
+		},
+		pInstanceTypes: {
+			Type: schema.TypeMap,
+			Elem: &schema.Schema{
+				Type: schema.TypeInt,
+			},
+			Optional:    true,
+			Description: "Map of instance type ID to maximum number of hosts that can be created with that instance type",
 		},
 	}
 }
@@ -246,6 +255,7 @@ func getLimits(limits interface{}) (p rest.Limits, err error) {
 		Volumes:         int32(safeInt(limitsMap[pVolumes])),
 		VolumeCapacity:  int64(safeFloat(limitsMap[pVolumeCapacity])),
 		PrivateNetworks: int32(safeInt(limitsMap[pPrivateNetworks])),
+		InstanceTypes:   safeMapStrInt32(limitsMap[pInstanceTypes]),
 	}, nil
 }
 
@@ -286,6 +296,7 @@ func resourceMetalProjectRead(d *schema.ResourceData, meta interface{}) (err err
 		pVolumes:         int(lim.Volumes),
 		pVolumeCapacity:  float64(lim.VolumeCapacity),
 		pPrivateNetworks: int(lim.PrivateNetworks),
+		pInstanceTypes:   lim.InstanceTypes,
 	}
 
 	if err = d.Set(pLimits, []interface{}{lData}); err != nil {

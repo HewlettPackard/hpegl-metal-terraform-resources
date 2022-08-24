@@ -118,6 +118,19 @@ func safeFloat(s interface{}) float64 {
 	return r
 }
 
+func safeMapStrInt32(s interface{}) map[string]int32 {
+	m, _ := s.(map[string]interface{})
+
+	r := make(map[string]int32, len(m))
+
+	for k, v := range m {
+		i, _ := v.(int)
+		r[k] = int32(i)
+	}
+
+	return r
+}
+
 // difference returns the elements in `a` that aren't in `b`.
 func difference(a, b []string) []string {
 	mb := make(map[string]struct{}, len(b))
