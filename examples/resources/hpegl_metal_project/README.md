@@ -66,7 +66,7 @@ The available_resources block takes the following arguments.
 - `limits` - Project quotas.
   - `hosts` - Maximum number of hosts
   - `volumes` - Maximum number of volumes
-  - `volume_capacity` - Maximum aggregated volume capacity
+  - `volume_capacity` - Maximum aggregated volume capacity in TiB
   - `private_networks` - Maximum number of private networks
   - `instance_types` - (Optional) Map of instance type ID to maximum number of hosts that can be created with that instance type
 
