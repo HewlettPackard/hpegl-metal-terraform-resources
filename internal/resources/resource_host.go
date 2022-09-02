@@ -710,9 +710,22 @@ func resourceMetalHostDelete(d *schema.ResourceData, meta interface{}) (err erro
 	}
 
 	ctx = p.GetContext()
-	_, err = p.Client.HostsApi.Delete(ctx, d.Id())
 
-	return err
+	for retry := 0; retry < maxETagRetries; retry++ {
+		if _, err := p.Client.HostsApi.Delete(ctx, d.Id()); err != nil {
+			if strings.Contains(err.Error(), "ETag mismatch") {
+				retryBackoff()
+
+				continue
+			}
+
+			return err
+		}
+
+		return nil
+	}
+
+	return fmt.Errorf("ETag retries exhausted")
 }
 
 // volumeExists returns true & the volume ID, if the input matches

@@ -5,15 +5,26 @@ package resources
 import (
 	"errors"
 	"fmt"
+	"math/rand"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 	rest "github.com/hewlettpackard/hpegl-metal-client/v1/pkg/client"
 )
 
-const dsFilter = "filter"
+const (
+	// dsFilter it's the name of the filter key
+	dsFilter = "filter"
+	// maxETagRetries sets the number of retries for a databse operation when an ETag mismatch error occurs during an update.
+	maxETagRetries = 1000
+	// minBackoffTime is the minimum time before a retry should be attempted
+	minBackoffTime = 5 * time.Millisecond
+	// backoffJitterTime is a maximum additional time that backoff can wait for
+	backoffJitterTime = 95
+)
 
 func dataSourceFiltersSchema() *schema.Schema {
 	return &schema.Schema{
@@ -204,4 +215,12 @@ func flattenStringList(list []string) []interface{} {
 	}
 
 	return vs
+}
+
+// retryBackoff holds a thread off for a random amount of time.
+func retryBackoff() time.Duration {
+	wait := minBackoffTime + time.Duration(rand.Intn(backoffJitterTime))*time.Millisecond
+	time.Sleep(wait)
+
+	return wait
 }
