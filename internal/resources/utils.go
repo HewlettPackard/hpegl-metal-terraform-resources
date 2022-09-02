@@ -16,13 +16,13 @@ import (
 )
 
 const (
-	// dsFilter it's the name of the filter key
+	// dsFilter it's the name of the filter key.
 	dsFilter = "filter"
 	// maxETagRetries sets the number of retries for a databse operation when an ETag mismatch error occurs during an update.
 	maxETagRetries = 1000
-	// minBackoffTime is the minimum time before a retry should be attempted
+	// minBackoffTime is the minimum time before a retry should be attempted.
 	minBackoffTime = 5 * time.Millisecond
-	// backoffJitterTime is a maximum additional time that backoff can wait for
+	// backoffJitterTime is a maximum additional time that backoff can wait for.
 	backoffJitterTime = 95
 )
 
@@ -219,6 +219,7 @@ func flattenStringList(list []string) []interface{} {
 
 // retryBackoff holds a thread off for a random amount of time.
 func retryBackoff() time.Duration {
+	//nolint:gosec
 	wait := minBackoffTime + time.Duration(rand.Intn(backoffJitterTime))*time.Millisecond
 	time.Sleep(wait)
 

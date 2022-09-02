@@ -719,7 +719,7 @@ func resourceMetalHostDelete(d *schema.ResourceData, meta interface{}) (err erro
 				continue
 			}
 
-			return err
+			return fmt.Errorf("unable to delete host")
 		}
 
 		return nil
