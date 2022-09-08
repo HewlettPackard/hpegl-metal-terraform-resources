@@ -38,6 +38,7 @@ func volumeSchema() map[string]*schema.Schema {
 		vName: {
 			Type:        schema.TypeString,
 			Required:    true,
+			ForceNew:    true,
 			Description: "A friendly name of the volume.",
 		},
 
@@ -308,7 +309,7 @@ func resourceMetalVolumeUpdate(d *schema.ResourceData, meta interface{}) (err er
 
 		vol, _, err := c.Client.VolumesApi.GetByID(ctx, vol.ID)
 		if err != nil {
-			return err
+			return fmt.Errorf("volume retrieve by ID: %v", err)
 		}
 
 		if vol.SubState != rest.VOLUMESUBSTATE_UPDATE_REQUESTED &&
