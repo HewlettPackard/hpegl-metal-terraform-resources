@@ -15,8 +15,8 @@ import (
 )
 
 const (
-	testVolCreatetSize = 10
-	testVolUpdateSize  = 12
+	testVolCreateSize = 10
+	testVolUpdateSize = 12
 )
 
 func TestAccResourceVolume_Basic(t *testing.T) {
@@ -69,7 +69,7 @@ func testAccCheckVolumeBasic(op string) string {
 		default = "USA:Central:V2DCC01"
 	}
 	`
-	size := testVolCreatetSize
+	size := testVolCreateSize
 
 	if op == "update" {
 		size = testVolUpdateSize
