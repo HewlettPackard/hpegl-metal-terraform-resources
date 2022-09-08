@@ -68,6 +68,7 @@ resource "hpegl_metal_host" "terra_host_new_ssh" {
   ssh           = [hpegl_metal_ssh_key.newssh_1.id]
   networks      = ["Public", hpegl_metal_network.newpnet_1.name]
   network_route = "Public"
+  network_untagged = hpegl_metal_network.newpnet_1.name
   location      = var.location
   description   = "Hello from Terraform"
   labels        = { "ServiceType" = "BMaaS" }

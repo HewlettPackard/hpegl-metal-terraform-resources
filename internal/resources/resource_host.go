@@ -26,6 +26,8 @@ const (
 	hPreAllocatedIPs      = "allocated_ips"
 	hNetForDefaultRouteID = "network_route_id"
 	hNetForDefaultRoute   = "network_route"
+	hNetUntagged          = "network_untagged"
+	hNetUntaggedID        = "network_untagged_id"
 	hSSHKeys              = "ssh"
 	hSSHKeyIDs            = "ssh_ids"
 	hSize                 = "machine_size"
@@ -194,6 +196,16 @@ func hostSchema() map[string]*schema.Schema {
 			Computed:    true,
 			Description: "Network ID of the default route",
 		},
+		hNetUntagged: {
+			Type:        schema.TypeString,
+			Description: "Untagged network",
+			Optional:    true,
+		},
+		hNetUntaggedID: {
+			Type:        schema.TypeString,
+			Computed:    true,
+			Description: "Untagged network ID",
+		},
 		hVolumeInfos: {
 			Type:        schema.TypeSet,
 			Optional:    true,
@@ -356,35 +368,19 @@ func resourceMetalHostCreate(d *schema.ResourceData, meta interface{}) (err erro
 	host.NetworkIDs = processedNetworks
 
 	// Network for default route
-	netDefaultRoute := d.Get(hNetForDefaultRoute).(string)
-
-	if netDefaultRoute == "" {
+	if netDefaultRoute := safeString(d.Get(hNetForDefaultRoute)); netDefaultRoute == "" {
 		host.NetworkForDefaultRoute = processedNetworks[0]
 	} else {
-		found := false
-		if _, ok := podNetIDMap[netDefaultRoute]; ok {
-			for _, netID := range processedNetworks {
-				if netID == netDefaultRoute {
-					found = true
-					host.NetworkForDefaultRoute = netDefaultRoute
-					break
-				}
-			}
-		} else if id, ok := podNetMap[netDefaultRoute]; ok {
-			for _, netID := range processedNetworks {
-				if netID == id {
-					found = true
-					host.NetworkForDefaultRoute = id
-					break
-				}
-			}
-		} else {
-			return fmt.Errorf("network for default route %s not found in %q", netDefaultRoute, availableNetworks)
+		if host.NetworkForDefaultRoute, err = getNetworkID(p, host.NetworkIDs, host.LocationID, netDefaultRoute); err != nil {
+			return err
 		}
+	}
 
-		if !found {
-			return fmt.Errorf("network for default route %s must be one of the selected networks", netDefaultRoute)
-		}
+	// Untagged network
+	netUntagged := safeString(d.Get(hNetUntagged))
+
+	if host.NetworkUntagged, err = getNetworkID(p, host.NetworkIDs, host.LocationID, netUntagged); err != nil {
+		return err
 	}
 
 	// Check if the volume is available
@@ -483,6 +479,10 @@ func resourceMetalHostRead(d *schema.ResourceData, meta interface{}) (err error)
 	d.Set(hInitiatorName, host.ISCSIConfig.InitiatorName)
 	if err = d.Set(hNetForDefaultRouteID, host.NetworkForDefaultRoute); err != nil {
 		return err
+	}
+
+	if err = d.Set(hNetUntaggedID, host.NetworkUntagged); err != nil {
+		return fmt.Errorf("set untagged network: %v", err)
 	}
 
 	tags := make(map[string]string, len(host.Labels))
@@ -597,7 +597,16 @@ func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err erro
 	}
 
 	// set the network for default route
-	if host.NetworkForDefaultRoute, err = getNetworkDefRoute(d, p, &host); err != nil {
+	if nDefRoute := safeString(d.Get(hNetForDefaultRoute)); nDefRoute != "" {
+		if host.NetworkForDefaultRoute, err = getNetworkID(p, host.NetworkIDs, host.LocationID, nDefRoute); err != nil {
+			return err
+		}
+	}
+
+	// set the untagged network
+	nUntagged := safeString(d.Get(hNetUntagged))
+
+	if host.NetworkUntagged, err = getNetworkID(p, host.NetworkIDs, host.LocationID, nUntagged); err != nil {
 		return err
 	}
 
@@ -776,31 +785,49 @@ func getNetworkIDs(d *schema.ResourceData, p *configuration.Config, host *rest.H
 	return netIds, nil
 }
 
-// getNetworkDefRoute returns the network for default route specified in the request or
-// the current value maintained in the state.
-func getNetworkDefRoute(d *schema.ResourceData, p *configuration.Config, host *rest.Host) (nDefRoute string, err error) {
-	nDefRoute, ok := d.Get(hNetForDefaultRoute).(string)
-	if !ok {
-		// network for default route is optional
-		// return the current value
-		return host.NetworkForDefaultRoute, nil
+// getNetworkID returns the network ID specified in the request.
+func getNetworkID(p *configuration.Config, hostNets []string, locationID, net string) (string, error) {
+	if net == "" {
+		return net, nil
 	}
 
-	nIDMap, nNameMap := getAvailableNetworkMaps(p, host.LocationID)
+	nIDMap, nNameMap := getAvailableNetworkMaps(p, locationID)
 	if len(nIDMap) == 0 {
-		return nDefRoute, fmt.Errorf("no available networks for location %s", host.LocationID)
+		return "", fmt.Errorf("no available networks for location %s", locationID)
 	}
 
-	if _, ok := nIDMap[nDefRoute]; ok {
-		return nDefRoute, nil
+	var (
+		found   bool
+		network string
+	)
+
+	if _, ok := nIDMap[net]; ok {
+		for _, netID := range hostNets {
+			if netID == net {
+				found = true
+				network = net
+
+				break
+			}
+		}
+	} else if id, ok := nNameMap[net]; ok {
+		for _, netID := range hostNets {
+			if netID == id {
+				found = true
+				network = id
+
+				break
+			}
+		}
+	} else {
+		return "", fmt.Errorf("network %s does not match any available network for location %s", net, locationID)
 	}
 
-	if id, ok := nNameMap[nDefRoute]; ok {
-		return id, nil
+	if !found {
+		return "", fmt.Errorf("network %s must be one of the selected networks", net)
 	}
 
-	return "", fmt.Errorf("network for default route %s does not match any available network for location %s",
-		nDefRoute, host.LocationID)
+	return network, nil
 }
 
 // getAvailableNetworkMaps returns available network name and ID maps based on location.
