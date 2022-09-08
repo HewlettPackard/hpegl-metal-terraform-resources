@@ -304,17 +304,24 @@ func resourceMetalVolumeUpdate(d *schema.ResourceData, meta interface{}) (err er
 		return
 	}
 
+	pollCount := 0
+
 	for {
 		time.Sleep(pollInterval)
 
 		vol, _, err := c.Client.VolumesApi.GetByID(ctx, vol.ID)
 		if err != nil {
-			return fmt.Errorf("volume retrieve by ID: %v", err)
+			return fmt.Errorf("get volume %s: %w", vol.ID, err)
 		}
 
 		if vol.SubState != rest.VOLUMESUBSTATE_UPDATE_REQUESTED &&
 			vol.SubState != rest.VOLUMESUBSTATE_UPDATING {
 			break
+		}
+
+		// Fail if volume state hasn't changed after max polls
+		if pollCount++; pollCount > pollCountMax {
+			return fmt.Errorf("waiting for volume update has timed out")
 		}
 	}
 
