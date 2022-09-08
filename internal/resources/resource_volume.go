@@ -78,7 +78,6 @@ func volumeSchema() map[string]*schema.Schema {
 		vSize: {
 			Type:        schema.TypeFloat,
 			Required:    true,
-			ForceNew:    true,
 			Description: "The minimum size of the volume specified in units of GBytes.",
 			ValidateFunc: func(val interface{}, key string) (warns []string, errs []error) {
 				sz, ok := val.(float64)
@@ -95,7 +94,6 @@ func volumeSchema() map[string]*schema.Schema {
 
 		vShareable: {
 			Type:        schema.TypeBool,
-			Required:    false,
 			Optional:    true,
 			Default:     false,
 			ForceNew:    true,
@@ -263,14 +261,16 @@ func resourceMetalVolumeRead(d *schema.ResourceData, meta interface{}) (err erro
 	d.Set(vState, volume.State)
 	d.Set(vStatus, volume.Status)
 
-	tags := make(map[string]string, len(volume.Labels))
+	if volume.Labels != nil {
+		tags := make(map[string]string, len(volume.Labels))
 
-	for k, v := range volume.Labels {
-		tags[k] = v
-	}
+		for k, v := range volume.Labels {
+			tags[k] = v
+		}
 
-	if err := d.Set(vLabels, tags); err != nil {
-		return fmt.Errorf("set labels: %v", err)
+		if err := d.Set(vLabels, tags); err != nil {
+			return fmt.Errorf("set labels: %v", err)
+		}
 	}
 
 	return nil
@@ -279,7 +279,48 @@ func resourceMetalVolumeRead(d *schema.ResourceData, meta interface{}) (err erro
 func resourceMetalVolumeUpdate(d *schema.ResourceData, meta interface{}) (err error) {
 	defer wrapResourceError(&err, "failed to update volume")
 
-	//@TODO - or not....?
+	c, err := client.GetClientFromMetaMap(meta)
+	if err != nil {
+		return
+	}
+
+	ctx := c.GetContext()
+
+	vol, _, err := c.Client.VolumesApi.GetByID(ctx, d.Id())
+	if err != nil {
+		return
+	}
+
+	newSize, ok := d.Get(vSize).(float64)
+	if !ok {
+		return fmt.Errorf("size is not in the expected format")
+	}
+
+	vol.Capacity = int64(newSize)
+
+	_, _, err = c.Client.VolumesApi.Update(ctx, vol)
+	if err != nil {
+		return
+	}
+
+	for {
+		time.Sleep(pollInterval)
+
+		vol, _, err := c.Client.VolumesApi.GetByID(ctx, vol.ID)
+		if err != nil {
+			return err
+		}
+
+		if vol.SubState != rest.VOLUMESUBSTATE_UPDATE_REQUESTED &&
+			vol.SubState != rest.VOLUMESUBSTATE_UPDATING {
+			break
+		}
+	}
+
+	if err = c.RefreshAvailableResources(); err != nil {
+		return
+	}
+
 	return resourceMetalVolumeRead(d, meta)
 }
 
