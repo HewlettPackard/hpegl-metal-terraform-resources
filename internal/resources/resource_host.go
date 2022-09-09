@@ -605,7 +605,7 @@ func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err erro
 
 	// set the untagged network
 	if nUntagged := safeString(d.Get(hNetUntagged)); nUntagged == "" {
-		host.NetworkUntagged = nUntagged
+		host.NetworkUntagged = ""
 	} else if host.NetworkUntagged, err = getNetworkID(p, host.NetworkIDs, host.LocationID, nUntagged); err != nil {
 		return err
 	}
@@ -788,7 +788,7 @@ func getNetworkIDs(d *schema.ResourceData, p *configuration.Config, host *rest.H
 // getNetworkID returns the network ID specified in the request.
 func getNetworkID(p *configuration.Config, hostNets []string, locationID, net string) (string, error) {
 	if net == "" {
-		return "", fmt.Errorf("not network provided")
+		return "", fmt.Errorf("no network provided")
 	}
 
 	nIDMap, nNameMap := getAvailableNetworkMaps(p, locationID)
