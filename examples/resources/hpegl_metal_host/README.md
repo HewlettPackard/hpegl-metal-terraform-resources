@@ -35,7 +35,7 @@ The following arguments are supported:
 - `ssh` - A list of ssh key names or IDs that will be placed into the host image.
 - `size` - The machine size to use for this host.
 - `networks` - A list of network names or IDs on which this host will be connected and be allocated an IP address.
-- `network_route` - Name or Id of network selected for the default route.
+- `network_route` - Name or ID of network selected for the default route.
 - `network_untagged` - Name or ID of network selected to be untagged.
 - `allocated_ips` - A list of pre-allocated IP addresses in one-to-one correspondance wth Networks.
 - `volumes` - Code blocks describing any iSCSI volumes to be created and attached to the host.
