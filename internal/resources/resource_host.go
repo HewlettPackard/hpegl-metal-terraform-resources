@@ -377,10 +377,10 @@ func resourceMetalHostCreate(d *schema.ResourceData, meta interface{}) (err erro
 	}
 
 	// Untagged network
-	netUntagged := safeString(d.Get(hNetUntagged))
-
-	if host.NetworkUntagged, err = getNetworkID(p, host.NetworkIDs, host.LocationID, netUntagged); err != nil {
-		return err
+	if netUntagged := safeString(d.Get(hNetUntagged)); netUntagged != "" {
+		if host.NetworkUntagged, err = getNetworkID(p, host.NetworkIDs, host.LocationID, netUntagged); err != nil {
+			return err
+		}
 	}
 
 	// Check if the volume is available
@@ -604,9 +604,9 @@ func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err erro
 	}
 
 	// set the untagged network
-	nUntagged := safeString(d.Get(hNetUntagged))
-
-	if host.NetworkUntagged, err = getNetworkID(p, host.NetworkIDs, host.LocationID, nUntagged); err != nil {
+	if nUntagged := safeString(d.Get(hNetUntagged)); nUntagged == "" {
+		host.NetworkUntagged = nUntagged
+	} else if host.NetworkUntagged, err = getNetworkID(p, host.NetworkIDs, host.LocationID, nUntagged); err != nil {
 		return err
 	}
 
@@ -788,7 +788,7 @@ func getNetworkIDs(d *schema.ResourceData, p *configuration.Config, host *rest.H
 // getNetworkID returns the network ID specified in the request.
 func getNetworkID(p *configuration.Config, hostNets []string, locationID, net string) (string, error) {
 	if net == "" {
-		return net, nil
+		return "", fmt.Errorf("not network provided")
 	}
 
 	nIDMap, nNameMap := getAvailableNetworkMaps(p, locationID)

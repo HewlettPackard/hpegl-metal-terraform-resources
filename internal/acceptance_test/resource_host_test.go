@@ -82,10 +82,12 @@ locals  {
 	// description, networks
 	desc := `"hello from Terraform"`
 	nets := `local.sorted_networks`
+	untagged := `"Private"`
 
 	if op == "update" {
 		desc = `"hello from Terraform (updated)"`
 		nets = `local.updated_networks`
+		untagged = `""`
 	}
 
 	// host block
@@ -97,10 +99,11 @@ resource "hpegl_metal_host" "test_host" {
 	ssh                = ["User1 - Linux"]
 	networks           = %s
 	network_route      = "Public"
+	network_untagged   = %s
 	location           = var.location
 	description        = %s
 }	
-`, nets, desc)
+`, nets, untagged, desc)
 
 	return common + host
 }
