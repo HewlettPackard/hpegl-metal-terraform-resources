@@ -4,6 +4,7 @@ package acceptance_test
 
 import (
 	"fmt"
+	"strconv"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
@@ -13,40 +14,76 @@ import (
 	"github.com/hewlettpackard/hpegl-metal-terraform-resources/pkg/client"
 )
 
+const (
+	testVolCreateSize = 10
+	testVolUpdateSize = 12
+)
+
 func TestAccResourceVolume_Basic(t *testing.T) {
+	var createID, updateID string
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: resource.TestCheckFunc(func(s *terraform.State) error { return testAccCheckVolumeDestroy(t, s) }),
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckVolumeBasic(),
+				Config: testAccCheckVolumeCreateBasic(),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckVolumeExists("hpegl_metal_volume.test_vol"),
+					testAccCheckVolumeExists("hpegl_metal_volume.test_vol", &createID),
+				),
+			},
+			{
+				Config: testAccCheckVolumeUpdateBasic(),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckVolumeExists("hpegl_metal_volume.test_vol", &updateID),
+					resource.TestCheckFunc(func(s *terraform.State) error {
+						if createID == updateID {
+							return nil
+						}
+
+						return fmt.Errorf("Create and Update Volume ID are not same")
+					}),
+					resource.TestCheckResourceAttr("hpegl_metal_volume.test_vol", "size", strconv.Itoa(testVolUpdateSize)),
 				),
 			},
 		},
 	})
 }
 
-func testAccCheckVolumeBasic() string {
-	return `
-provider "hpegl" {
-	metal {
+func testAccCheckVolumeCreateBasic() string {
+	return testAccCheckVolumeBasic("create")
+}
+
+func testAccCheckVolumeUpdateBasic() string {
+	return testAccCheckVolumeBasic("update")
+}
+
+func testAccCheckVolumeBasic(op string) string {
+	common := `
+	provider "hpegl" {
+		metal {
+		}
 	}
-}
+	
+	variable "location" {
+		default = "USA:Central:V2DCC01"
+	}
+	`
+	size := testVolCreateSize
 
-variable "location" {
-	default = "USA:Central:V2DCC01"
-}
+	if op == "update" {
+		size = testVolUpdateSize
+	}
 
-resource "hpegl_metal_volume" "test_vol" {
-  name        = "test.volume"
-  size        = 10
-  flavor      = "Fast"
-  description = "hello from Terraform"
-  location    = var.location
-}`
+	res := fmt.Sprintf(`resource "hpegl_metal_volume" "test_vol" {
+		name        = "test.volume"
+		size        = %d
+		flavor      = "Fast"
+		description = "hello from Terraform"
+		location    = var.location
+	  }`, size)
+
+	return common + res
 }
 
 func testAccCheckVolumeDestroy(t *testing.T, s *terraform.State) error {
@@ -79,7 +116,7 @@ func testAccCheckVolumeDestroy(t *testing.T, s *terraform.State) error {
 	return nil
 }
 
-func testAccCheckVolumeExists(resource string) resource.TestCheckFunc {
+func testAccCheckVolumeExists(resource string, id *string) resource.TestCheckFunc {
 	return func(state *terraform.State) error {
 		rs, ok := state.RootModule().Resources[resource]
 		if !ok {
@@ -103,6 +140,8 @@ func testAccCheckVolumeExists(resource string) resource.TestCheckFunc {
 		if err != nil {
 			return fmt.Errorf("Volume: %q not found: %s", volumeID, err)
 		}
+
+		*id = volumeID
 
 		return nil
 	}
