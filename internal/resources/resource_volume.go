@@ -120,7 +120,7 @@ func volumeSchema() map[string]*schema.Schema {
 		},
 		vWWN: {
 			Type:        schema.TypeString,
-			Optional:    true,
+			Computed:    true,
 			Description: "Volume serial number",
 		},
 	}
