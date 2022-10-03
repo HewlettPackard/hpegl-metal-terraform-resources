@@ -26,6 +26,7 @@ const (
 	vState       = "state"
 	vStatus      = "status"
 	vLabels      = "labels"
+   vWWN         = "wwn"
 
 	// volume Info constants.
 	vID          = "id"
@@ -117,6 +118,11 @@ func volumeSchema() map[string]*schema.Schema {
 			Optional:    true,
 			Description: "volume labels as (name, value) pairs",
 		},
+		vWWN: {
+			Type:        schema.TypeString,
+			Optional:    true,
+			Description: "Volume serial number",
+		},
 	}
 }
 
@@ -172,6 +178,7 @@ func resourceMetalVolumeCreate(d *schema.ResourceData, meta interface{}) (err er
 		Description: d.Get(vDescription).(string),
 		FlavorID:    vfID,
 		Shareable:   d.Get(vShareable).(bool),
+      WWN:         d.Get
 	}
 
 	targetLocation, ok := d.Get(vLocation).(string)
@@ -261,6 +268,7 @@ func resourceMetalVolumeRead(d *schema.ResourceData, meta interface{}) (err erro
 	}
 	d.Set(vState, volume.State)
 	d.Set(vStatus, volume.Status)
+   d.Set(vWWN, volume.WWN)
 
 	if volume.Labels != nil {
 		tags := make(map[string]string, len(volume.Labels))
