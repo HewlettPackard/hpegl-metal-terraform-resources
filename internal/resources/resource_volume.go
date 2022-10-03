@@ -26,7 +26,7 @@ const (
 	vState       = "state"
 	vStatus      = "status"
 	vLabels      = "labels"
-   vWWN         = "wwn"
+	vWWN         = "wwn"
 
 	// volume Info constants.
 	vID          = "id"
@@ -178,7 +178,6 @@ func resourceMetalVolumeCreate(d *schema.ResourceData, meta interface{}) (err er
 		Description: d.Get(vDescription).(string),
 		FlavorID:    vfID,
 		Shareable:   d.Get(vShareable).(bool),
-      WWN:         d.Get
 	}
 
 	targetLocation, ok := d.Get(vLocation).(string)
@@ -268,7 +267,7 @@ func resourceMetalVolumeRead(d *schema.ResourceData, meta interface{}) (err erro
 	}
 	d.Set(vState, volume.State)
 	d.Set(vStatus, volume.Status)
-   d.Set(vWWN, volume.WWN)
+	d.Set(vWWN, volume.WWN)
 
 	if volume.Labels != nil {
 		tags := make(map[string]string, len(volume.Labels))
