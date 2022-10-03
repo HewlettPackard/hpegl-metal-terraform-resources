@@ -432,5 +432,7 @@ func getSupportedNetworkPurpose() string {
 		rest.NETWORKPURPOSE_V_CHA,
 		rest.NETWORKPURPOSE_VM_FT,
 		rest.NETWORKPURPOSE_I_SCSI_A,
-		rest.NETWORKPURPOSE_I_SCSI_B)
+		rest.NETWORKPURPOSE_I_SCSI_B,
+		rest.NETWORKPURPOSE_TELEMETRY,
+	)
 }
