@@ -269,11 +269,7 @@ func resourceMetalVolumeRead(d *schema.ResourceData, meta interface{}) (err erro
 	}
 	d.Set(vState, volume.State)
 	d.Set(vStatus, volume.Status)
-	if err = d.Set(vWWN, volume.WWN) {
-		if err != nil {
-			return fmt.Errorf("set WWN: %v", err)
-		}
-	}
+	d.Set(vWWN, volume.WWN)
 
 	if volume.Labels != nil {
 		tags := make(map[string]string, len(volume.Labels))
