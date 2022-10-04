@@ -262,13 +262,15 @@ func resourceMetalVolumeRead(d *schema.ResourceData, meta interface{}) (err erro
 	loc, _ := p.GetLocationName(volume.LocationID)
 	d.Set(vLocation, loc)
 	d.Set(vLocationID, volume.LocationID)
-	if err = d.Set(vShareable, volume.Shareable); err != nil {
-		return err
+	if err = d.Set(vShareable, volume.Shareable) {
+		if err != nil {
+			return err
+		}
 	}
 	d.Set(vState, volume.State)
 	d.Set(vStatus, volume.Status)
 	if err = d.Set(vWWN, volume.WWN); err != nil {
-		return err
+		return fmt.Errorf("set WWN: %v", err)
 	}
 
 	if volume.Labels != nil {
