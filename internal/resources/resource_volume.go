@@ -116,12 +116,12 @@ func volumeSchema() map[string]*schema.Schema {
 		vLabels: {
 			Type:        schema.TypeMap,
 			Optional:    true,
-			Description: "volume labels as (name, value) pairs",
+			Description: "The volume labels as (name, value) pairs.",
 		},
 		vWWN: {
 			Type:        schema.TypeString,
 			Computed:    true,
-			Description: "Volume serial number",
+			Description: "The volume serial number.",
 		},
 	}
 }
