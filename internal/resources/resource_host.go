@@ -535,19 +535,19 @@ func setConnectionsValues(d *schema.ResourceData, hostConnections []rest.HostCon
 	}
 
 	if err := d.Set(hConnections, hConnsIP); err != nil {
-		return err
+		return fmt.Errorf("set connections ip map: %v", err)
 	}
 
 	if err := d.Set(hConnectionsSubnet, hConnsSubnet); err != nil {
-		return err
+		return fmt.Errorf("set connections subnet map: %v", err)
 	}
 
 	if err := d.Set(hConnectionsGateway, hConnsGateway); err != nil {
-		return err
+		return fmt.Errorf("set connections gateway map: %v", err)
 	}
 
 	if err := d.Set(hConnectionsVLAN, hConnsVLAN); err != nil {
-		return err
+		return fmt.Errorf("set connections vlan map: %v", err)
 	}
 
 	return nil

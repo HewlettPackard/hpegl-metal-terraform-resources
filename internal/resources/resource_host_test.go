@@ -38,15 +38,18 @@ func Test_setConnectionsValues(t *testing.T) {
 	err := setConnectionsValues(d, conns)
 	assert.Nil(t, err)
 
-	connIPs := d.Get(hConnections).(map[string]interface{})
+	connIPs, ok := d.Get(hConnections).(map[string]interface{})
+	assert.True(t, ok, "type assertion failed")
 	assert.Equal(t, 1, len(connIPs))
 	assert.Equal(t, someIP, connIPs[someName])
 
-	connSubNets := d.Get(hConnectionsSubnet).(map[string]interface{})
+	connSubNets, ok := d.Get(hConnectionsSubnet).(map[string]interface{})
+	assert.True(t, ok, "type assertion failed")
 	assert.Equal(t, 1, len(connSubNets))
 	assert.Equal(t, someSubnet, connSubNets[someName])
 
-	connGateways := d.Get(hConnectionsGateway).(map[string]interface{})
+	connGateways, ok := d.Get(hConnectionsGateway).(map[string]interface{})
+	assert.True(t, ok, "type assertion failed")
 	assert.Equal(t, 1, len(connGateways))
 	assert.Equal(t, someGateway, connGateways[someName])
 }
