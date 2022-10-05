@@ -148,12 +148,12 @@ func hostSchema() map[string]*schema.Schema {
 		hConnectionsSubnet: {
 			Type:        schema.TypeMap,
 			Computed:    true,
-			Description: "A map of network connection name to subnet IP addrese.",
+			Description: "A map of network connection name to subnet IP address.",
 		},
 		hConnectionsGateway: {
 			Type:        schema.TypeMap,
 			Computed:    true,
-			Description: "A map of network connection name to gateway IP addrese.",
+			Description: "A map of network connection name to gateway IP address.",
 		},
 		hConnectionsVLAN: {
 			Type:        schema.TypeMap,
@@ -517,7 +517,7 @@ func resourceMetalHostRead(d *schema.ResourceData, meta interface{}) (err error)
 	return nil
 }
 
-// setConnectionsValues sets hConnections, hConnectionsSubnet, hConnectionsGateway,
+// setConnectionsValues sets hConnections, hConnectionsSubnet, hConnectionsGateway
 // and hConnectionsVLAN from the specified hostConnections.
 func setConnectionsValues(d *schema.ResourceData, hostConnections []rest.HostConnection) error {
 	hConnsIP := make(map[string]string)
