@@ -32,8 +32,8 @@ ips = {
 }
 subnets = {
   "tformed-0" = tomap({
-    "Public" = ""
-    "Storage-Client" = ""
+    "Public" = "192.168.50.0/24"
+    "Storage-Client" = "10.20.0.0/24"
   })
 }
 vlans = {
