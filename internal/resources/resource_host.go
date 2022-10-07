@@ -44,6 +44,7 @@ const (
 	hPortalCommOkay       = "portal_comm_okay"
 	hPwrState             = "power_state"
 	hLabels               = "labels"
+	hDiscoveryIPs         = "discovery_ips"
 
 	// allowedImageLength is number of Image related attributes that can be provided in the from of 'image@version'.
 	allowedImageLength = 2
@@ -219,6 +220,14 @@ func hostSchema() map[string]*schema.Schema {
 			Type:        schema.TypeMap,
 			Optional:    true,
 			Description: "map of label name to label value for this host",
+		},
+		hDiscoveryIPs: {
+			Type:     schema.TypeList,
+			Optional: true,
+			Elem: &schema.Schema{
+				Type: schema.TypeString,
+			},
+			Description: "List of iSCSI Discovery IP address.",
 		},
 	}
 }
@@ -452,6 +461,7 @@ func resourceMetalHostRead(d *schema.ResourceData, meta interface{}) (err error)
 
 	hostvas := getVAsForHost(host.ID, varesources)
 	volumeInfos := make([]map[string]interface{}, 0, len(hostvas))
+	discoveryIPs := make([]string, 0, len(hostvas))
 	for _, i := range hostvas {
 		vi := map[string]interface{}{
 			vID:          i.ID,
@@ -460,10 +470,15 @@ func resourceMetalHostRead(d *schema.ResourceData, meta interface{}) (err error)
 			vTargetIQN:   i.TargetIQN,
 		}
 		volumeInfos = append(volumeInfos, vi)
+		discoveryIPs = append(discoveryIPs, i.DiscoveryIP)
 	}
 
 	if err := d.Set(hVolumeInfos, volumeInfos); err != nil {
 		return err
+	}
+
+	if err := d.Set(hDiscoveryIPs, discoveryIPs); err != nil {
+		return fmt.Errorf("set discoveryIP: %v", err)
 	}
 
 	d.Set(hDescription, host.Description)
