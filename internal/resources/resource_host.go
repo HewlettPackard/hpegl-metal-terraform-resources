@@ -424,6 +424,21 @@ func resourceMetalHostCreate(d *schema.ResourceData, meta interface{}) (err erro
 	return resourceMetalHostRead(d, meta)
 }
 
+func removeDuplicateStr(strSlice []string) []string {
+	allKeys := make(map[string]bool)
+	list := []string{}
+
+	for _, item := range strSlice {
+		if _, value := allKeys[item]; !value {
+			allKeys[item] = true
+
+			list = append(list, item)
+		}
+	}
+
+	return list
+}
+
 //nolint: funlen    // Ignoring function length check on existing function
 func resourceMetalHostRead(d *schema.ResourceData, meta interface{}) (err error) {
 	defer wrapResourceError(&err, "failed to query host")
@@ -477,7 +492,7 @@ func resourceMetalHostRead(d *schema.ResourceData, meta interface{}) (err error)
 		return err
 	}
 
-	if err := d.Set(hDiscoveryIPs, discoveryIPs); err != nil {
+	if err := d.Set(hDiscoveryIPs, removeDuplicateStr(discoveryIPs)); err != nil {
 		return fmt.Errorf("set discoveryIP: %v", err)
 	}
 
