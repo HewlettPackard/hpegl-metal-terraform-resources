@@ -44,7 +44,7 @@ const (
 	hPortalCommOkay       = "portal_comm_okay"
 	hPwrState             = "power_state"
 	hLabels               = "labels"
-	hDiscoveryIPs         = "discovery_ips"
+	hISCSIDiscoveryIP     = "iscsi_discovery_ip"
 
 	// allowedImageLength is number of Image related attributes that can be provided in the from of 'image@version'.
 	allowedImageLength = 2
@@ -221,12 +221,10 @@ func hostSchema() map[string]*schema.Schema {
 			Optional:    true,
 			Description: "map of label name to label value for this host",
 		},
-		hDiscoveryIPs: {
-			Type:     schema.TypeList,
-			Optional: true,
-			Elem: &schema.Schema{
-				Type: schema.TypeString,
-			},
+		hISCSIDiscoveryIP: {
+			Type:        schema.TypeString,
+			Optional:    true,
+			Computed:    true,
 			Description: "List of iSCSI Discovery IP address.",
 		},
 	}
@@ -424,21 +422,6 @@ func resourceMetalHostCreate(d *schema.ResourceData, meta interface{}) (err erro
 	return resourceMetalHostRead(d, meta)
 }
 
-func removeDuplicateStr(strSlice []string) []string {
-	allKeys := make(map[string]bool)
-	list := []string{}
-
-	for _, item := range strSlice {
-		if _, value := allKeys[item]; !value {
-			allKeys[item] = true
-
-			list = append(list, item)
-		}
-	}
-
-	return list
-}
-
 //nolint: funlen    // Ignoring function length check on existing function
 func resourceMetalHostRead(d *schema.ResourceData, meta interface{}) (err error) {
 	defer wrapResourceError(&err, "failed to query host")
@@ -476,7 +459,7 @@ func resourceMetalHostRead(d *schema.ResourceData, meta interface{}) (err error)
 
 	hostvas := getVAsForHost(host.ID, varesources)
 	volumeInfos := make([]map[string]interface{}, 0, len(hostvas))
-	discoveryIPs := make([]string, 0, len(hostvas))
+	discoveryIP := ""
 	for _, i := range hostvas {
 		vi := map[string]interface{}{
 			vID:          i.ID,
@@ -485,14 +468,17 @@ func resourceMetalHostRead(d *schema.ResourceData, meta interface{}) (err error)
 			vTargetIQN:   i.TargetIQN,
 		}
 		volumeInfos = append(volumeInfos, vi)
-		discoveryIPs = append(discoveryIPs, i.DiscoveryIP)
+
+		if discoveryIP == "" {
+			discoveryIP = i.DiscoveryIP
+		}
 	}
 
 	if err := d.Set(hVolumeInfos, volumeInfos); err != nil {
 		return err
 	}
 
-	if err := d.Set(hDiscoveryIPs, removeDuplicateStr(discoveryIPs)); err != nil {
+	if err := d.Set(hISCSIDiscoveryIP, discoveryIP); err != nil {
 		return fmt.Errorf("set discoveryIP: %v", err)
 	}
 
