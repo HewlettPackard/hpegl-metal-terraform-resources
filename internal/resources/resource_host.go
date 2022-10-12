@@ -33,6 +33,9 @@ const (
 	hSize                 = "machine_size"
 	hSizeID               = "machine_size_id"
 	hConnections          = "connections"
+	hConnectionsSubnet    = "connections_subnet"
+	hConnectionsGateway   = "connections_gateway"
+	hConnectionsVLAN      = "connections_vlan"
 	hUserData             = "user_data"
 	hCHAPUser             = "chap_user"
 	hCHAPSecret           = "chap_secret"
@@ -141,7 +144,25 @@ func hostSchema() map[string]*schema.Schema {
 		hConnections: {
 			Type:        schema.TypeMap,
 			Computed:    true,
-			Description: "A map of network connections and assigned IP addreses, eg {'Private':'10.83.0.17'}.",
+			Description: "A map of network connection name to assigned IP addrese, eg {'Private':'10.83.0.17'}.",
+		},
+		hConnectionsSubnet: {
+			Type:        schema.TypeMap,
+			Computed:    true,
+			Description: "A map of network connection name to subnet IP address.",
+		},
+		hConnectionsGateway: {
+			Type:        schema.TypeMap,
+			Computed:    true,
+			Description: "A map of network connection name to gateway IP address.",
+		},
+		hConnectionsVLAN: {
+			Type:        schema.TypeMap,
+			Computed:    true,
+			Description: "A map of network connection name to VLAN ID.",
+			Elem: &schema.Schema{
+				Type: schema.TypeInt,
+			},
 		},
 		hCHAPUser: {
 			Type:        schema.TypeString,
@@ -473,13 +494,11 @@ func resourceMetalHostRead(d *schema.ResourceData, meta interface{}) (err error)
 	}
 
 	d.Set(hDescription, host.Description)
-	hCons := make(map[string]interface{})
-	for _, con := range host.Connections {
-		for _, hNet := range con.Networks {
-			hCons[hNet.Name] = hNet.IP
-		}
+
+	if err = setConnectionsValues(d, host.Connections); err != nil {
+		return err
 	}
-	d.Set(hConnections, hCons)
+
 	d.Set(hCHAPUser, host.ISCSIConfig.CHAPUser)
 	d.Set(hCHAPSecret, host.ISCSIConfig.CHAPSecret)
 	d.Set(hInitiatorName, host.ISCSIConfig.InitiatorName)
@@ -504,6 +523,42 @@ func resourceMetalHostRead(d *schema.ResourceData, meta interface{}) (err error)
 
 	if err := d.Set(hLabels, tags); err != nil {
 		return fmt.Errorf("set labels: %v", err)
+	}
+
+	return nil
+}
+
+// setConnectionsValues sets hConnections, hConnectionsSubnet, hConnectionsGateway
+// and hConnectionsVLAN from the specified hostConnections.
+func setConnectionsValues(d *schema.ResourceData, hostConnections []rest.HostConnection) error {
+	hConnsIP := make(map[string]string)
+	hConnsSubnet := make(map[string]string)
+	hConnsGateway := make(map[string]string)
+	hConnsVLAN := make(map[string]int32)
+
+	for _, con := range hostConnections {
+		for _, hNet := range con.Networks {
+			hConnsIP[hNet.Name] = hNet.IP
+			hConnsSubnet[hNet.Name] = hNet.Subnet
+			hConnsGateway[hNet.Name] = hNet.Gateway
+			hConnsVLAN[hNet.Name] = hNet.VLAN
+		}
+	}
+
+	if err := d.Set(hConnections, hConnsIP); err != nil {
+		return fmt.Errorf("set connections ip map: %v", err)
+	}
+
+	if err := d.Set(hConnectionsSubnet, hConnsSubnet); err != nil {
+		return fmt.Errorf("set connections subnet map: %v", err)
+	}
+
+	if err := d.Set(hConnectionsGateway, hConnsGateway); err != nil {
+		return fmt.Errorf("set connections gateway map: %v", err)
+	}
+
+	if err := d.Set(hConnectionsVLAN, hConnsVLAN); err != nil {
+		return fmt.Errorf("set connections vlan map: %v", err)
 	}
 
 	return nil
