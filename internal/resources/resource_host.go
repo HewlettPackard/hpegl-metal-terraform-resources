@@ -223,7 +223,6 @@ func hostSchema() map[string]*schema.Schema {
 		},
 		hISCSIDiscoveryAddress: {
 			Type:        schema.TypeString,
-			Optional:    true,
 			Computed:    true,
 			Description: "iSCSI Discovery IP address.",
 		},
