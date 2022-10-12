@@ -44,7 +44,7 @@ const (
 	hPortalCommOkay       = "portal_comm_okay"
 	hPwrState             = "power_state"
 	hLabels               = "labels"
-	hISCSIDiscoveryIP     = "iscsi_discovery_ip"
+	hISCSIDiscoveryAddress = "iscsi_discovery_address"
 
 	// allowedImageLength is number of Image related attributes that can be provided in the from of 'image@version'.
 	allowedImageLength = 2
@@ -221,11 +221,11 @@ func hostSchema() map[string]*schema.Schema {
 			Optional:    true,
 			Description: "map of label name to label value for this host",
 		},
-		hISCSIDiscoveryIP: {
+		hISCSIDiscoveryAddress: {
 			Type:        schema.TypeString,
 			Optional:    true,
 			Computed:    true,
-			Description: "List of iSCSI Discovery IP address.",
+			Description: "iSCSI Discovery IP address.",
 		},
 	}
 }
@@ -459,7 +459,6 @@ func resourceMetalHostRead(d *schema.ResourceData, meta interface{}) (err error)
 
 	hostvas := getVAsForHost(host.ID, varesources)
 	volumeInfos := make([]map[string]interface{}, 0, len(hostvas))
-	discoveryIP := ""
 	for _, i := range hostvas {
 		vi := map[string]interface{}{
 			vID:          i.ID,
@@ -468,18 +467,10 @@ func resourceMetalHostRead(d *schema.ResourceData, meta interface{}) (err error)
 			vTargetIQN:   i.TargetIQN,
 		}
 		volumeInfos = append(volumeInfos, vi)
-
-		if discoveryIP == "" {
-			discoveryIP = i.DiscoveryIP
-		}
 	}
 
 	if err := d.Set(hVolumeInfos, volumeInfos); err != nil {
 		return err
-	}
-
-	if err := d.Set(hISCSIDiscoveryIP, discoveryIP); err != nil {
-		return fmt.Errorf("set discoveryIP: %v", err)
 	}
 
 	d.Set(hDescription, host.Description)
@@ -493,6 +484,11 @@ func resourceMetalHostRead(d *schema.ResourceData, meta interface{}) (err error)
 	d.Set(hCHAPUser, host.ISCSIConfig.CHAPUser)
 	d.Set(hCHAPSecret, host.ISCSIConfig.CHAPSecret)
 	d.Set(hInitiatorName, host.ISCSIConfig.InitiatorName)
+
+	if err = d.Set(hISCSIDiscoveryAddress, host.ISCSIConfig.ISCSIDiscoveryAddress); err != nil {
+		return fmt.Errorf("set discovery IP: %v", err)
+	}
+
 	if err = d.Set(hNetForDefaultRouteID, host.NetworkForDefaultRoute); err != nil {
 		return err
 	}
