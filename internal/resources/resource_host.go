@@ -16,37 +16,37 @@ import (
 
 const (
 	// field names for a Metal host. These are referenceable from some terraform source.
-	hName                 = "name"
-	hDescription          = "description"
-	hImage                = "image"
-	hLocation             = "location"
-	hLocationID           = "location_id"
-	hNetworks             = "networks"
-	hNetworkIDs           = "network_ids"
-	hPreAllocatedIPs      = "allocated_ips"
-	hNetForDefaultRouteID = "network_route_id"
-	hNetForDefaultRoute   = "network_route"
-	hNetUntagged          = "network_untagged"
-	hNetUntaggedID        = "network_untagged_id"
-	hSSHKeys              = "ssh"
-	hSSHKeyIDs            = "ssh_ids"
-	hSize                 = "machine_size"
-	hSizeID               = "machine_size_id"
-	hConnections          = "connections"
-	hConnectionsSubnet    = "connections_subnet"
-	hConnectionsGateway   = "connections_gateway"
-	hConnectionsVLAN      = "connections_vlan"
-	hUserData             = "user_data"
-	hCHAPUser             = "chap_user"
-	hCHAPSecret           = "chap_secret"
-	hInitiatorName        = "initiator_name"
-	hVolumeInfos          = "volume_infos"
-	hVolumeAttachments    = "volume_attachments"
-	hState                = "state"
-	hSubState             = "sub_state"
-	hPortalCommOkay       = "portal_comm_okay"
-	hPwrState             = "power_state"
-	hLabels               = "labels"
+	hName                  = "name"
+	hDescription           = "description"
+	hImage                 = "image"
+	hLocation              = "location"
+	hLocationID            = "location_id"
+	hNetworks              = "networks"
+	hNetworkIDs            = "network_ids"
+	hPreAllocatedIPs       = "allocated_ips"
+	hNetForDefaultRouteID  = "network_route_id"
+	hNetForDefaultRoute    = "network_route"
+	hNetUntagged           = "network_untagged"
+	hNetUntaggedID         = "network_untagged_id"
+	hSSHKeys               = "ssh"
+	hSSHKeyIDs             = "ssh_ids"
+	hSize                  = "machine_size"
+	hSizeID                = "machine_size_id"
+	hConnections           = "connections"
+	hConnectionsSubnet     = "connections_subnet"
+	hConnectionsGateway    = "connections_gateway"
+	hConnectionsVLAN       = "connections_vlan"
+	hUserData              = "user_data"
+	hCHAPUser              = "chap_user"
+	hCHAPSecret            = "chap_secret"
+	hInitiatorName         = "initiator_name"
+	hVolumeInfos           = "volume_infos"
+	hVolumeAttachments     = "volume_attachments"
+	hState                 = "state"
+	hSubState              = "sub_state"
+	hPortalCommOkay        = "portal_comm_okay"
+	hPwrState              = "power_state"
+	hLabels                = "labels"
 	hISCSIDiscoveryAddress = "iscsi_discovery_address"
 
 	// allowedImageLength is number of Image related attributes that can be provided in the from of 'image@version'.
@@ -479,6 +479,7 @@ func resourceMetalHostRead(d *schema.ResourceData, meta interface{}) (err error)
 
 	hostvas := getVAsForHost(host.ID, varesources)
 	volumeInfos := make([]map[string]interface{}, 0, len(hostvas))
+	discoveryIP := ""
 	for _, i := range hostvas {
 		vi := map[string]interface{}{
 			vID:          i.ID,
@@ -487,6 +488,13 @@ func resourceMetalHostRead(d *schema.ResourceData, meta interface{}) (err error)
 			vTargetIQN:   i.TargetIQN,
 		}
 		volumeInfos = append(volumeInfos, vi)
+		if discoveryIP == "" {
+			discoveryIP = i.DiscoveryIP
+		}
+	}
+
+	if err = d.Set(hISCSIDiscoveryAddress, discoveryIP); err != nil {
+		return fmt.Errorf("set discovery IP: %v", err)
 	}
 
 	if err := d.Set(hVolumeInfos, volumeInfos); err != nil {
@@ -502,10 +510,6 @@ func resourceMetalHostRead(d *schema.ResourceData, meta interface{}) (err error)
 	d.Set(hCHAPUser, host.ISCSIConfig.CHAPUser)
 	d.Set(hCHAPSecret, host.ISCSIConfig.CHAPSecret)
 	d.Set(hInitiatorName, host.ISCSIConfig.InitiatorName)
-
-	if err = d.Set(hISCSIDiscoveryAddress, host.ISCSIConfig.ISCSIDiscoveryAddress); err != nil {
-		return fmt.Errorf("set discovery IP: %v", err)
-	}
 
 	if err = d.Set(hNetForDefaultRouteID, host.NetworkForDefaultRoute); err != nil {
 		return err
