@@ -488,6 +488,7 @@ func resourceMetalHostRead(d *schema.ResourceData, meta interface{}) (err error)
 			vTargetIQN:   i.TargetIQN,
 		}
 		volumeInfos = append(volumeInfos, vi)
+
 		if discoveryIP == "" {
 			discoveryIP = i.DiscoveryIP
 		}
