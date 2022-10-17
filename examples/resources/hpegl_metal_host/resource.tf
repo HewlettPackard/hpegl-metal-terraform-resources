@@ -71,5 +71,5 @@ resource "hpegl_metal_host" "terra_host_new_ssh" {
   network_untagged = hpegl_metal_network.newpnet_1.name
   location         = var.location
   description      = "Hello from Terraform"
-  labels           = { "ServiceType" = "BMaaS" }
+  labels           = { "ServiceType": "BMaaS" }
 }
