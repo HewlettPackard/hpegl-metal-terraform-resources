@@ -9,7 +9,7 @@ require (
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.20.0
 	github.com/hewlettpackard/hpegl-metal-client v1.4.11
 	github.com/hewlettpackard/hpegl-provider-lib v0.0.12
-	github.com/stretchr/testify v1.8.0
+	github.com/stretchr/testify v1.8.1
 	gopkg.in/yaml.v2 v2.4.0
 )
 
@@ -177,7 +177,7 @@ require (
 	github.com/spf13/viper v1.12.0 // indirect
 	github.com/ssgreg/nlreturn/v2 v2.2.1 // indirect
 	github.com/stbenjam/no-sprintf-host-port v0.1.1 // indirect
-	github.com/stretchr/objx v0.4.0 // indirect
+	github.com/stretchr/objx v0.5.0 // indirect
 	github.com/subosito/gotenv v1.4.0 // indirect
 	github.com/sylvia7788/contextcheck v1.0.4 // indirect
 	github.com/tdakkota/asciicheck v0.1.1 // indirect
