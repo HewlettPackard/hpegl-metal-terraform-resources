@@ -66,7 +66,7 @@ func testAccCheckVolumeBasic(op string) string {
 	}
 	
 	variable "location" {
-		default = "USA:Matrix:AFCDCC1"
+		default = "USA:Central:AFCDCC1"
 	}
 	`
 	size := testVolCreateSize

@@ -63,7 +63,7 @@ provider "hpegl" {
 }
 
 variable "location" {
-	default = "USA:Matrix:AFCDCC1"
+	default = "USA:Central:AFCDCC1"
 }
 
 data "hpegl_metal_available_resources" "compute" {
