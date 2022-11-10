@@ -25,11 +25,16 @@ resource "hpegl_metal_host" "terra_host" {
   image              = "ubuntu@18.04-20201102"
   machine_size       = "Medium System"
   ssh                = [hpegl_metal_ssh_key.newssh_1.id]
-  networks           = ["Public", "Storage-Client"]
+  networks           = ["Public", "Storage"]
   network_route      = "Public"
   location           = var.location
   description        = "Hello from Terraform"
   volume_attachments = [hpegl_metal_volume.iscsi_volume.id]
+  # timeouts {
+  #   create = "1m"
+  #   update = "1m"
+  #   delete = "1m"
+  # }
 }
 
 # Example of Host creation with implicit dependencies

@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 	rest "github.com/hewlettpackard/hpegl-metal-client/v1/pkg/client"
@@ -50,6 +51,24 @@ const (
 
 	// allowedImageLength is number of Image related attributes that can be provided in the from of 'image@version'.
 	allowedImageLength = 2
+)
+
+// HostStateEnum values. see hpe-hcss/quake/model/host.go.
+const (
+	hStateNew                 = "New"
+	hStateDeleting            = "Deleting"
+	hStateDeleted             = "Deleted"
+	hStateFailed              = "Failed"
+	hStateUpdatingConnections = "Updating Connections"
+	hStateImagingPrep         = "Imaging Prep"
+	hStateImaging             = "Imaging"
+	hStateConnecting          = "Connecting"
+	hStateBooting             = "Booting"
+	hStateReady               = "Ready"
+	hStateReplacing           = "Replacing"
+	hStateReleasing           = "Releasing"
+	hStateAllocating          = "Allocating"
+	hStateMaintenance         = "Maintenance"
 )
 
 func hostSchema() map[string]*schema.Schema {
@@ -255,6 +274,11 @@ func HostResource() *schema.Resource {
 		},
 		Schema:      hostSchema(),
 		Description: "Provides Host resource. This allows Metal Host creation, deletion and update.",
+		Timeouts: &schema.ResourceTimeout{
+			Create: schema.DefaultTimeout(60 * time.Minute),
+			Update: schema.DefaultTimeout(60 * time.Minute),
+			Delete: schema.DefaultTimeout(60 * time.Minute),
+		},
 	}
 }
 
@@ -431,6 +455,37 @@ func resourceMetalHostCreate(d *schema.ResourceData, meta interface{}) (err erro
 	if err != nil {
 		return err
 	}
+
+	// host create is asynchronous in Metal svc.  Wait until host state is Ready.
+	createStateConf := &resource.StateChangeConf{
+		Pending: []string{
+			hStateNew,
+			hStateImagingPrep,
+			hStateImaging,
+			hStateConnecting,
+			hStateBooting,
+		},
+		Target: []string{
+			hStateReady,
+		},
+		Refresh: func() (interface{}, string, error) {
+			host, _, err := p.Client.HostsApi.GetByID(ctx, h.ID)
+			if err != nil {
+				return nil, "", fmt.Errorf("get host %v", h.ID)
+			}
+
+			return host, string(host.State), nil
+		},
+		Timeout:    d.Timeout(schema.TimeoutCreate),
+		Delay:      10 * time.Second,
+		MinTimeout: 10 * time.Second,
+	}
+
+	_, err = createStateConf.WaitForState()
+	if err != nil {
+		return fmt.Errorf("waiting for host instance (%s) to be created: %s", d.Id(), err)
+	}
+
 	d.SetId(h.ID)
 
 	return resourceMetalHostRead(d, meta)
@@ -674,6 +729,33 @@ func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err erro
 		return err
 	}
 
+	// host update is asynchronous in Metal svc.  Wait until host state is Ready.
+	createStateConf := &resource.StateChangeConf{
+		Pending: []string{
+			hStateUpdatingConnections,
+			hStateConnecting,
+			hStateMaintenance,
+		},
+		Target: []string{
+			hStateReady,
+		},
+		Refresh: func() (interface{}, string, error) {
+			h, _, err := p.Client.HostsApi.GetByID(ctx, host.ID)
+			if err != nil {
+				return nil, "", fmt.Errorf("get host %v", host.ID)
+			}
+
+			return h, string(h.State), nil
+		},
+		Timeout:    d.Timeout(schema.TimeoutUpdate),
+		Delay:      10 * time.Second,
+		MinTimeout: 10 * time.Second,
+	}
+
+	if _, err = createStateConf.WaitForState(); err != nil {
+		return fmt.Errorf("waiting for host instance (%s) to be updated: %s", d.Id(), err)
+	}
+
 	return resourceMetalHostRead(d, meta)
 }
 
@@ -694,42 +776,6 @@ func resourceMetalHostDelete(d *schema.ResourceData, meta interface{}) (err erro
 		if err == nil {
 			// Update resource pool and propagate any error
 			err = p.RefreshAvailableResources()
-		}
-	}()
-
-	defer func() {
-		// host deletes are asynchronous in Metal svc and we can not delete terraform's
-		// reference to the host until it has really gone from Metal svc. If we delete the
-		// reference too early, or in the presence of errors, we will never be able to retry
-		// the delete operation from Terraform (since it has no reference to the resource).
-		if err == nil {
-			// Host deletes are async so wait here until Metal svc reports that the host has really gone.
-			for {
-				time.Sleep(pollInterval)
-
-				ctx := p.GetContext()
-				host, _, err = p.Client.HostsApi.GetByID(ctx, d.Id())
-				if err != nil {
-					return
-				}
-
-				switch host.State {
-				case rest.HOSTSTATE_DELETED:
-					// Success; delete terraform reference.
-					d.SetId("")
-					return
-
-				case rest.HOSTSTATE_FAILED:
-					// Metal has finished delete attempts but failed. Retain the reference to
-					// the host since it technically still exists so that terraform can attempt
-					// another delete at a later time.
-					err = fmt.Errorf("unable to delete host")
-					return
-
-				default:
-					continue
-				}
-			}
 		}
 	}()
 
@@ -774,9 +820,40 @@ func resourceMetalHostDelete(d *schema.ResourceData, meta interface{}) (err erro
 	}
 
 	ctx = p.GetContext()
-	_, err = p.Client.HostsApi.Delete(ctx, d.Id())
+	if _, err = p.Client.HostsApi.Delete(ctx, d.Id()); err != nil {
+		// nolint:wrapcheck // defer func is wrapping the error.
+		return err
+	}
 
-	return err
+	// host deletes are asynchronous in Metal svc and we can not delete terraform's
+	// reference to the host until it has really gone from Metal svc. If we delete the
+	// reference too early, or in the presence of errors, we will never be able to retry
+	// the delete operation from Terraform (since it has no reference to the resource).
+	createStateConf := &resource.StateChangeConf{
+		Pending: []string{
+			hStateDeleting,
+		},
+		Target: []string{
+			hStateDeleted,
+		},
+		Refresh: func() (interface{}, string, error) {
+			host, _, err := p.Client.HostsApi.GetByID(ctx, d.Id())
+			if err != nil {
+				return nil, "", fmt.Errorf("get host %v", d.Id())
+			}
+
+			return host, string(host.State), nil
+		},
+		Timeout:    d.Timeout(schema.TimeoutDelete),
+		Delay:      10 * time.Second,
+		MinTimeout: 10 * time.Second,
+	}
+
+	if _, err = createStateConf.WaitForState(); err != nil {
+		return fmt.Errorf("waiting for host instance (%s) to be deleted: %s", d.Id(), err)
+	}
+
+	return nil
 }
 
 // volumeExists returns true & the volume ID, if the input matches
