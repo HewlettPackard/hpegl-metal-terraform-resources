@@ -53,7 +53,7 @@ const (
 	allowedImageLength = 2
 )
 
-// HostStateEnum values. see hpe-hcss/quake/model/host.go.
+// Host State values.
 const (
 	hStateNew                 = "New"
 	hStateDeleting            = "Deleting"
