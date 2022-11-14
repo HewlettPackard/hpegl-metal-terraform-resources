@@ -455,7 +455,7 @@ func resourceMetalHostCreate(d *schema.ResourceData, meta interface{}) (err erro
 		return err
 	}
 
-	// host create is asynchronous in Metal svc.  Wait until host state is Ready.
+	// host create is asynchronous in Metal svc. Wait until host state is Ready.
 	createStateConf := &resource.StateChangeConf{
 		Pending: []string{
 			hStateNew,
@@ -728,7 +728,7 @@ func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err erro
 		return err
 	}
 
-	// host update is asynchronous in Metal svc.  Wait until host state is Ready.
+	// host update is asynchronous in Metal svc. Wait until host state is Ready.
 	updateStateConf := &resource.StateChangeConf{
 		Pending: []string{
 			hStateUpdatingConnections,
