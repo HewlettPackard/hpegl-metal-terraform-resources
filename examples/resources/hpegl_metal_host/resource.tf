@@ -30,10 +30,12 @@ resource "hpegl_metal_host" "terra_host" {
   location           = var.location
   description        = "Hello from Terraform"
   volume_attachments = [hpegl_metal_volume.iscsi_volume.id]
+  ## uncomment below to override the 60m timeouts
+  ## see https://developer.hashicorp.com/terraform/plugin/sdkv2/resources/retries-and-customizable-timeouts
   # timeouts {
-  #   create = "1m"
-  #   update = "1m"
-  #   delete = "1m"
+  #   create = "20m"
+  #   update = "30m"
+  #   delete = "5m"
   # }
 }
 
