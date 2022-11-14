@@ -15,8 +15,8 @@ import (
 	"github.com/hewlettpackard/hpegl-metal-terraform-resources/pkg/configuration"
 )
 
+// field names for a Metal host. These are referenceable from some terraform source.
 const (
-	// field names for a Metal host. These are referenceable from some terraform source.
 	hName                 = "name"
 	hDescription          = "description"
 	hImage                = "image"
@@ -58,18 +58,17 @@ const (
 	hStateNew                 = "New"
 	hStateDeleting            = "Deleting"
 	hStateDeleted             = "Deleted"
-	hStateFailed              = "Failed"
 	hStateUpdatingConnections = "Updating Connections"
 	hStateImagingPrep         = "Imaging Prep"
 	hStateImaging             = "Imaging"
 	hStateConnecting          = "Connecting"
 	hStateBooting             = "Booting"
 	hStateReady               = "Ready"
-	hStateReplacing           = "Replacing"
-	hStateReleasing           = "Releasing"
-	hStateAllocating          = "Allocating"
 	hStateMaintenance         = "Maintenance"
 )
+
+// the untyped int 10 and 60.
+const ten, sixty = 10, 60
 
 func hostSchema() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
@@ -275,9 +274,9 @@ func HostResource() *schema.Resource {
 		Schema:      hostSchema(),
 		Description: "Provides Host resource. This allows Metal Host creation, deletion and update.",
 		Timeouts: &schema.ResourceTimeout{
-			Create: schema.DefaultTimeout(60 * time.Minute),
-			Update: schema.DefaultTimeout(60 * time.Minute),
-			Delete: schema.DefaultTimeout(60 * time.Minute),
+			Create: schema.DefaultTimeout(sixty * time.Minute),
+			Update: schema.DefaultTimeout(sixty * time.Minute),
+			Delete: schema.DefaultTimeout(sixty * time.Minute),
 		},
 	}
 }
@@ -477,11 +476,11 @@ func resourceMetalHostCreate(d *schema.ResourceData, meta interface{}) (err erro
 			return host, string(host.State), nil
 		},
 		Timeout:    d.Timeout(schema.TimeoutCreate),
-		Delay:      10 * time.Second,
-		MinTimeout: 10 * time.Second,
+		Delay:      ten * time.Second,
+		MinTimeout: ten * time.Second,
 	}
 
-	_, err = createStateConf.WaitForState()
+	_, err = createStateConf.WaitForStateContext(ctx)
 	if err != nil {
 		return fmt.Errorf("waiting for host instance (%s) to be created: %s", d.Id(), err)
 	}
@@ -748,11 +747,11 @@ func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err erro
 			return h, string(h.State), nil
 		},
 		Timeout:    d.Timeout(schema.TimeoutUpdate),
-		Delay:      10 * time.Second,
-		MinTimeout: 10 * time.Second,
+		Delay:      ten * time.Second,
+		MinTimeout: ten * time.Second,
 	}
 
-	if _, err = createStateConf.WaitForState(); err != nil {
+	if _, err = createStateConf.WaitForStateContext(ctx); err != nil {
 		return fmt.Errorf("waiting for host instance (%s) to be updated: %s", d.Id(), err)
 	}
 
@@ -845,11 +844,11 @@ func resourceMetalHostDelete(d *schema.ResourceData, meta interface{}) (err erro
 			return host, string(host.State), nil
 		},
 		Timeout:    d.Timeout(schema.TimeoutDelete),
-		Delay:      10 * time.Second,
-		MinTimeout: 10 * time.Second,
+		Delay:      ten * time.Second,
+		MinTimeout: ten * time.Second,
 	}
 
-	if _, err = createStateConf.WaitForState(); err != nil {
+	if _, err = createStateConf.WaitForStateContext(ctx); err != nil {
 		return fmt.Errorf("waiting for host instance (%s) to be deleted: %s", d.Id(), err)
 	}
 
