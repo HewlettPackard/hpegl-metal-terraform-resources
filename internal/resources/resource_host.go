@@ -67,8 +67,8 @@ const (
 	hStateMaintenance         = "Maintenance"
 )
 
-// the untyped int 10 and 60.
-const ten, sixty = 10, 60
+// the untyped int 10, 30, 60.
+const ten, thirty, sixty = 10, 30, 60
 
 func hostSchema() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
@@ -476,7 +476,7 @@ func resourceMetalHostCreate(d *schema.ResourceData, meta interface{}) (err erro
 			return host, string(host.State), nil
 		},
 		Timeout:    d.Timeout(schema.TimeoutCreate),
-		Delay:      ten * time.Second,
+		Delay:      thirty * time.Second,
 		MinTimeout: ten * time.Second,
 	}
 
@@ -729,7 +729,7 @@ func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err erro
 	}
 
 	// host update is asynchronous in Metal svc.  Wait until host state is Ready.
-	createStateConf := &resource.StateChangeConf{
+	updateStateConf := &resource.StateChangeConf{
 		Pending: []string{
 			hStateUpdatingConnections,
 			hStateConnecting,
@@ -747,11 +747,11 @@ func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err erro
 			return h, string(h.State), nil
 		},
 		Timeout:    d.Timeout(schema.TimeoutUpdate),
-		Delay:      ten * time.Second,
+		Delay:      thirty * time.Second,
 		MinTimeout: ten * time.Second,
 	}
 
-	if _, err = createStateConf.WaitForStateContext(ctx); err != nil {
+	if _, err = updateStateConf.WaitForStateContext(ctx); err != nil {
 		return fmt.Errorf("waiting for host instance (%s) to be updated: %s", d.Id(), err)
 	}
 
@@ -828,7 +828,7 @@ func resourceMetalHostDelete(d *schema.ResourceData, meta interface{}) (err erro
 	// reference to the host until it has really gone from Metal svc. If we delete the
 	// reference too early, or in the presence of errors, we will never be able to retry
 	// the delete operation from Terraform (since it has no reference to the resource).
-	createStateConf := &resource.StateChangeConf{
+	deleteStateConf := &resource.StateChangeConf{
 		Pending: []string{
 			hStateDeleting,
 		},
@@ -844,11 +844,11 @@ func resourceMetalHostDelete(d *schema.ResourceData, meta interface{}) (err erro
 			return host, string(host.State), nil
 		},
 		Timeout:    d.Timeout(schema.TimeoutDelete),
-		Delay:      ten * time.Second,
+		Delay:      thirty * time.Second,
 		MinTimeout: ten * time.Second,
 	}
 
-	if _, err = createStateConf.WaitForStateContext(ctx); err != nil {
+	if _, err = deleteStateConf.WaitForStateContext(ctx); err != nil {
 		return fmt.Errorf("waiting for host instance (%s) to be deleted: %s", d.Id(), err)
 	}
 
