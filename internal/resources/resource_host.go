@@ -67,12 +67,8 @@ const (
 	hStateMaintenance         = "Maintenance"
 )
 
-// duration (nanoseconds) values used for StateChangeConf.
-const (
-	tenDuration    = time.Duration(10)
-	thirtyDuration = time.Duration(30)
-	sixtyDuration  = time.Duration(60)
-)
+// untyped ints used for timeout 10, 30, 60.
+const ten, thirty, sixty = 10, 30, 60
 
 func hostSchema() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
@@ -278,9 +274,9 @@ func HostResource() *schema.Resource {
 		Schema:      hostSchema(),
 		Description: "Provides Host resource. This allows Metal Host creation, deletion and update.",
 		Timeouts: &schema.ResourceTimeout{
-			Create: schema.DefaultTimeout(sixtyDuration * time.Minute),
-			Update: schema.DefaultTimeout(sixtyDuration * time.Minute),
-			Delete: schema.DefaultTimeout(sixtyDuration * time.Minute),
+			Create: schema.DefaultTimeout(sixty * time.Minute),
+			Update: schema.DefaultTimeout(sixty * time.Minute),
+			Delete: schema.DefaultTimeout(sixty * time.Minute),
 		},
 	}
 }
@@ -482,8 +478,8 @@ func resourceMetalHostCreate(d *schema.ResourceData, meta interface{}) (err erro
 			return host, string(host.State), nil
 		},
 		Timeout:    d.Timeout(schema.TimeoutCreate),
-		Delay:      thirtyDuration * time.Second,
-		MinTimeout: tenDuration * time.Second,
+		Delay:      thirty * time.Second,
+		MinTimeout: ten * time.Second,
 	}
 
 	if _, err = createStateConf.WaitForStateContext(ctx); err != nil {
@@ -751,8 +747,8 @@ func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err erro
 			return h, string(h.State), nil
 		},
 		Timeout:    d.Timeout(schema.TimeoutUpdate),
-		Delay:      thirtyDuration * time.Second,
-		MinTimeout: tenDuration * time.Second,
+		Delay:      thirty * time.Second,
+		MinTimeout: ten * time.Second,
 	}
 
 	if _, err := updateStateConf.WaitForStateContext(ctx); err != nil {
@@ -849,8 +845,8 @@ func resourceMetalHostDelete(d *schema.ResourceData, meta interface{}) (err erro
 			return host, string(host.State), nil
 		},
 		Timeout:    d.Timeout(schema.TimeoutDelete),
-		Delay:      thirtyDuration * time.Second,
-		MinTimeout: tenDuration * time.Second,
+		Delay:      thirty * time.Second,
+		MinTimeout: ten * time.Second,
 	}
 
 	if _, err := deleteStateConf.WaitForStateContext(ctx); err != nil {
