@@ -33,8 +33,8 @@ resource "hpegl_metal_host" "terra_host" {
   ## uncomment below to override the 60m timeouts
   ## see https://developer.hashicorp.com/terraform/plugin/sdkv2/resources/retries-and-customizable-timeouts
   # timeouts {
-  #   create = "20m"
-  #   update = "30m"
+  #   create = "90m"
+  #   update = "5m"
   #   delete = "5m"
   # }
 }

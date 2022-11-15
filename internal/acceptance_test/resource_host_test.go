@@ -6,18 +6,12 @@ import (
 	"fmt"
 	"net/http"
 	"testing"
-	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 
 	rest "github.com/hewlettpackard/hpegl-metal-client/v1/pkg/client"
 	"github.com/hewlettpackard/hpegl-metal-terraform-resources/pkg/client"
-)
-
-const (
-	hostStateReadyWait = 30 * time.Second
-	hostStatePollCount = 4
 )
 
 func TestAccResourceHost_Basic(t *testing.T) {
@@ -29,12 +23,12 @@ func TestAccResourceHost_Basic(t *testing.T) {
 			// host create step
 			{
 				Config: testAccCheckHostBasic(),
-				Check:  testWaitUntilHostReady("hpegl_metal_host.test_host"),
+				Check:  testVerifyHostReady("hpegl_metal_host.test_host"),
 			},
 			// host update step
 			{
 				Config: testAccHostUpdateConfig(),
-				Check:  testWaitUntilHostReady("hpegl_metal_host.test_host"),
+				Check:  testVerifyHostReady("hpegl_metal_host.test_host"),
 			},
 		},
 	})
@@ -108,9 +102,9 @@ resource "hpegl_metal_host" "test_host" {
 	return common + host
 }
 
-// testWaitUntilHostReady checks if the host was created successfully and
+// testVerifyHostReady checks if the host was created successfully and
 // is in the 'Ready' state.
-func testWaitUntilHostReady(rsrc string) resource.TestCheckFunc {
+func testVerifyHostReady(rsrc string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[rsrc]
 		if !ok {
@@ -130,19 +124,14 @@ func testWaitUntilHostReady(rsrc string) resource.TestCheckFunc {
 
 		ctx := p.GetContext()
 
-		hostState := rest.HOSTSTATE_NEW
-		for i := 0; i < hostStatePollCount && hostState != rest.HOSTSTATE_READY; i++ {
-			time.Sleep(hostStateReadyWait)
-
-			host, resp, err := p.Client.HostsApi.GetByID(ctx, hostID)
-			if err != nil {
-				return fmt.Errorf("Host: %q not found: %s", hostID, err)
-			}
-
-			resp.Body.Close()
-
-			hostState = host.State
+		host, resp, err := p.Client.HostsApi.GetByID(ctx, hostID)
+		if err != nil {
+			return fmt.Errorf("Host: %q not found: %s", hostID, err)
 		}
+
+		resp.Body.Close()
+
+		hostState := host.State
 
 		if hostState != rest.HOSTSTATE_READY {
 			return fmt.Errorf("Host %s state %v != %v", hostID, hostState, rest.HOSTSTATE_READY)
