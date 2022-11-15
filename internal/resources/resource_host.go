@@ -67,8 +67,12 @@ const (
 	hStateMaintenance         = "Maintenance"
 )
 
-// the untyped int 10, 30, 60.
-const ten, thirty, sixty = 10, 30, 60
+// timeout values used for StateChangeConf.
+const (
+	tenSeconds    = time.Duration(10) * time.Second
+	thirtySeconds = time.Duration(30) * time.Second
+	sixtyMinutes  = time.Duration(60) * time.Minute
+)
 
 func hostSchema() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
@@ -274,9 +278,9 @@ func HostResource() *schema.Resource {
 		Schema:      hostSchema(),
 		Description: "Provides Host resource. This allows Metal Host creation, deletion and update.",
 		Timeouts: &schema.ResourceTimeout{
-			Create: schema.DefaultTimeout(sixty * time.Minute),
-			Update: schema.DefaultTimeout(sixty * time.Minute),
-			Delete: schema.DefaultTimeout(sixty * time.Minute),
+			Create: schema.DefaultTimeout(sixtyMinutes),
+			Update: schema.DefaultTimeout(sixtyMinutes),
+			Delete: schema.DefaultTimeout(sixtyMinutes),
 		},
 	}
 }
@@ -455,6 +459,8 @@ func resourceMetalHostCreate(d *schema.ResourceData, meta interface{}) (err erro
 		return err
 	}
 
+	d.SetId(h.ID)
+
 	// host create is asynchronous in Metal svc.  Wait until host state is Ready.
 	createStateConf := &resource.StateChangeConf{
 		Pending: []string{
@@ -476,16 +482,13 @@ func resourceMetalHostCreate(d *schema.ResourceData, meta interface{}) (err erro
 			return host, string(host.State), nil
 		},
 		Timeout:    d.Timeout(schema.TimeoutCreate),
-		Delay:      thirty * time.Second,
-		MinTimeout: ten * time.Second,
+		Delay:      thirtySeconds,
+		MinTimeout: tenSeconds,
 	}
 
-	_, err = createStateConf.WaitForStateContext(ctx)
-	if err != nil {
+	if _, err = createStateConf.WaitForStateContext(ctx); err != nil {
 		return fmt.Errorf("waiting for host instance (%s) to be created: %s", d.Id(), err)
 	}
-
-	d.SetId(h.ID)
 
 	return resourceMetalHostRead(d, meta)
 }
@@ -634,6 +637,7 @@ func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err erro
 	}
 
 	ctx := p.GetContext()
+
 	host, _, err := p.Client.HostsApi.GetByID(ctx, d.Id())
 	if err != nil {
 		return err
@@ -747,11 +751,11 @@ func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err erro
 			return h, string(h.State), nil
 		},
 		Timeout:    d.Timeout(schema.TimeoutUpdate),
-		Delay:      thirty * time.Second,
-		MinTimeout: ten * time.Second,
+		Delay:      thirtySeconds,
+		MinTimeout: tenSeconds,
 	}
 
-	if _, err = updateStateConf.WaitForStateContext(ctx); err != nil {
+	if _, err := updateStateConf.WaitForStateContext(ctx); err != nil {
 		return fmt.Errorf("waiting for host instance (%s) to be updated: %s", d.Id(), err)
 	}
 
@@ -819,7 +823,8 @@ func resourceMetalHostDelete(d *schema.ResourceData, meta interface{}) (err erro
 	}
 
 	ctx = p.GetContext()
-	if _, err = p.Client.HostsApi.Delete(ctx, d.Id()); err != nil {
+
+	if _, err := p.Client.HostsApi.Delete(ctx, d.Id()); err != nil {
 		// nolint:wrapcheck // defer func is wrapping the error.
 		return err
 	}
@@ -844,11 +849,11 @@ func resourceMetalHostDelete(d *schema.ResourceData, meta interface{}) (err erro
 			return host, string(host.State), nil
 		},
 		Timeout:    d.Timeout(schema.TimeoutDelete),
-		Delay:      thirty * time.Second,
-		MinTimeout: ten * time.Second,
+		Delay:      thirtySeconds,
+		MinTimeout: tenSeconds,
 	}
 
-	if _, err = deleteStateConf.WaitForStateContext(ctx); err != nil {
+	if _, err := deleteStateConf.WaitForStateContext(ctx); err != nil {
 		return fmt.Errorf("waiting for host instance (%s) to be deleted: %s", d.Id(), err)
 	}
 
