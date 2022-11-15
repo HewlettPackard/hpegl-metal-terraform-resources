@@ -732,7 +732,7 @@ func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err erro
 		return err
 	}
 
-	// host update is asynchronous in Metal svc.  Wait until host state is Ready.
+	// host update is asynchronous in Metal svc. Wait until host state is Ready.
 	updateStateConf := &resource.StateChangeConf{
 		Pending: []string{
 			hStateUpdatingConnections,
