@@ -46,7 +46,7 @@ provider "hpegl" {
 }
 
 variable "location" {
-	default = "USA:Central:V2DCC01"
+	default = "USA:Central:AFCDCC1"
 }
 
 resource "hpegl_metal_network" "pnet" {
@@ -64,7 +64,7 @@ provider "hpegl" {
 }
 
 variable "location" {
-	default = "USA:Central:V2DCC01"
+	default = "USA:Central:AFCDCC1"
 }
 
 resource "hpegl_metal_network" "pnet" {
