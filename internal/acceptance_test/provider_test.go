@@ -39,7 +39,7 @@ func TestProvider(t *testing.T) {
 	testAccPreCheck(t)
 }
 
-// nolint: funlen  // ignoring for test functions
+//nolint: funlen  // ignoring for test functions
 func TestAccProvider_Auth0Error(t *testing.T) {
 	filePath, err := getDefaultMetalConfigPath()
 	if err != nil {
