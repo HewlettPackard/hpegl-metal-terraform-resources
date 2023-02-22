@@ -1,4 +1,4 @@
-// (C) Copyright 2020-2022 Hewlett Packard Enterprise Development LP
+// (C) Copyright 2020-2023 Hewlett Packard Enterprise Development LP
 
 package acceptance_test
 
@@ -39,7 +39,7 @@ func TestProvider(t *testing.T) {
 	testAccPreCheck(t)
 }
 
-//nolint: funlen  // ignoring for test functions
+// nolint: funlen  // ignoring for test functions
 func TestAccProvider_Auth0Error(t *testing.T) {
 	filePath, err := getDefaultMetalConfigPath()
 	if err != nil {
@@ -164,10 +164,11 @@ func testAccProviderMetalBasic() string {
 provider "hpegl" {
 	metal {
 	}
+	alias = "test"
 }
 
 data "hpegl_metal_available_resources" "physical" {
-
+	provider = hpegl.test
 }`
 }
 
