@@ -1,4 +1,4 @@
-// (C) Copyright 2020-2022 Hewlett Packard Enterprise Development LP
+// (C) Copyright 2020-2023 Hewlett Packard Enterprise Development LP
 
 package resources
 
@@ -433,5 +433,7 @@ func getSupportedNetworkPurpose() string {
 		rest.NETWORKPURPOSE_VM_FT,
 		rest.NETWORKPURPOSE_I_SCSI_A,
 		rest.NETWORKPURPOSE_I_SCSI_B,
-		rest.NETWORKPURPOSE_TELEMETRY)
+		rest.NETWORKPURPOSE_TELEMETRY,
+		rest.NETWORKPURPOSE_EXTERNAL,
+	)
 }
