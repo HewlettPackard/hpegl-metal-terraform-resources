@@ -423,7 +423,7 @@ func resourceMetalNetworkDelete(d *schema.ResourceData, meta interface{}) (err e
 
 // getSupportedNetworkPurpose returns a string containing supported network purpose values.
 func getSupportedNetworkPurpose() string {
-	return fmt.Sprintf("%v, %v, %v, %v, %v, %v, %v, %v, %v or %v",
+	return fmt.Sprintf("%v, %v, %v, %v, %v, %v, %v, %v, %v, %v or %v",
 		rest.NETWORKPURPOSE_BACKUP,
 		rest.NETWORKPURPOSE_STORAGE,
 		rest.NETWORKPURPOSE_VM_KERNEL,
