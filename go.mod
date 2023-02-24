@@ -7,7 +7,7 @@ require (
 	github.com/golangci/golangci-lint v1.51.1
 	github.com/hashicorp/terraform-plugin-docs v0.13.0
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.25.0
-	github.com/hewlettpackard/hpegl-metal-client v1.4.13
+	github.com/hewlettpackard/hpegl-metal-client v1.4.14
 	github.com/hewlettpackard/hpegl-provider-lib v0.0.14
 	github.com/stretchr/testify v1.8.1
 	gopkg.in/yaml.v2 v2.4.0
