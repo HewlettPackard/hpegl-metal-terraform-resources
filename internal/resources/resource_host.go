@@ -471,7 +471,10 @@ func resourceMetalHostRead(d *schema.ResourceData, meta interface{}) (err error)
 	d.Set(hLocation, loc)
 	d.Set(hLocationID, host.LocationID)
 	d.Set(hNetworkIDs, host.NetworkIDs)
-	d.Set(hSummaryStatus, host.SummaryStatus)
+
+	if err = d.Set(hSummaryStatus, host.SummaryStatus); err != nil {
+		return err
+	}
 
 	varesources, _, err := p.Client.VolumeAttachmentsApi.List(ctx)
 	if err != nil {
