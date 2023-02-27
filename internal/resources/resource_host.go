@@ -1,4 +1,4 @@
-// (C) Copyright 2020-2022 Hewlett Packard Enterprise Development LP
+// (C) Copyright 2020-2023 Hewlett Packard Enterprise Development LP
 
 package resources
 
@@ -47,6 +47,7 @@ const (
 	hPortalCommOkay       = "portal_comm_okay"
 	hPwrState             = "power_state"
 	hLabels               = "labels"
+	hSummaryStatus        = "summary_status"
 
 	// allowedImageLength is number of Image related attributes that can be provided in the from of 'image@version'.
 	allowedImageLength = 2
@@ -241,6 +242,11 @@ func hostSchema() map[string]*schema.Schema {
 			Optional:    true,
 			Description: "map of label name to label value for this host",
 		},
+		hSummaryStatus: {
+			Type:        schema.TypeString,
+			Computed:    true,
+			Description: "The current health status of the host",
+		},
 	}
 }
 
@@ -258,7 +264,7 @@ func HostResource() *schema.Resource {
 	}
 }
 
-//nolint: funlen    // Ignoring function length check on existing function
+// nolint: funlen    // Ignoring function length check on existing function
 func resourceMetalHostCreate(d *schema.ResourceData, meta interface{}) (err error) {
 	defer wrapResourceError(&err, "failed to create host")
 
@@ -436,7 +442,7 @@ func resourceMetalHostCreate(d *schema.ResourceData, meta interface{}) (err erro
 	return resourceMetalHostRead(d, meta)
 }
 
-//nolint: funlen    // Ignoring function length check on existing function
+// nolint: funlen    // Ignoring function length check on existing function
 func resourceMetalHostRead(d *schema.ResourceData, meta interface{}) (err error) {
 	defer wrapResourceError(&err, "failed to query host")
 
@@ -465,6 +471,7 @@ func resourceMetalHostRead(d *schema.ResourceData, meta interface{}) (err error)
 	d.Set(hLocation, loc)
 	d.Set(hLocationID, host.LocationID)
 	d.Set(hNetworkIDs, host.NetworkIDs)
+	d.Set(hSummaryStatus, host.SummaryStatus)
 
 	varesources, _, err := p.Client.VolumeAttachmentsApi.List(ctx)
 	if err != nil {
@@ -570,7 +577,7 @@ func getVAsForHost(hostID string, vas []rest.VolumeAttachment) []rest.VolumeInfo
 	return hostvas
 }
 
-//nolint: funlen    // Ignoring function length check on existing function
+// nolint: funlen    // Ignoring function length check on existing function
 func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err error) {
 	defer wrapResourceError(&err, "failed to update host")
 
@@ -670,14 +677,14 @@ func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err erro
 
 	_, _, err = p.Client.HostsApi.Update(ctx, host.ID, host)
 	if err != nil {
-		// nolint:wrapcheck // defer func is wrapping the error.
+		//nolint:wrapcheck // defer func is wrapping the error.
 		return err
 	}
 
 	return resourceMetalHostRead(d, meta)
 }
 
-//nolint: funlen    // Ignoring function length check on existing function
+// nolint: funlen    // Ignoring function length check on existing function
 func resourceMetalHostDelete(d *schema.ResourceData, meta interface{}) (err error) {
 	defer wrapResourceError(&err, "failed to delete host")
 
