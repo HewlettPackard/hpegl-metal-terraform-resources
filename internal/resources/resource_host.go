@@ -1,4 +1,4 @@
-// (C) Copyright 2020-2022 Hewlett Packard Enterprise Development LP
+// (C) Copyright 2020-2023 Hewlett Packard Enterprise Development LP
 
 package resources
 
@@ -47,6 +47,7 @@ const (
 	hPortalCommOkay       = "portal_comm_okay"
 	hPwrState             = "power_state"
 	hLabels               = "labels"
+	hSummaryStatus        = "summary_status"
 
 	// allowedImageLength is number of Image related attributes that can be provided in the from of 'image@version'.
 	allowedImageLength = 2
@@ -240,6 +241,11 @@ func hostSchema() map[string]*schema.Schema {
 			Type:        schema.TypeMap,
 			Optional:    true,
 			Description: "map of label name to label value for this host",
+		},
+		hSummaryStatus: {
+			Type:        schema.TypeString,
+			Computed:    true,
+			Description: "The current health status of the host",
 		},
 	}
 }
@@ -466,6 +472,10 @@ func resourceMetalHostRead(d *schema.ResourceData, meta interface{}) (err error)
 	d.Set(hLocationID, host.LocationID)
 	d.Set(hNetworkIDs, host.NetworkIDs)
 
+	if err = d.Set(hSummaryStatus, host.SummaryStatus); err != nil {
+		return fmt.Errorf("set summary status: %v", err)
+	}
+
 	varesources, _, err := p.Client.VolumeAttachmentsApi.List(ctx)
 	if err != nil {
 		return fmt.Errorf("error reading volume attachment information %v", err)
@@ -670,7 +680,7 @@ func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err erro
 
 	_, _, err = p.Client.HostsApi.Update(ctx, host.ID, host)
 	if err != nil {
-		// nolint:wrapcheck // defer func is wrapping the error.
+		//nolint:wrapcheck // defer func is wrapping the error.
 		return err
 	}
 
