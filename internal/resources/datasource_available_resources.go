@@ -1,4 +1,4 @@
-// (C) Copyright 2020-2022 Hewlett Packard Enterprise Development LP
+// (C) Copyright 2020-2023 Hewlett Packard Enterprise Development LP
 
 package resources
 
@@ -344,6 +344,8 @@ func addNetworks(p *configuration.Config, d *schema.ResourceData, available rest
 			nPurpose:     net.Purpose,
 			nLocationID:  net.LocationID,
 			nIPPoolID:    net.IPPoolID,
+			nVLAN:        net.VLAN,
+			nVNI:         net.VNI,
 		}
 		l, _ := p.GetLocationName(net.LocationID)
 		iData[nLocation] = l
