@@ -63,10 +63,11 @@ func testAccCheckVolumeBasic(op string) string {
 	provider "hpegl" {
 		metal {
 		}
+		alias = "test"
 	}
 	
 	variable "location" {
-		default = "USA:Central:V2DCC01"
+		default = "USA:Central:AFCDCC1"
 	}
 	`
 	size := testVolCreateSize
@@ -76,6 +77,7 @@ func testAccCheckVolumeBasic(op string) string {
 	}
 
 	res := fmt.Sprintf(`resource "hpegl_metal_volume" "test_vol" {
+		provider    = hpegl.test
 		name        = "test.volume"
 		size        = %d
 		flavor      = "Fast"

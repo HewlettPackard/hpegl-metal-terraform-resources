@@ -1,4 +1,4 @@
-// (C) Copyright 2020-2022 Hewlett Packard Enterprise Development LP
+// (C) Copyright 2020-2023 Hewlett Packard Enterprise Development LP
 
 package acceptance_test
 
@@ -18,9 +18,11 @@ func metalSSHKeyConfigBasic(name, publicSSHKey string) string {
 	provider "hpegl" {
 		metal {
 		}
+		alias = "test"
 	}
 
 	resource "hpegl_metal_ssh_key" "test" {
+		provider   = hpegl.test
 		name       = %q
 		public_key = %q
 	}

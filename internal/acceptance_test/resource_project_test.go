@@ -56,6 +56,7 @@ func projectBasic(op string) string {
 	provider "hpegl" {
 		metal {
 		}
+		alias = "test"
 	}`
 
 	name := `"TestHoster1-SimProject1"`
@@ -70,6 +71,7 @@ func projectBasic(op string) string {
 
 	res := fmt.Sprintf(`
 	resource "hpegl_metal_project" "project1" {
+		provider            = hpegl.test
 		name = %s
 		profile {
 		company             = %s

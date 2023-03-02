@@ -1,4 +1,4 @@
-// (C) Copyright 2020-2022 Hewlett Packard Enterprise Development LP
+// (C) Copyright 2020-2023 Hewlett Packard Enterprise Development LP
 
 package acceptance_test
 
@@ -29,9 +29,11 @@ const testAvailableResourceBasic = `
 provider "hpegl" {
 	metal {
 	}
+	alias = "test"
 }
 
 data "hpegl_metal_available_resources" "compute" {
+	provider = hpegl.test
 }
 `
 

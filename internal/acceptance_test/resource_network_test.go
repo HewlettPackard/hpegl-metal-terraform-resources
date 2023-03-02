@@ -1,4 +1,4 @@
-// (C) Copyright 2020-2022 Hewlett Packard Enterprise Development LP
+// (C) Copyright 2020-2023 Hewlett Packard Enterprise Development LP
 
 package acceptance_test
 
@@ -43,13 +43,15 @@ func testAccCheckNetworkBasic() string {
 provider "hpegl" {
 	metal {
 	}
+	alias = "test"
 }
 
 variable "location" {
-	default = "USA:Central:V2DCC01"
+	default = "USA:Central:AFCDCC1"
 }
 
 resource "hpegl_metal_network" "pnet" {
+  provider           = hpegl.test
   name               = "pnet-test"              
   location           = var.location
   description        = "tf-net description"
@@ -61,13 +63,15 @@ func testAccCheckNetworkOptFields() string {
 provider "hpegl" {
 	metal {
 	}
+	alias = "test"
 }
 
 variable "location" {
-	default = "USA:Central:V2DCC01"
+	default = "USA:Central:AFCDCC1"
 }
 
 resource "hpegl_metal_network" "pnet" {
+  provider           = hpegl.test
   name               = "pnet-test"              
   location           = var.location
   description        = "tf-net description"

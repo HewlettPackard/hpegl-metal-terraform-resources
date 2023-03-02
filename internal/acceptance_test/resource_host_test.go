@@ -1,4 +1,4 @@
-// (C) Copyright 2020-2022 Hewlett Packard Enterprise Development LP
+// (C) Copyright 2020-2023 Hewlett Packard Enterprise Development LP
 
 package acceptance_test
 
@@ -42,6 +42,7 @@ func testAccCheckHostBasic() string {
 // attributes of the host 'test_host':
 //   - description is updated
 //   - last network removed from sorted list of networks
+//
 // Updated config is compared against config specified in testAccCheckHostBasic.
 func testAccHostUpdateConfig() string {
 	return hostConfig("update")
@@ -54,13 +55,15 @@ func hostConfig(op string) string {
 provider "hpegl" {
 	metal {
 	}
+	alias = "test"
 }
 
 variable "location" {
-	default = "USA:Central:V2DCC01"
+	default = "USA:Central:AFCDCC1"
 }
 
 data "hpegl_metal_available_resources" "compute" {
+	provider = hpegl.test
 }
 
 locals  {
@@ -87,6 +90,7 @@ locals  {
 	// host block
 	host := fmt.Sprintf(`
 resource "hpegl_metal_host" "test_host" {
+	provider           = hpegl.test
 	name               = "test"
 	image              = join("@",[local.host_os_flavor, local.host_os_version])
 	machine_size       = "${data.hpegl_metal_available_resources.compute.machine_sizes.0.name}"

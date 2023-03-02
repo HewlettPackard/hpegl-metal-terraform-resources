@@ -1,4 +1,4 @@
-// (C) Copyright 2020, 2022 Hewlett Packard Enterprise Development LP
+// (C) Copyright 2020, 2022-2023 Hewlett Packard Enterprise Development LP
 
 package acceptance_test
 
@@ -30,9 +30,11 @@ func testUsageConfigBasic() string {
 	provider "hpegl" {
 		metal {
 		}
+		alias = "test"
 	}
 	
 	data "hpegl_metal_usage" "used" {
+		provider = hpegl.test		
 		start = %q
 	}
 	`, time.Now().Format(time.RFC3339))
