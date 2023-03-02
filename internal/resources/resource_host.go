@@ -848,7 +848,7 @@ func resourceMetalHostDelete(d *schema.ResourceData, meta interface{}) (err erro
 	ctx = p.GetContext()
 
 	if _, err := p.Client.HostsApi.Delete(ctx, d.Id()); err != nil {
-		// nolint:wrapcheck // defer func is wrapping the error.
+		//nolint:wrapcheck // defer func is wrapping the error.
 		return err
 	}
 
