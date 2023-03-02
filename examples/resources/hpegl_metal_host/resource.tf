@@ -1,4 +1,4 @@
-# (C) Copyright 2020-2022 Hewlett Packard Enterprise Development LP
+# (C) Copyright 2020-2023 Hewlett Packard Enterprise Development LP
 
 provider "hpegl" {
   metal {
@@ -7,7 +7,11 @@ provider "hpegl" {
 }
 
 variable "location" {
-  default = "USA:Central:V2DCC01"
+  default = "USA:Central:AFCDCC1"
+}
+
+variable "host_action_async" {
+  default = false
 }
 
 resource "hpegl_metal_volume" "iscsi_volume" {
@@ -23,7 +27,7 @@ resource "hpegl_metal_host" "terra_host" {
   count              = 1
   name               = "tformed-${count.index}"
   image              = "ubuntu@18.04-20201102"
-  machine_size       = "Medium System"
+  machine_size       = "A2atpq"
   ssh                = [hpegl_metal_ssh_key.newssh_1.id]
   networks           = ["Public", "Storage"]
   network_route      = "Public"
@@ -68,10 +72,10 @@ resource "hpegl_metal_network" "newpnet_1" {
 }
 
 resource "hpegl_metal_host" "terra_host_new_ssh" {
-  count            = 2
+  count            = 1 
   name             = "tformed-newssh-${count.index}"
   image            = "ubuntu@18.04-20201102"
-  machine_size     = "Medium System"
+  machine_size     = "A2atpq"
   ssh              = [hpegl_metal_ssh_key.newssh_1.id]
   networks         = ["Public", hpegl_metal_network.newpnet_1.name]
   network_route    = "Public"

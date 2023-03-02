@@ -49,6 +49,7 @@ const (
 	hPwrState             = "power_state"
 	hLabels               = "labels"
 	hSummaryStatus        = "summary_status"
+	hHostActionAsync      = "host_action_async"
 
 	// allowedImageLength is number of Image related attributes that can be provided in the from of 'image@version'.
 	allowedImageLength = 2
@@ -265,6 +266,12 @@ func hostSchema() map[string]*schema.Schema {
 			Computed:    true,
 			Description: "The current health status of the host",
 		},
+		hHostActionAsync: {
+			Type:        schema.TypeBool,
+			Optional:    true,
+			Default:     true,
+			Description: "set true to do host create, update, and delete asynchronous",
+		},
 	}
 }
 
@@ -287,7 +294,7 @@ func HostResource() *schema.Resource {
 	}
 }
 
-//nolint: funlen    // Ignoring function length check on existing function
+// nolint: funlen    // Ignoring function length check on existing function
 func resourceMetalHostCreate(d *schema.ResourceData, meta interface{}) (err error) {
 	defer wrapResourceError(&err, "failed to create host")
 
@@ -463,6 +470,11 @@ func resourceMetalHostCreate(d *schema.ResourceData, meta interface{}) (err erro
 
 	d.SetId(h.ID)
 
+	// if this is async, return here
+	if d.Get(hHostActionAsync).(bool) {
+		return resourceMetalHostRead(d, meta)
+	}
+
 	// host create is asynchronous in Metal svc.  Wait until host state is Ready.
 	createStateConf := &resource.StateChangeConf{
 		Pending: []string{
@@ -495,7 +507,7 @@ func resourceMetalHostCreate(d *schema.ResourceData, meta interface{}) (err erro
 	return resourceMetalHostRead(d, meta)
 }
 
-//nolint: funlen    // Ignoring function length check on existing function
+// nolint: funlen    // Ignoring function length check on existing function
 func resourceMetalHostRead(d *schema.ResourceData, meta interface{}) (err error) {
 	defer wrapResourceError(&err, "failed to query host")
 
@@ -633,7 +645,7 @@ func getVAsForHost(hostID string, vas []rest.VolumeAttachment) []rest.VolumeInfo
 	return hostvas
 }
 
-//nolint: funlen    // Ignoring function length check on existing function
+// nolint: funlen    // Ignoring function length check on existing function
 func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err error) {
 	defer wrapResourceError(&err, "failed to update host")
 
@@ -738,6 +750,11 @@ func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err erro
 		return err
 	}
 
+	// if this is async, return here
+	if d.Get(hHostActionAsync).(bool) {
+		return resourceMetalHostRead(d, meta)
+	}
+
 	// host update is asynchronous in Metal svc. Wait until host state is Ready.
 	updateStateConf := &resource.StateChangeConf{
 		Pending: []string{
@@ -768,7 +785,7 @@ func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err erro
 	return resourceMetalHostRead(d, meta)
 }
 
-//nolint: funlen    // Ignoring function length check on existing function
+// nolint: funlen    // Ignoring function length check on existing function
 func resourceMetalHostDelete(d *schema.ResourceData, meta interface{}) (err error) {
 	defer wrapResourceError(&err, "failed to delete host")
 
@@ -833,6 +850,11 @@ func resourceMetalHostDelete(d *schema.ResourceData, meta interface{}) (err erro
 	if _, err := p.Client.HostsApi.Delete(ctx, d.Id()); err != nil {
 		// nolint:wrapcheck // defer func is wrapping the error.
 		return err
+	}
+
+	// if this is async, return here
+	if d.Get(hHostActionAsync).(bool) {
+		return resourceMetalHostRead(d, meta)
 	}
 
 	// host deletes are asynchronous in Metal svc and we can not delete terraform's
