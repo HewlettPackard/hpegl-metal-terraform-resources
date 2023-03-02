@@ -72,7 +72,7 @@ resource "hpegl_metal_network" "newpnet_1" {
 }
 
 resource "hpegl_metal_host" "terra_host_new_ssh" {
-  count            = 1 
+  count            = 1
   name             = "tformed-newssh-${count.index}"
   image            = "ubuntu@18.04-20201102"
   machine_size     = "A2atpq"
