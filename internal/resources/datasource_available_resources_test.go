@@ -37,10 +37,11 @@ func Test_addNetworks(t *testing.T) {
 	assert.Nil(t, err)
 
 	networks, ok := d.Get(avNetworks).([]interface{})
-	assert.True(t, ok, "type assertion failed")
+	assert.True(t, ok, "type assertion failed for networks")
 	assert.Equal(t, 1, len(networks))
 
-	net := networks[0].(map[string]interface{})
+	net, ok := networks[0].(map[string]interface{})
+	assert.True(t, ok, "type assertion failed for a network")
 
 	assert.Equal(t, testVlan, net["vlan"])
 	assert.Equal(t, testVni, net["vni"])
