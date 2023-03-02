@@ -294,6 +294,15 @@ func HostResource() *schema.Resource {
 	}
 }
 
+func isHostActionAsync(d *schema.ResourceData) (bool, error) {
+	isAsync, ok := d.Get(hHostActionAsync).(bool)
+	if !ok {
+		return true, fmt.Errorf("%v is expected to be a bool", hHostActionAsync)
+	}
+
+	return isAsync, nil
+}
+
 // nolint: funlen    // Ignoring function length check on existing function
 func resourceMetalHostCreate(d *schema.ResourceData, meta interface{}) (err error) {
 	defer wrapResourceError(&err, "failed to create host")
@@ -470,8 +479,13 @@ func resourceMetalHostCreate(d *schema.ResourceData, meta interface{}) (err erro
 
 	d.SetId(h.ID)
 
-	// if this is async, return here
-	if d.Get(hHostActionAsync).(bool) {
+	isAsync, err := isHostActionAsync(d)
+	if err != nil {
+		return err
+	}
+
+	if isAsync {
+		// if this is async, return here
 		return resourceMetalHostRead(d, meta)
 	}
 
@@ -750,8 +764,13 @@ func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err erro
 		return err
 	}
 
-	// if this is async, return here
-	if d.Get(hHostActionAsync).(bool) {
+	isAsync, err := isHostActionAsync(d)
+	if err != nil {
+		return err
+	}
+
+	if isAsync {
+		// if this is async, return here
 		return resourceMetalHostRead(d, meta)
 	}
 
@@ -852,8 +871,13 @@ func resourceMetalHostDelete(d *schema.ResourceData, meta interface{}) (err erro
 		return err
 	}
 
-	// if this is async, return here
-	if d.Get(hHostActionAsync).(bool) {
+	isAsync, err := isHostActionAsync(d)
+	if err != nil {
+		return err
+	}
+
+	if isAsync {
+		// if this is async, return here
 		return resourceMetalHostRead(d, meta)
 	}
 
