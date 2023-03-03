@@ -76,6 +76,8 @@ func testAccHostUpdateConfig(isAsync bool) string {
 }
 
 // hostConfig returns the host config to apply for the specified operation.
+//
+//nolint:funlen // Ignoring function length check on existing function
 func hostConfig(op string, isAsync bool) string {
 	// common config for create/update
 	common := `
