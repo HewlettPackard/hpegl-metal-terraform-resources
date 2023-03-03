@@ -1,5 +1,5 @@
 #! /usr/bin/make
-#(C) Copyright 2022 Hewlett Packard Enterprise Development LP
+#(C) Copyright 2022-2023 Hewlett Packard Enterprise Development LP
 # Inspiration from https://github.com/rightscale/go-boilerplate/blob/master/Makefile
 
 NAME=$(shell find cmd -name ".gitkeep_provider" -exec dirname {} \; | sort -u | sed -e 's|cmd/||')
@@ -93,7 +93,7 @@ coverage: vendor
 .PHONY: coverage
 
 acceptance:	
-	TF_ACC=true go test -v -count=1 -timeout=300s ./...
+	TF_ACC=true go test -v -count=1 -timeout=600s ./...
 
 build: vendor $(NAME)
 .PHONY: build

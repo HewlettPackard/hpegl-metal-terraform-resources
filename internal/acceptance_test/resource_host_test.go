@@ -5,7 +5,9 @@ package acceptance_test
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 	"testing"
+	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
@@ -14,7 +16,12 @@ import (
 	"github.com/hewlettpackard/hpegl-metal-terraform-resources/pkg/client"
 )
 
-func TestAccResourceHost_Basic(t *testing.T) {
+const (
+	hostStateReadyWait = 30 * time.Second
+	hostStatePollCount = 4
+)
+
+func TestAccResourceHost_Async(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
@@ -22,20 +29,40 @@ func TestAccResourceHost_Basic(t *testing.T) {
 		Steps: []resource.TestStep{
 			// host create step
 			{
-				Config: testAccCheckHostBasic(),
+				Config: testAccCheckHostBasic(true),
+				Check:  testWaitUntilHostReady("hpegl_metal_host.test_host"),
+			},
+			// host update step
+			{
+				Config: testAccHostUpdateConfig(true),
+				Check:  testWaitUntilHostReady("hpegl_metal_host.test_host"),
+			},
+		},
+	})
+}
+
+func TestAccResourceHost_Sync(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: resource.TestCheckFunc(func(s *terraform.State) error { return testAccCheckHostDestroy(t, s) }),
+		Steps: []resource.TestStep{
+			// host create step
+			{
+				Config: testAccCheckHostBasic(false),
 				Check:  testVerifyHostReady("hpegl_metal_host.test_host"),
 			},
 			// host update step
 			{
-				Config: testAccHostUpdateConfig(),
+				Config: testAccHostUpdateConfig(false),
 				Check:  testVerifyHostReady("hpegl_metal_host.test_host"),
 			},
 		},
 	})
 }
 
-func testAccCheckHostBasic() string {
-	return hostConfig("create")
+func testAccCheckHostBasic(isAsync bool) string {
+	return hostConfig("create", isAsync)
 }
 
 // testAccHostUpdateConfig updates the terraform config by updating
@@ -44,12 +71,12 @@ func testAccCheckHostBasic() string {
 //   - last network removed from sorted list of networks
 //
 // Updated config is compared against config specified in testAccCheckHostBasic.
-func testAccHostUpdateConfig() string {
-	return hostConfig("update")
+func testAccHostUpdateConfig(isAsync bool) string {
+	return hostConfig("update", isAsync)
 }
 
 // hostConfig returns the host config to apply for the specified operation.
-func hostConfig(op string) string {
+func hostConfig(op string, isAsync bool) string {
 	// common config for create/update
 	common := `
 provider "hpegl" {
@@ -87,11 +114,18 @@ locals  {
 		untagged = `""`
 	}
 
+	name := "test%v"
+	if isAsync {
+		name = fmt.Sprintf(name, "async")
+	} else {
+		name = fmt.Sprintf(name, "sync")
+	}
+
 	// host block
 	host := fmt.Sprintf(`
 resource "hpegl_metal_host" "test_host" {
 	provider           = hpegl.test
-	name               = "test"
+	name               = "%s"
 	image              = join("@",[local.host_os_flavor, local.host_os_version])
 	machine_size       = "${data.hpegl_metal_available_resources.compute.machine_sizes.0.name}"
 	ssh                = ["User1 - Linux"]
@@ -100,10 +134,55 @@ resource "hpegl_metal_host" "test_host" {
 	network_untagged   = %s
 	location           = var.location
 	description        = %s
+	host_action_async  = %s
 }	
-`, nets, untagged, desc)
+`, name, nets, untagged, desc, strconv.FormatBool(isAsync))
 
 	return common + host
+}
+
+// testWaitUntilHostReady checks if the host was created successfully and
+// is in the 'Ready' state.
+func testWaitUntilHostReady(rsrc string) resource.TestCheckFunc {
+	return func(s *terraform.State) error {
+		rs, ok := s.RootModule().Resources[rsrc]
+		if !ok {
+			return fmt.Errorf("Host not found: %q", rsrc)
+		}
+
+		if rs.Primary.ID == "" {
+			return fmt.Errorf("No host primary ID set")
+		}
+
+		hostID := rs.Primary.ID
+
+		p, err := client.GetClientFromMetaMap(testAccProvider.Meta())
+		if err != nil {
+			return fmt.Errorf("Error retrieving Metal client: %v", err)
+		}
+
+		ctx := p.GetContext()
+
+		hostState := rest.HOSTSTATE_NEW
+		for i := 0; i < hostStatePollCount && hostState != rest.HOSTSTATE_READY; i++ {
+			time.Sleep(hostStateReadyWait)
+
+			host, resp, err := p.Client.HostsApi.GetByID(ctx, hostID)
+			if err != nil {
+				return fmt.Errorf("Host: %q not found: %s", hostID, err)
+			}
+
+			resp.Body.Close()
+
+			hostState = host.State
+		}
+
+		if hostState != rest.HOSTSTATE_READY {
+			return fmt.Errorf("Host %s state %v != %v", hostID, hostState, rest.HOSTSTATE_READY)
+		}
+
+		return nil
+	}
 }
 
 // testVerifyHostReady checks if the host was created successfully and

@@ -11,7 +11,7 @@ variable "location" {
 }
 
 variable "host_action_async" {
-  default = false
+  default = true
 }
 
 resource "hpegl_metal_volume" "iscsi_volume" {
@@ -34,6 +34,7 @@ resource "hpegl_metal_host" "terra_host" {
   location           = var.location
   description        = "Hello from Terraform"
   volume_attachments = [hpegl_metal_volume.iscsi_volume.id]
+  host_action_async  = var.host_action_async
   ## uncomment below to override the 60m timeouts
   ## see https://developer.hashicorp.com/terraform/plugin/sdkv2/resources/retries-and-customizable-timeouts
   # timeouts {
@@ -83,4 +84,5 @@ resource "hpegl_metal_host" "terra_host_new_ssh" {
   location         = var.location
   description      = "Hello from Terraform"
   labels           = { "ServiceType" = "BMaaS" }
+  host_action_async  = var.host_action_async
 }
