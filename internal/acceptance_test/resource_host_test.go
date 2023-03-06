@@ -19,6 +19,8 @@ import (
 const (
 	hostStateReadyWait = 30 * time.Second
 	hostStatePollCount = 4
+	isAsync            = true
+	isNotAsync         = false
 )
 
 func TestAccResourceHost_Async(t *testing.T) {
@@ -29,12 +31,12 @@ func TestAccResourceHost_Async(t *testing.T) {
 		Steps: []resource.TestStep{
 			// host create step
 			{
-				Config: testAccCheckHostBasic(true),
+				Config: testAccCheckHostBasic(isAsync),
 				Check:  testWaitUntilHostReady("hpegl_metal_host.test_host"),
 			},
 			// host update step
 			{
-				Config: testAccHostUpdateConfig(true),
+				Config: testAccHostUpdateConfig(isAsync),
 				Check:  testWaitUntilHostReady("hpegl_metal_host.test_host"),
 			},
 		},
@@ -49,20 +51,20 @@ func TestAccResourceHost_Sync(t *testing.T) {
 		Steps: []resource.TestStep{
 			// host create step
 			{
-				Config: testAccCheckHostBasic(false),
+				Config: testAccCheckHostBasic(isNotAsync),
 				Check:  testVerifyHostReady("hpegl_metal_host.test_host"),
 			},
 			// host update step
 			{
-				Config: testAccHostUpdateConfig(false),
+				Config: testAccHostUpdateConfig(isNotAsync),
 				Check:  testVerifyHostReady("hpegl_metal_host.test_host"),
 			},
 		},
 	})
 }
 
-func testAccCheckHostBasic(isAsync bool) string {
-	return hostConfig("create", isAsync)
+func testAccCheckHostBasic(async bool) string {
+	return hostConfig("create", async)
 }
 
 // testAccHostUpdateConfig updates the terraform config by updating
@@ -71,14 +73,14 @@ func testAccCheckHostBasic(isAsync bool) string {
 //   - last network removed from sorted list of networks
 //
 // Updated config is compared against config specified in testAccCheckHostBasic.
-func testAccHostUpdateConfig(isAsync bool) string {
-	return hostConfig("update", isAsync)
+func testAccHostUpdateConfig(async bool) string {
+	return hostConfig("update", async)
 }
 
 // hostConfig returns the host config to apply for the specified operation.
 //
 //nolint:funlen // Ignoring function length check on existing function
-func hostConfig(op string, isAsync bool) string {
+func hostConfig(op string, async bool) string {
 	// common config for create/update
 	common := `
 provider "hpegl" {
@@ -117,10 +119,10 @@ locals  {
 	}
 
 	name := "test%v"
-	if isAsync {
-		name = fmt.Sprintf(name, "async")
+	if async {
+		name = fmt.Sprintf(name, "Async")
 	} else {
-		name = fmt.Sprintf(name, "sync")
+		name = fmt.Sprintf(name, "Sync")
 	}
 
 	// host block
@@ -138,7 +140,7 @@ resource "hpegl_metal_host" "test_host" {
 	description        = %s
 	host_action_async  = %s
 }	
-`, name, nets, untagged, desc, strconv.FormatBool(isAsync))
+`, name, nets, untagged, desc, strconv.FormatBool(async))
 
 	return common + host
 }
@@ -189,11 +191,11 @@ func testWaitUntilHostReady(rsrc string) resource.TestCheckFunc {
 
 // testVerifyHostReady checks if the host was created successfully and
 // is in the 'Ready' state.
-func testVerifyHostReady(rsrc string) resource.TestCheckFunc {
+func testVerifyHostReady(resourceStateKey string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
-		rs, ok := s.RootModule().Resources[rsrc]
+		rs, ok := s.RootModule().Resources[resourceStateKey]
 		if !ok {
-			return fmt.Errorf("Host not found: %q", rsrc)
+			return fmt.Errorf("Host not found: %q", resourceStateKey)
 		}
 
 		if rs.Primary.ID == "" {

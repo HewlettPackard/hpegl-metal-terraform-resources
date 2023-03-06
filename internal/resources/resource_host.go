@@ -270,7 +270,7 @@ func hostSchema() map[string]*schema.Schema {
 			Type:        schema.TypeBool,
 			Optional:    true,
 			Default:     true,
-			Description: "set true to do host create, update, and delete asynchronously",
+			Description: "set true to do host create, update, and delete asynchronously.  The default is true.",
 		},
 	}
 }
