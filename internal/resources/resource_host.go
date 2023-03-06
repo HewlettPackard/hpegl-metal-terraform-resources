@@ -71,9 +71,9 @@ const (
 
 // Timeout values.
 const (
-	tenSeconds    = 10 * time.Second
-	thirtySeconds = 30 * time.Second
-	sixtyMinutes  = 60 * time.Minute
+	shortTimeout  = 10 * time.Second
+	mediumTimeout = 30 * time.Second
+	longTimeout   = 60 * time.Minute
 )
 
 func hostSchema() map[string]*schema.Schema {
@@ -291,9 +291,9 @@ func HostResource() *schema.Resource {
 		Schema:      hostSchema(),
 		Description: "Provides Host resource. This allows Metal Host creation, deletion and update.",
 		Timeouts: &schema.ResourceTimeout{
-			Create: schema.DefaultTimeout(sixtyMinutes),
-			Update: schema.DefaultTimeout(sixtyMinutes),
-			Delete: schema.DefaultTimeout(sixtyMinutes),
+			Create: schema.DefaultTimeout(longTimeout),
+			Update: schema.DefaultTimeout(longTimeout),
+			Delete: schema.DefaultTimeout(longTimeout),
 		},
 	}
 }
@@ -528,8 +528,8 @@ func resourceMetalHostCreate(d *schema.ResourceData, meta interface{}) (err erro
 			return host, string(host.State), nil
 		},
 		Timeout:    d.Timeout(schema.TimeoutCreate),
-		Delay:      thirtySeconds,
-		MinTimeout: tenSeconds,
+		Delay:      mediumTimeout,
+		MinTimeout: shortTimeout,
 	}
 
 	if _, err = createStateConf.WaitForStateContext(ctx); err != nil {
@@ -810,8 +810,8 @@ func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err erro
 			return h, string(h.State), nil
 		},
 		Timeout:    d.Timeout(schema.TimeoutUpdate),
-		Delay:      thirtySeconds,
-		MinTimeout: tenSeconds,
+		Delay:      mediumTimeout,
+		MinTimeout: shortTimeout,
 	}
 
 	if _, err := updateStateConf.WaitForStateContext(ctx); err != nil {
@@ -917,8 +917,8 @@ func resourceMetalHostDelete(d *schema.ResourceData, meta interface{}) (err erro
 			return host, string(host.State), nil
 		},
 		Timeout:    d.Timeout(schema.TimeoutDelete),
-		Delay:      thirtySeconds,
-		MinTimeout: tenSeconds,
+		Delay:      mediumTimeout,
+		MinTimeout: shortTimeout,
 	}
 
 	if _, err := deleteStateConf.WaitForStateContext(ctx); err != nil {
