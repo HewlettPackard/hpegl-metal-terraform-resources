@@ -57,16 +57,16 @@ const (
 
 // Host State values.
 const (
-	hStateNew                 = "New"
-	hStateDeleting            = "Deleting"
-	hStateDeleted             = "Deleted"
-	hStateUpdatingConnections = "Updating Connections"
-	hStateImagingPrep         = "Imaging Prep"
-	hStateImaging             = "Imaging"
-	hStateConnecting          = "Connecting"
-	hStateBooting             = "Booting"
-	hStateReady               = "Ready"
-	hStateMaintenance         = "Maintenance"
+	hStateNew                 = string(rest.HOSTSTATE_NEW)
+	hStateDeleting            = string(rest.HOSTSTATE_DELETING)
+	hStateDeleted             = string(rest.HOSTSTATE_DELETED)
+	hStateUpdatingConnections = string(rest.HOSTSTATE_UPDATING_CONNECTIONS)
+	hStateImagingPrep         = string(rest.HOSTSTATE_IMAGING_PREP)
+	hStateImaging             = string(rest.HOSTSTATE_IMAGING)
+	hStateConnecting          = string(rest.HOSTSTATE_CONNECTING)
+	hStateBooting             = string(rest.HOSTSTATE_BOOTING)
+	hStateReady               = string(rest.HOSTSTATE_READY)
+	hStateMaintenance         = string(rest.HOSTSTATE_MAINTENANCE)
 )
 
 // Timeout values.
