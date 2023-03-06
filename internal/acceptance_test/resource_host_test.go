@@ -218,10 +218,8 @@ func testVerifyHostReady(resourceStateKey string) resource.TestCheckFunc {
 
 		resp.Body.Close()
 
-		hostState := host.State
-
-		if hostState != rest.HOSTSTATE_READY {
-			return fmt.Errorf("Host %s state %v != %v", hostID, hostState, rest.HOSTSTATE_READY)
+		if got, want := host.State, rest.HOSTSTATE_READY; got != want {
+			return fmt.Errorf("Host %s state %v != %v", hostID, got, want)
 		}
 
 		return nil

@@ -69,8 +69,12 @@ const (
 	hStateMaintenance         = "Maintenance"
 )
 
-// untyped ints used for timeout 10, 30, 60.
-const ten, thirty, sixty = 10, 30, 60
+// Timeout values.
+const (
+	tenSeconds    = 10 * time.Second
+	thirtySeconds = 30 * time.Second
+	sixtyMinutes  = 60 * time.Minute
+)
 
 func hostSchema() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
@@ -287,9 +291,9 @@ func HostResource() *schema.Resource {
 		Schema:      hostSchema(),
 		Description: "Provides Host resource. This allows Metal Host creation, deletion and update.",
 		Timeouts: &schema.ResourceTimeout{
-			Create: schema.DefaultTimeout(sixty * time.Minute),
-			Update: schema.DefaultTimeout(sixty * time.Minute),
-			Delete: schema.DefaultTimeout(sixty * time.Minute),
+			Create: schema.DefaultTimeout(sixtyMinutes),
+			Update: schema.DefaultTimeout(sixtyMinutes),
+			Delete: schema.DefaultTimeout(sixtyMinutes),
 		},
 	}
 }
@@ -297,10 +301,25 @@ func HostResource() *schema.Resource {
 func isHostActionAsync(d *schema.ResourceData) (bool, error) {
 	isAsync, ok := d.Get(hHostActionAsync).(bool)
 	if !ok {
-		return true, fmt.Errorf("%v is expected to be a bool", hHostActionAsync)
+		return false, fmt.Errorf("%v is expected to be a bool", hHostActionAsync)
 	}
 
 	return isAsync, nil
+}
+
+// updateResourceData will update the ResourceData by querying the latest host
+// if the action is async.  Returns true if the action is async, false otherwise.
+func updateResourceData(d *schema.ResourceData, meta interface{}) (bool, error) {
+	isAsync, err := isHostActionAsync(d)
+	if err != nil {
+		return false, err
+	}
+
+	if isAsync {
+		return true, resourceMetalHostRead(d, meta)
+	}
+
+	return false, nil
 }
 
 //nolint:funlen // Ignoring function length check on existing function
@@ -479,14 +498,13 @@ func resourceMetalHostCreate(d *schema.ResourceData, meta interface{}) (err erro
 
 	d.SetId(h.ID)
 
-	isAsync, err := isHostActionAsync(d)
+	isAsync, err := updateResourceData(d, meta)
 	if err != nil {
 		return err
 	}
 
 	if isAsync {
-		// if this is async, return here
-		return resourceMetalHostRead(d, meta)
+		return nil
 	}
 
 	// host create is asynchronous in Metal svc.  Wait until host state is Ready.
@@ -510,8 +528,8 @@ func resourceMetalHostCreate(d *schema.ResourceData, meta interface{}) (err erro
 			return host, string(host.State), nil
 		},
 		Timeout:    d.Timeout(schema.TimeoutCreate),
-		Delay:      thirty * time.Second,
-		MinTimeout: ten * time.Second,
+		Delay:      thirtySeconds,
+		MinTimeout: tenSeconds,
 	}
 
 	if _, err = createStateConf.WaitForStateContext(ctx); err != nil {
@@ -764,14 +782,13 @@ func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err erro
 		return err
 	}
 
-	isAsync, err := isHostActionAsync(d)
+	isAsync, err := updateResourceData(d, meta)
 	if err != nil {
 		return err
 	}
 
 	if isAsync {
-		// if this is async, return here
-		return resourceMetalHostRead(d, meta)
+		return nil
 	}
 
 	// host update is asynchronous in Metal svc. Wait until host state is Ready.
@@ -793,8 +810,8 @@ func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err erro
 			return h, string(h.State), nil
 		},
 		Timeout:    d.Timeout(schema.TimeoutUpdate),
-		Delay:      thirty * time.Second,
-		MinTimeout: ten * time.Second,
+		Delay:      thirtySeconds,
+		MinTimeout: tenSeconds,
 	}
 
 	if _, err := updateStateConf.WaitForStateContext(ctx); err != nil {
@@ -871,14 +888,13 @@ func resourceMetalHostDelete(d *schema.ResourceData, meta interface{}) (err erro
 		return err
 	}
 
-	isAsync, err := isHostActionAsync(d)
+	isAsync, err := updateResourceData(d, meta)
 	if err != nil {
 		return err
 	}
 
 	if isAsync {
-		// if this is async, return here
-		return resourceMetalHostRead(d, meta)
+		return nil
 	}
 
 	// host deletes are asynchronous in Metal svc and we can not delete terraform's
@@ -901,8 +917,8 @@ func resourceMetalHostDelete(d *schema.ResourceData, meta interface{}) (err erro
 			return host, string(host.State), nil
 		},
 		Timeout:    d.Timeout(schema.TimeoutDelete),
-		Delay:      thirty * time.Second,
-		MinTimeout: ten * time.Second,
+		Delay:      thirtySeconds,
+		MinTimeout: tenSeconds,
 	}
 
 	if _, err := deleteStateConf.WaitForStateContext(ctx); err != nil {
