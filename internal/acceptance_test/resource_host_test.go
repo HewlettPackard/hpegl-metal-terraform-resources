@@ -119,7 +119,7 @@ locals  {
 	}
 
 	name := "testAsync"
-	if sync {
+	if !async {
 		name = fmt.Sprintf("testSync")
 	}
 
