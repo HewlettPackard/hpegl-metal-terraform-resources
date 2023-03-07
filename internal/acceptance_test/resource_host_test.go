@@ -118,11 +118,9 @@ locals  {
 		untagged = `""`
 	}
 
-	name := "test%v"
-	if async {
-		name = fmt.Sprintf(name, "Async")
-	} else {
-		name = fmt.Sprintf(name, "Sync")
+	name := "testAsync"
+	if sync {
+		name = fmt.Sprintf("testSync")
 	}
 
 	// host block
