@@ -55,20 +55,6 @@ const (
 	allowedImageLength = 2
 )
 
-// Host State values.
-const (
-	hStateNew                 = string(rest.HOSTSTATE_NEW)
-	hStateDeleting            = string(rest.HOSTSTATE_DELETING)
-	hStateDeleted             = string(rest.HOSTSTATE_DELETED)
-	hStateUpdatingConnections = string(rest.HOSTSTATE_UPDATING_CONNECTIONS)
-	hStateImagingPrep         = string(rest.HOSTSTATE_IMAGING_PREP)
-	hStateImaging             = string(rest.HOSTSTATE_IMAGING)
-	hStateConnecting          = string(rest.HOSTSTATE_CONNECTING)
-	hStateBooting             = string(rest.HOSTSTATE_BOOTING)
-	hStateReady               = string(rest.HOSTSTATE_READY)
-	hStateMaintenance         = string(rest.HOSTSTATE_MAINTENANCE)
-)
-
 // Timeout values.
 const (
 	shortTimeout  = 10 * time.Second
@@ -510,14 +496,14 @@ func resourceMetalHostCreate(d *schema.ResourceData, meta interface{}) (err erro
 	// host create is asynchronous in Metal svc.  Wait until host state is Ready.
 	createStateConf := &resource.StateChangeConf{
 		Pending: []string{
-			hStateNew,
-			hStateImagingPrep,
-			hStateImaging,
-			hStateConnecting,
-			hStateBooting,
+			string(rest.HOSTSTATE_NEW),
+			string(rest.HOSTSTATE_IMAGING_PREP),
+			string(rest.HOSTSTATE_IMAGING),
+			string(rest.HOSTSTATE_CONNECTING),
+			string(rest.HOSTSTATE_BOOTING),
 		},
 		Target: []string{
-			hStateReady,
+			string(rest.HOSTSTATE_READY),
 		},
 		Refresh: func() (interface{}, string, error) {
 			host, _, err := p.Client.HostsApi.GetByID(ctx, h.ID)
@@ -794,12 +780,12 @@ func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err erro
 	// host update is asynchronous in Metal svc. Wait until host state is Ready.
 	updateStateConf := &resource.StateChangeConf{
 		Pending: []string{
-			hStateUpdatingConnections,
-			hStateConnecting,
-			hStateMaintenance,
+			string(rest.HOSTSTATE_UPDATING_CONNECTIONS),
+			string(rest.HOSTSTATE_CONNECTING),
+			string(rest.HOSTSTATE_MAINTENANCE),
 		},
 		Target: []string{
-			hStateReady,
+			string(rest.HOSTSTATE_READY),
 		},
 		Refresh: func() (interface{}, string, error) {
 			h, _, err := p.Client.HostsApi.GetByID(ctx, host.ID)
@@ -903,10 +889,10 @@ func resourceMetalHostDelete(d *schema.ResourceData, meta interface{}) (err erro
 	// the delete operation from Terraform (since it has no reference to the resource).
 	deleteStateConf := &resource.StateChangeConf{
 		Pending: []string{
-			hStateDeleting,
+			string(rest.HOSTSTATE_DELETING),
 		},
 		Target: []string{
-			hStateDeleted,
+			string(rest.HOSTSTATE_DELETED),
 		},
 		Refresh: func() (interface{}, string, error) {
 			host, _, err := p.Client.HostsApi.GetByID(ctx, d.Id())
