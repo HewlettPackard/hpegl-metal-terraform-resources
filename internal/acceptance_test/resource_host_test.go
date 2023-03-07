@@ -78,8 +78,6 @@ func testAccHostUpdateConfig(async bool) string {
 }
 
 // hostConfig returns the host config to apply for the specified operation.
-//
-//nolint:funlen // Ignoring function length check on existing function
 func hostConfig(op string, async bool) string {
 	// common config for create/update
 	common := `
@@ -120,7 +118,7 @@ locals  {
 
 	name := "testAsync"
 	if !async {
-		name = fmt.Sprintf("testSync")
+		name = "testSync"
 	}
 
 	// host block
