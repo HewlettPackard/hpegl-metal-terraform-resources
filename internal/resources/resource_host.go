@@ -807,6 +807,13 @@ func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err erro
 	return resourceMetalHostRead(d, meta)
 }
 
+// resourceMetalHostDelete deletes a host synchnously, only returning when the host is
+// deleted. This method is not asynchronous because host deletes are asynchronous in
+// Metal svc and we can not delete terraform's reference to the host until it has really
+// gone from Metal svc. If we delete the reference too early, or in the presence of errors,
+// we will never be able to retry the delete operation from Terraform (since it has no
+// reference to the resource).
+//
 //nolint:funlen // Ignoring function length check on existing function
 func resourceMetalHostDelete(d *schema.ResourceData, meta interface{}) (err error) {
 	defer wrapResourceError(&err, "failed to delete host")
@@ -874,13 +881,9 @@ func resourceMetalHostDelete(d *schema.ResourceData, meta interface{}) (err erro
 		return err
 	}
 
-	isAsync, err := updateResourceData(d, meta)
+	_, err = updateResourceData(d, meta)
 	if err != nil {
 		return err
-	}
-
-	if isAsync {
-		return nil
 	}
 
 	// host deletes are asynchronous in Metal svc and we can not delete terraform's
