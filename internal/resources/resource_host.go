@@ -881,11 +881,6 @@ func resourceMetalHostDelete(d *schema.ResourceData, meta interface{}) (err erro
 		return err
 	}
 
-	_, err = updateResourceData(d, meta)
-	if err != nil {
-		return err
-	}
-
 	// host deletes are asynchronous in Metal svc and we can not delete terraform's
 	// reference to the host until it has really gone from Metal svc. If we delete the
 	// reference too early, or in the presence of errors, we will never be able to retry
