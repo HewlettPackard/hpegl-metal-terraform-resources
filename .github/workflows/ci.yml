@@ -38,10 +38,11 @@ jobs:
           PASSWD: ${{ secrets.SIM_PASSWD }}
           EMAIL: ${{ secrets.SIM_USER }}
           PORTAL_URL: localhost
+          SKIP_USER_MON: true
 
         options: >-
           --health-timeout=30s
-          --health-start-period=120s
+          --health-start-period=60s
           --health-cmd="curl -k http://localhost:3002/info/time"
           --name SimPortal
 
