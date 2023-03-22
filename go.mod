@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/antihax/optional v1.0.0
-	github.com/golangci/golangci-lint v1.52.0
+	github.com/golangci/golangci-lint v1.52.1
 	github.com/hashicorp/terraform-plugin-docs v0.14.1
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.26.1
 	github.com/hewlettpackard/hpegl-metal-client v1.4.16
