@@ -176,6 +176,7 @@ func NewConfig(portalURL string, opts ...CreateOpt) (*Config, error) {
 	if err != nil {
 		return nil, fmt.Errorf("configuration error: %v", err)
 	}
+
 	cfg.BasePath = basePath
 
 	if config.useGLToken || config.trf != nil {
