@@ -1,4 +1,4 @@
-// (C) Copyright 2020-2022 Hewlett Packard Enterprise Development LP
+// (C) Copyright 2020-2023 Hewlett Packard Enterprise Development LP
 
 package configuration
 
@@ -6,6 +6,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net/url"
 	"os"
 	"strings"
 
@@ -170,7 +171,13 @@ func NewConfig(portalURL string, opts ...CreateOpt) (*Config, error) {
 
 	// Get a new Client configuration with basepath set to Metal portal URL and add base version path /rest/v1
 	cfg := rest.NewConfiguration()
-	cfg.BasePath = config.restURL + "/rest/v1"
+
+	basePath, err := url.JoinPath(config.restURL, "/rest/v1")
+	if err != nil {
+		return nil, fmt.Errorf("configuration error: %v", err)
+	}
+
+	cfg.BasePath = basePath
 
 	if config.useGLToken || config.trf != nil {
 		if err := validateGLConfig(*config); err != nil {
