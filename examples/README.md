@@ -1,4 +1,4 @@
-# (C) Copyright 2020-2022 Hewlett Packard Enterprise Development LP
+# (C) Copyright 2020-2023 Hewlett Packard Enterprise Development LP
 # Examples of using the Metal Terraform provider.
 
 ## Pre-requisites
@@ -113,12 +113,13 @@ output "tfhost" {
 
 ## Other examples
 
-1. [Available resrources](./available-resources/README.md): Obtain information about unprovisioned resources available to terraform.
-1. [Available images](./available-images/README.md): Obtain filtered, specifc image information.
-1. [SSH key creation](./ssh-key-creation/README.md): Create new SSH keys for host image injection.
-1. [Host creation](./host-creation/README.md): Create one or more hosts.
-1. [Volume creation](./volume-creation/README.md): Create iSCSI volumes for host attachments.
-1. [Network creation](./network-creation/README.md): Create custom new metworks for project intra-communication.
-1. [Usage information](./usage/README.md): Extract resource usage information.
-1. [Project](./project/README.md): Create and manipulate projects.
+1. [Available resrources](./data-sources/hpegl_metal_available_resources/README.md): Obtain information about unprovisioned resources available to terraform.
+1. [Available images](./data-sources/hpegl_metal_available_images/README.md): Obtain filtered, specifc image information.
+1. [SSH key creation](./resources/hpegl_metal_ssh_key/README.md): Create new SSH keys for host image injection.
+1. [Host creation](./resources/hpegl_metal_host/README.md): Create one or more hosts.
+1. [Volume creation](./resources/hpegl_metal_volume/README.md): Create iSCSI volumes for host attachments.
+1. [Network creation](./resources/hpegl_metal_network/README.md): Create custom new metworks for project intra-communication.
+1. [Usage information](./data-sources/hpegl_metal_usage/README.md): Extract resource usage information.
+1. [Project](./resources/hpegl_metal_project/README.md): Create and manipulate projects.
+1. [Image] (./resources/hpegl_metal_project/README.md): Create and manipulate OS service images.
 1. [Advanced](./advanced/README.md): Advanced Terraform operations.

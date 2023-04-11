@@ -383,18 +383,24 @@ func resourceMetalNetworkUpdate(d *schema.ResourceData, meta interface{}) (err e
 	if err != nil {
 		return err
 	}
-	n.Name = d.Get(nName).(string)
-	n.Description = d.Get(nDescription).(string)
+
+	updateNetwork := rest.UpdateNetwork{
+		ID:   n.ID,
+		ETag: n.ETag,
+	}
+
+	updateNetwork.Name = d.Get(nName).(string)
+	updateNetwork.Description = d.Get(nDescription).(string)
 
 	if hostUse, ok := d.Get(nHostUse).(string); ok {
-		n.HostUse = rest.NetworkHostUse(hostUse)
+		updateNetwork.HostUse = rest.NetworkHostUse(hostUse)
 	}
 
 	if purpose, ok := d.Get(nPurpose).(string); ok {
-		n.Purpose = rest.NetworkPurpose(purpose)
+		updateNetwork.Purpose = rest.NetworkPurpose(purpose)
 	}
 
-	_, _, err = p.Client.NetworksApi.Update(ctx, n.ID, n)
+	_, _, err = p.Client.NetworksApi.Update(ctx, updateNetwork.ID, updateNetwork)
 	if err != nil {
 		return err
 	}
@@ -402,7 +408,7 @@ func resourceMetalNetworkUpdate(d *schema.ResourceData, meta interface{}) (err e
 	return resourceMetalNetworkRead(d, meta)
 }
 
-//nolint: dupl   // Ignoring issues in the existing code
+// nolint: dupl   // Ignoring issues in the existing code
 func resourceMetalNetworkDelete(d *schema.ResourceData, meta interface{}) (err error) {
 	defer wrapResourceError(&err, "failed to delete network")
 

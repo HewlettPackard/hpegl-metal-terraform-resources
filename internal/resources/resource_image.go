@@ -1,0 +1,111 @@
+// (C) Copyright 2023 Hewlett Packard Enterprise Development LP
+
+package resources
+
+import (
+	"fmt"
+	"os"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hewlettpackard/hpegl-metal-terraform-resources/pkg/client"
+)
+
+const iServiceImageFile = "os_service_image_file"
+
+func serviceSchema() map[string]*schema.Schema {
+	return map[string]*schema.Schema{
+		iServiceImageFile: {
+			Type:        schema.TypeString,
+			Required:    true,
+			Description: "Path to the YAML file containing the service image definition ",
+		},
+	}
+}
+
+func ServiceImageResource() *schema.Resource {
+	return &schema.Resource{
+		Create: resourceMetalImageCreate,
+		Read:   resourceMetalImageRead,
+		Delete: resourceMetalImageDelete,
+		Update: resourceMetalImageUpdate,
+		Importer: &schema.ResourceImporter{
+			State: schema.ImportStatePassthrough,
+		},
+		Schema:      serviceSchema(),
+		Description: "Provides Service resource. This allows creation, deletion and update of Metal OD services .",
+	}
+}
+
+func resourceMetalImageCreate(d *schema.ResourceData, meta interface{}) (err error) {
+	defer wrapResourceError(&err, "failed to create OS service image")
+
+	filePath := safeString(d.Get(iServiceImageFile))
+
+	file, err := os.Open(filePath)
+	if err != nil {
+		return fmt.Errorf("failed to open file %s, %v", filePath, err)
+	}
+
+	p, err := client.GetClientFromMetaMap(meta)
+	if err != nil {
+		return err
+	}
+
+	ctx := p.GetContext()
+
+	svc, _, err := p.Client.ServicesApi.Add(ctx, file, nil)
+	if err != nil {
+		return err
+	}
+
+	d.SetId(svc.ID)
+
+	return nil
+}
+
+func resourceMetalImageRead(d *schema.ResourceData, meta interface{}) (err error) {
+	return nil
+}
+
+func resourceMetalImageDelete(d *schema.ResourceData, meta interface{}) (err error) {
+	defer wrapResourceError(&err, "failed to delete OS service image")
+
+	p, err := client.GetClientFromMetaMap(meta)
+	if err != nil {
+		return err
+	}
+
+	ctx := p.GetContext()
+
+	if _, err = p.Client.ServicesApi.Delete(ctx, d.Id()); err != nil {
+		return err
+	}
+
+	d.SetId("")
+
+	return nil
+}
+
+func resourceMetalImageUpdate(d *schema.ResourceData, meta interface{}) (err error) {
+	defer wrapResourceError(&err, "failed to replace OS service image")
+
+	filePath := safeString(d.Get(iServiceImageFile))
+
+	file, err := os.Open(filePath)
+	if err != nil {
+		return fmt.Errorf("failed to open file %s, %v", filePath, err)
+	}
+
+	p, err := client.GetClientFromMetaMap(meta)
+	if err != nil {
+		return err
+	}
+
+	ctx := p.GetContext()
+
+	if _, _, err := p.Client.ServicesApi.Update(ctx, d.Id(), file); err != nil {
+		return err
+	}
+
+	return nil
+}

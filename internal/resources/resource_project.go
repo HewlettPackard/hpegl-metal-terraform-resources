@@ -1,4 +1,4 @@
-// (C) Copyright 2020-2022 Hewlett Packard Enterprise Development LP
+// (C) Copyright 2020-2023 Hewlett Packard Enterprise Development LP
 
 package resources
 
@@ -31,6 +31,7 @@ const (
 	pVolumeCapacity  = "volume_capacity"
 	pPrivateNetworks = "private_networks"
 	pInstanceTypes   = "instance_types"
+	pPermittedImages = "permitted_images"
 )
 
 func limitsSchema() map[string]*schema.Schema {
@@ -154,6 +155,14 @@ func projectSchema() map[string]*schema.Schema {
 				Type: schema.TypeString,
 			},
 		},
+		pPermittedImages: {
+			Type:        schema.TypeSet,
+			Optional:    true,
+			Description: "List of permitted OS service images",
+			Elem: &schema.Schema{
+				Type: schema.TypeString,
+			},
+		},
 	}
 }
 
@@ -210,6 +219,17 @@ func resourceMetalProjectCreate(d *schema.ResourceData, meta interface{}) (err e
 		np.PermittedSites = expandStringList(s.List())
 	}
 
+	if f, ok := d.GetOk(pPermittedImages); ok {
+		s, ok := f.(*schema.Set)
+		if !ok {
+			err = fmt.Errorf("permitted images list is not in the expected format")
+
+			return err
+		}
+
+		np.PermittedOSImages = expandStringList(s.List())
+	}
+
 	ctx := p.GetContext()
 
 	// TO DO:
@@ -226,6 +246,23 @@ func resourceMetalProjectCreate(d *schema.ResourceData, meta interface{}) (err e
 	return resourceMetalProjectRead(d, meta)
 }
 
+func getUpdateProfile(profile interface{}) (p rest.UpdateProfile, err error) {
+	profileMap, ok := profile.(map[string]interface{})
+	if !ok {
+		err = fmt.Errorf("wrong profile format")
+		return
+	}
+
+	return rest.UpdateProfile{
+		Address:     safeString(profileMap[pAddress]),
+		Company:     safeString(profileMap[pCompany]),
+		Email:       safeString(profileMap[pEmail]),
+		PhoneNumber: safeString(profileMap[pPhoneNumber]),
+		TeamDesc:    safeString(profileMap[pProjectDescription]),
+		TeamName:    safeString(profileMap[pProjectName]),
+	}, nil
+}
+
 func getProfile(profile interface{}) (p rest.Profile, err error) {
 	profileMap, ok := profile.(map[string]interface{})
 	if !ok {
@@ -240,6 +277,22 @@ func getProfile(profile interface{}) (p rest.Profile, err error) {
 		PhoneNumber: safeString(profileMap[pPhoneNumber]),
 		TeamDesc:    safeString(profileMap[pProjectDescription]),
 		TeamName:    safeString(profileMap[pProjectName]),
+	}, nil
+}
+
+func getUpdateLimits(limits interface{}) (p rest.UpdateLimits, err error) {
+	limitsMap, ok := limits.(map[string]interface{})
+	if !ok {
+		err = fmt.Errorf("wrong limits format")
+		return
+	}
+
+	return rest.UpdateLimits{
+		Hosts:           int32(safeInt(limitsMap[pHosts])),
+		Volumes:         int32(safeInt(limitsMap[pVolumes])),
+		VolumeCapacity:  int64(safeFloat(limitsMap[pVolumeCapacity])),
+		PrivateNetworks: int32(safeInt(limitsMap[pPrivateNetworks])),
+		InstanceTypes:   safeMapStrInt32(limitsMap[pInstanceTypes]),
 	}, nil
 }
 
@@ -310,6 +363,13 @@ func resourceMetalProjectRead(d *schema.ResourceData, meta interface{}) (err err
 		}
 	}
 
+	if len(project.PermittedOSImages) > 0 {
+		images := flattenStringList(project.PermittedOSImages)
+		if err = d.Set(pPermittedImages, schema.NewSet(schema.HashString, images)); err != nil {
+			return err // nolint:wrapcheck // defer func is wrapping the error.
+		}
+	}
+
 	return nil
 }
 
@@ -333,10 +393,15 @@ func resourceMetalProjectUpdate(d *schema.ResourceData, meta interface{}) (err e
 		return fmt.Errorf("name is not in the expected format")
 	}
 
-	project.Name = name
+	updateProject := rest.UpdateProject{
+		ID:   project.ID,
+		ETag: project.ETag,
+	}
+
+	updateProject.Name = name
 
 	if list, ok := d.Get(pProfile).([]interface{}); ok && len(list) == 1 {
-		if project.Profile, err = getProfile(list[0]); err != nil {
+		if updateProject.Profile, err = getUpdateProfile(list[0]); err != nil {
 			return
 		}
 	} else {
@@ -344,14 +409,25 @@ func resourceMetalProjectUpdate(d *schema.ResourceData, meta interface{}) (err e
 	}
 
 	if list, ok := d.Get(pLimits).([]interface{}); ok && len(list) == 1 {
-		if project.Limits, err = getLimits(list[0]); err != nil {
+		if updateProject.Limits, err = getUpdateLimits(list[0]); err != nil {
 			return
 		}
 	} else {
 		return fmt.Errorf("only 1 limit block is allowed")
 	}
 
-	_, _, err = p.Client.ProjectsApi.Update(ctx, project.ID, project)
+	if f, ok := d.GetOk(pPermittedImages); ok {
+		s, ok := f.(*schema.Set)
+		if !ok {
+			err = fmt.Errorf("permitted images list is not in the expected format")
+
+			return err
+		}
+
+		updateProject.PermittedOSImages = expandStringList(s.List())
+	}
+
+	_, _, err = p.Client.ProjectsApi.Update(ctx, updateProject.ID, updateProject)
 	if err != nil {
 		return
 	}

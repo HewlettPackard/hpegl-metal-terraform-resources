@@ -1,4 +1,4 @@
-// (C) Copyright 2020-2022 Hewlett Packard Enterprise Development LP
+// (C) Copyright 2020-2023 Hewlett Packard Enterprise Development LP
 
 package registration
 
@@ -17,6 +17,7 @@ const (
 	qSSHKey  = mPrefix + "_ssh_key"
 	qNetwork = mPrefix + "_network"
 	qIP      = mPrefix + "_ip"
+	qImage   = mPrefix + "_image"
 
 	qAvailableResource = mPrefix + "_available_resources"
 	qAvailableImages   = mPrefix + "_available_images"
@@ -52,6 +53,7 @@ func (r Registration) SupportedResources() map[string]*schema.Resource {
 		qProject: resources.ProjectResource(),
 		qNetwork: resources.ProjectNetworkResource(),
 		qIP:      resources.IPResource(),
+		qImage:   resources.ServiceImageResource(),
 	}
 }
 
