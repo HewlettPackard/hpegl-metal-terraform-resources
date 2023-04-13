@@ -141,7 +141,6 @@ func VolumeResource() *schema.Resource {
 	}
 }
 
-// nolint: funlen    // Ignoring function length check on existing function
 func resourceMetalVolumeCreate(d *schema.ResourceData, meta interface{}) (err error) {
 	defer wrapResourceError(&err, "failed to create volume")
 
@@ -393,7 +392,7 @@ func deleteVAsForVolume(p *configuration.Config, volID string) error {
 	return nil
 }
 
-// nolint: funlen    // Ignoring function length check on existing function
+//nolint: funlen    // Ignoring function length check on existing function
 func resourceMetalVolumeDelete(d *schema.ResourceData, meta interface{}) (err error) {
 	var volume rest.Volume
 

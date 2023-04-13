@@ -39,10 +39,10 @@ Apply complete! Resources: 1 added, 0 changed, 0 destroyed.
 
 ### Argument Reference
 
-The available_resources block takes the following arguments.
+The resource block takes the following arguments.
 
 - `os_service_image_file` - Path to the YAML file containig the OS service image definition.
 
 ### Attribute Reference
 
-There are not additinoal attributes.
+There are no additinoal attributes.

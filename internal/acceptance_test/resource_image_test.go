@@ -9,6 +9,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
+
 	"github.com/hewlettpackard/hpegl-metal-terraform-resources/pkg/client"
 )
 
@@ -72,6 +73,7 @@ func imageBasic(op string) string {
 	return common + res
 }
 
+//nolint:dupl //ignoring duplication for acceptance tests
 func testAccCheckImageDestroy(t *testing.T, s *terraform.State) error {
 	t.Helper()
 

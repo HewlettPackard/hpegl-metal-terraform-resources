@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+
 	"github.com/hewlettpackard/hpegl-metal-terraform-resources/pkg/client"
 )
 
@@ -29,10 +30,10 @@ func ServiceImageResource() *schema.Resource {
 		Delete: resourceMetalImageDelete,
 		Update: resourceMetalImageUpdate,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Schema:      serviceSchema(),
-		Description: "Provides Service resource. This allows creation, deletion and update of Metal OD services .",
+		Description: "Provides service image resource. This allows creation, deletion and update of Metal OS service images .",
 	}
 }
 
@@ -48,14 +49,14 @@ func resourceMetalImageCreate(d *schema.ResourceData, meta interface{}) (err err
 
 	p, err := client.GetClientFromMetaMap(meta)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to get client, %v", err)
 	}
 
 	ctx := p.GetContext()
 
 	svc, _, err := p.Client.ServicesApi.Add(ctx, file, nil)
 	if err != nil {
-		return err
+		return err //nolint:wrapcheck // defer func is wrapping the error.
 	}
 
 	d.SetId(svc.ID)
@@ -63,7 +64,7 @@ func resourceMetalImageCreate(d *schema.ResourceData, meta interface{}) (err err
 	return nil
 }
 
-func resourceMetalImageRead(d *schema.ResourceData, meta interface{}) (err error) {
+func resourceMetalImageRead(_ *schema.ResourceData, _ interface{}) (err error) {
 	return nil
 }
 
@@ -72,13 +73,13 @@ func resourceMetalImageDelete(d *schema.ResourceData, meta interface{}) (err err
 
 	p, err := client.GetClientFromMetaMap(meta)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to get client, %v", err)
 	}
 
 	ctx := p.GetContext()
 
 	if _, err = p.Client.ServicesApi.Delete(ctx, d.Id()); err != nil {
-		return err
+		return err //nolint:wrapcheck // defer func is wrapping the error.
 	}
 
 	d.SetId("")
@@ -98,13 +99,13 @@ func resourceMetalImageUpdate(d *schema.ResourceData, meta interface{}) (err err
 
 	p, err := client.GetClientFromMetaMap(meta)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to get client, %v", err)
 	}
 
 	ctx := p.GetContext()
 
 	if _, _, err := p.Client.ServicesApi.Update(ctx, d.Id(), file); err != nil {
-		return err
+		return err //nolint:wrapcheck // defer func is wrapping the error.
 	}
 
 	return nil

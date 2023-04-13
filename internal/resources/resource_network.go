@@ -389,8 +389,8 @@ func resourceMetalNetworkUpdate(d *schema.ResourceData, meta interface{}) (err e
 		ETag: n.ETag,
 	}
 
-	updateNetwork.Name = d.Get(nName).(string)
-	updateNetwork.Description = d.Get(nDescription).(string)
+	updateNetwork.Name = safeString(d.Get(nName))
+	updateNetwork.Description = safeString(d.Get(nDescription))
 
 	if hostUse, ok := d.Get(nHostUse).(string); ok {
 		updateNetwork.HostUse = rest.NetworkHostUse(hostUse)
@@ -408,7 +408,7 @@ func resourceMetalNetworkUpdate(d *schema.ResourceData, meta interface{}) (err e
 	return resourceMetalNetworkRead(d, meta)
 }
 
-// nolint: dupl   // Ignoring issues in the existing code
+//nolint: dupl   // Ignoring issues in the existing code
 func resourceMetalNetworkDelete(d *schema.ResourceData, meta interface{}) (err error) {
 	defer wrapResourceError(&err, "failed to delete network")
 

@@ -121,5 +121,5 @@ output "tfhost" {
 1. [Network creation](./resources/hpegl_metal_network/README.md): Create custom new metworks for project intra-communication.
 1. [Usage information](./data-sources/hpegl_metal_usage/README.md): Extract resource usage information.
 1. [Project](./resources/hpegl_metal_project/README.md): Create and manipulate projects.
-1. [Image] (./resources/hpegl_metal_project/README.md): Create and manipulate OS service images.
+1. [Image](./resources/hpegl_metal_image/README.md): Create and manipulate OS service images.
 1. [Advanced](./advanced/README.md): Advanced Terraform operations.

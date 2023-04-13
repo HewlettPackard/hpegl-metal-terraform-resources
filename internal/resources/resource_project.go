@@ -250,6 +250,7 @@ func getUpdateProfile(profile interface{}) (p rest.UpdateProfile, err error) {
 	profileMap, ok := profile.(map[string]interface{})
 	if !ok {
 		err = fmt.Errorf("wrong profile format")
+
 		return
 	}
 
@@ -284,6 +285,7 @@ func getUpdateLimits(limits interface{}) (p rest.UpdateLimits, err error) {
 	limitsMap, ok := limits.(map[string]interface{})
 	if !ok {
 		err = fmt.Errorf("wrong limits format")
+
 		return
 	}
 
@@ -366,7 +368,7 @@ func resourceMetalProjectRead(d *schema.ResourceData, meta interface{}) (err err
 	if len(project.PermittedOSImages) > 0 {
 		images := flattenStringList(project.PermittedOSImages)
 		if err = d.Set(pPermittedImages, schema.NewSet(schema.HashString, images)); err != nil {
-			return err // nolint:wrapcheck // defer func is wrapping the error.
+			return err //nolint:wrapcheck // defer func is wrapping the error.
 		}
 	}
 

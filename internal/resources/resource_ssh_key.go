@@ -123,7 +123,7 @@ func resourceMetalSSHKeyUpdate(d *schema.ResourceData, meta interface{}) (err er
 	return resourceMetalSSHKeyRead(d, meta)
 }
 
-// nolint: dupl   // Ignoring issues in the existing code
+//nolint: dupl   // Ignoring issues in the existing code
 func resourceMetalSSHKeyDelete(d *schema.ResourceData, meta interface{}) (err error) {
 	defer wrapResourceError(&err, "failed to delete ssh_key")
 
