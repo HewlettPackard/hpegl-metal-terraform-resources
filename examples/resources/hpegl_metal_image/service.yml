@@ -11,14 +11,7 @@
   description: v2 service client install service test
   hoster_use: true
   project_use: true
-  image_info:
-    image_size: 0
-    urls: []
-    download_timeout: 0
-    signature: ""
-    algorithm: sha256sum
   timeout: 1800
-  interface_version: "2.0"
   device_layouts:
     - device: /dev/sda
       table_type: gpt

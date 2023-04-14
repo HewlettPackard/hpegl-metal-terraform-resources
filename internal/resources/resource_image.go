@@ -18,7 +18,7 @@ func serviceSchema() map[string]*schema.Schema {
 		iServiceImageFile: {
 			Type:        schema.TypeString,
 			Required:    true,
-			Description: "Path to the YAML file containing the service image definition ",
+			Description: "Path to the YAML file containing the service image definition.",
 		},
 	}
 }
@@ -33,23 +33,23 @@ func ServiceImageResource() *schema.Resource {
 			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Schema:      serviceSchema(),
-		Description: "Provides service image resource. This allows creation, deletion and update of Metal OS service images .",
+		Description: "Provides service image resource. This allows creation, deletion and update of Metal OS service images.",
 	}
 }
 
 func resourceMetalImageCreate(d *schema.ResourceData, meta interface{}) (err error) {
-	defer wrapResourceError(&err, "failed to create OS service image")
+	defer wrapResourceError(&err, "create OS service image")
 
 	filePath := safeString(d.Get(iServiceImageFile))
 
 	file, err := os.Open(filePath)
 	if err != nil {
-		return fmt.Errorf("failed to open file %s, %v", filePath, err)
+		return fmt.Errorf("open file %s, %v", filePath, err)
 	}
 
 	p, err := client.GetClientFromMetaMap(meta)
 	if err != nil {
-		return fmt.Errorf("failed to get client, %v", err)
+		return fmt.Errorf("get client, %v", err)
 	}
 
 	ctx := p.GetContext()
@@ -69,11 +69,11 @@ func resourceMetalImageRead(_ *schema.ResourceData, _ interface{}) (err error) {
 }
 
 func resourceMetalImageDelete(d *schema.ResourceData, meta interface{}) (err error) {
-	defer wrapResourceError(&err, "failed to delete OS service image")
+	defer wrapResourceError(&err, "delete OS service image")
 
 	p, err := client.GetClientFromMetaMap(meta)
 	if err != nil {
-		return fmt.Errorf("failed to get client, %v", err)
+		return fmt.Errorf("get client, %v", err)
 	}
 
 	ctx := p.GetContext()
@@ -88,18 +88,18 @@ func resourceMetalImageDelete(d *schema.ResourceData, meta interface{}) (err err
 }
 
 func resourceMetalImageUpdate(d *schema.ResourceData, meta interface{}) (err error) {
-	defer wrapResourceError(&err, "failed to replace OS service image")
+	defer wrapResourceError(&err, "replace OS service image")
 
 	filePath := safeString(d.Get(iServiceImageFile))
 
 	file, err := os.Open(filePath)
 	if err != nil {
-		return fmt.Errorf("failed to open file %s, %v", filePath, err)
+		return fmt.Errorf("open file %s, %v", filePath, err)
 	}
 
 	p, err := client.GetClientFromMetaMap(meta)
 	if err != nil {
-		return fmt.Errorf("failed to get client, %v", err)
+		return fmt.Errorf("get client, %v", err)
 	}
 
 	ctx := p.GetContext()

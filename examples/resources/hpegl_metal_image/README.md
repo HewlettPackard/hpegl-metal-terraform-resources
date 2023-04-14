@@ -45,4 +45,4 @@ The resource block takes the following arguments.
 
 ### Attribute Reference
 
-There are no additinoal attributes.
+There are no additional attributes.

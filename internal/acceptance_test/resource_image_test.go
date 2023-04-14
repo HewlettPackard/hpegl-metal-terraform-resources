@@ -14,8 +14,8 @@ import (
 )
 
 func TestAccResourceImage_Basic(t *testing.T) {
-	// as-of Project creation is only supported when using GL IAM token.
-	// so, skipping test if it is explicitly disabled.
+	// As of now Image creation is only supported when using GL IAM token,
+	// skipping test if it is explicitly disabled.
 	if os.Getenv("HPEGL_METAL_GL_TOKEN") == "false" {
 		return
 	}

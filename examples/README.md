@@ -117,8 +117,8 @@ output "tfhost" {
 1. [Available images](./data-sources/hpegl_metal_available_images/README.md): Obtain filtered, specifc image information.
 1. [SSH key creation](./resources/hpegl_metal_ssh_key/README.md): Create new SSH keys for host image injection.
 1. [Host creation](./resources/hpegl_metal_host/README.md): Create one or more hosts.
-1. [Volume creation](./resources/hpegl_metal_volume/README.md): Create iSCSI volumes for host attachments.
-1. [Network creation](./resources/hpegl_metal_network/README.md): Create custom new metworks for project intra-communication.
+1. [Volume creation](./resources/hpegl_metal_volume/README.md): Create storage volumes for host attachments.
+1. [Network creation](./resources/hpegl_metal_network/README.md): Create custom new networks for intra-project communication.
 1. [Usage information](./data-sources/hpegl_metal_usage/README.md): Extract resource usage information.
 1. [Project](./resources/hpegl_metal_project/README.md): Create and manipulate projects.
 1. [Image](./resources/hpegl_metal_image/README.md): Create and manipulate OS service images.
