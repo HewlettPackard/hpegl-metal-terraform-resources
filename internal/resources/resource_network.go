@@ -383,18 +383,24 @@ func resourceMetalNetworkUpdate(d *schema.ResourceData, meta interface{}) (err e
 	if err != nil {
 		return err
 	}
-	n.Name = d.Get(nName).(string)
-	n.Description = d.Get(nDescription).(string)
+
+	updateNetwork := rest.UpdateNetwork{
+		ID:   n.ID,
+		ETag: n.ETag,
+	}
+
+	updateNetwork.Name = safeString(d.Get(nName))
+	updateNetwork.Description = safeString(d.Get(nDescription))
 
 	if hostUse, ok := d.Get(nHostUse).(string); ok {
-		n.HostUse = rest.NetworkHostUse(hostUse)
+		updateNetwork.HostUse = rest.NetworkHostUse(hostUse)
 	}
 
 	if purpose, ok := d.Get(nPurpose).(string); ok {
-		n.Purpose = rest.NetworkPurpose(purpose)
+		updateNetwork.Purpose = rest.NetworkPurpose(purpose)
 	}
 
-	_, _, err = p.Client.NetworksApi.Update(ctx, n.ID, n)
+	_, _, err = p.Client.NetworksApi.Update(ctx, updateNetwork.ID, updateNetwork)
 	if err != nil {
 		return err
 	}

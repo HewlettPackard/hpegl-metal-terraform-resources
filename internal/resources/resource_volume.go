@@ -1,4 +1,4 @@
-// (C) Copyright 2020-2022 Hewlett Packard Enterprise Development LP
+// (C) Copyright 2020-2023 Hewlett Packard Enterprise Development LP
 
 package resources
 
@@ -141,7 +141,6 @@ func VolumeResource() *schema.Resource {
 	}
 }
 
-//nolint: funlen    // Ignoring function length check on existing function
 func resourceMetalVolumeCreate(d *schema.ResourceData, meta interface{}) (err error) {
 	defer wrapResourceError(&err, "failed to create volume")
 
@@ -309,9 +308,14 @@ func resourceMetalVolumeUpdate(d *schema.ResourceData, meta interface{}) (err er
 		return fmt.Errorf("size is not in the expected format")
 	}
 
-	vol.Capacity = int64(newSize)
+	updateVol := rest.UpdateVolume{
+		ID:   vol.ID,
+		ETag: vol.ETag,
+	}
 
-	_, _, err = c.Client.VolumesApi.Update(ctx, vol)
+	updateVol.Capacity = int64(newSize)
+
+	_, _, err = c.Client.VolumesApi.Update(ctx, updateVol.ID, updateVol)
 	if err != nil {
 		return
 	}

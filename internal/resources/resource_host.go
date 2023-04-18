@@ -729,40 +729,46 @@ func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err erro
 		}
 	}
 
+	updateHost := rest.UpdateHost{
+		ID:   host.ID,
+		ETag: host.ETag,
+		Name: host.Name,
+	}
+
 	// description
 	if updDesc, ok := d.Get(hDescription).(string); ok {
-		host.Description = updDesc
+		updateHost.Description = updDesc
 	}
 
 	// initiator name
 	updInitiatorName, ok := d.Get(hInitiatorName).(string)
 	if ok && updInitiatorName != "" && updInitiatorName != host.ISCSIConfig.InitiatorName {
-		host.ISCSIConfig.InitiatorName = updInitiatorName
+		updateHost.ISCSIConfig.InitiatorName = updInitiatorName
 	}
 
 	// set the network ids
-	if host.NetworkIDs, err = getNetworkIDs(d, p, &host); err != nil {
+	if updateHost.NetworkIDs, err = getNetworkIDs(d, p, &host); err != nil {
 		return err
 	}
 
 	// set the network for default route
 	if nDefRoute := safeString(d.Get(hNetForDefaultRoute)); nDefRoute != "" {
-		if host.NetworkForDefaultRoute, err = getNetworkID(p, host.NetworkIDs, host.LocationID, nDefRoute); err != nil {
+		if updateHost.NetworkForDefaultRoute, err = getNetworkID(p, host.NetworkIDs, host.LocationID, nDefRoute); err != nil {
 			return err
 		}
 	}
 
 	// set the untagged network
 	if nUntagged := safeString(d.Get(hNetUntagged)); nUntagged == "" {
-		host.NetworkUntagged = ""
-	} else if host.NetworkUntagged, err = getNetworkID(p, host.NetworkIDs, host.LocationID, nUntagged); err != nil {
+		updateHost.NetworkUntagged = ""
+	} else if updateHost.NetworkUntagged, err = getNetworkID(p, host.NetworkIDs, host.LocationID, nUntagged); err != nil {
 		return err
 	}
 
 	// Update.
 	ctx = p.GetContext()
 
-	_, _, err = p.Client.HostsApi.Update(ctx, host.ID, host)
+	_, _, err = p.Client.HostsApi.Update(ctx, updateHost.ID, updateHost)
 	if err != nil {
 		//nolint:wrapcheck // defer func is wrapping the error.
 		return err
