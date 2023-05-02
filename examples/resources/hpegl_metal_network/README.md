@@ -100,7 +100,7 @@ The following arguments are supported:
 - `purpose` - (Optional) Purpose of the network. Allowed values are Backup, Storage, vmKernel, vmNSX-T, vMotion, vCHA, vmFT, iSCSI-A, iSCSI-B, Telemetry and External
 - `ip_pool` - (Optional) IP pool used by the network. If not defined an IP allocated from the hoster IP pool factory will be used.
 - `vlan` - (Optional) VLAN ID of the network. If not specified, it is allocated from the reserved pool.
-- `vni` - (Optional) VNI ID of the network. If not specified, it is allocated from the reserved pool.
+- `vni` - (Optional) VNI ID of the network. If not specified, it is allocated from the reserved pool if required.
 
 ### Attribute Reference
 
