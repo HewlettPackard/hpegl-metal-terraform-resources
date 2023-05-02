@@ -113,11 +113,6 @@ func safeInt(s interface{}) int {
 	return r
 }
 
-func safeInt32(s interface{}) int32 {
-	r, _ := s.(int32)
-	return r
-}
-
 func safeFloat(s interface{}) float64 {
 	r, _ := s.(float64)
 	return r
