@@ -9,7 +9,7 @@ require (
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.26.1
 	github.com/hewlettpackard/hpegl-metal-client v1.5.1
 	github.com/hewlettpackard/hpegl-provider-lib v0.0.14
-	github.com/stretchr/testify v1.8.2
+	github.com/stretchr/testify v1.8.3
 	gopkg.in/yaml.v2 v2.4.0
 )
 
