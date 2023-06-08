@@ -72,8 +72,11 @@ func testAccCheckVolumeBasic(op string) string {
 	`
 	size := testVolCreateSize
 
+	labels := "{\"Sub-Org\" = \"New Deployments\", \"phase\" = \"Stage-2\"}"
+
 	if op == "update" {
 		size = testVolUpdateSize
+		labels = "{\"Sub-Org\" = \"New Deployments\", \"new-label\" = \"new-value\"}"
 	}
 
 	res := fmt.Sprintf(`resource "hpegl_metal_volume" "test_vol" {
@@ -83,7 +86,8 @@ func testAccCheckVolumeBasic(op string) string {
 		flavor      = "Fast"
 		description = "hello from Terraform"
 		location    = var.location
-	  }`, size)
+		labels      = %s
+	  }`, size, labels)
 
 	return common + res
 }

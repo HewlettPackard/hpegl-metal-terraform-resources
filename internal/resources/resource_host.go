@@ -765,6 +765,11 @@ func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err erro
 		return err
 	}
 
+	// add tags
+	if m, ok := (d.Get(hLabels).(map[string]interface{})); ok {
+		updateHost.Labels = convertMap(m)
+	}
+
 	// Update.
 	ctx = p.GetContext()
 

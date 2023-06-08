@@ -82,14 +82,12 @@ func volumeSchema() map[string]*schema.Schema {
 			Required:    true,
 			Description: "The minimum size of the volume specified in units of GBytes.",
 			ValidateFunc: func(val interface{}, key string) (warns []string, errs []error) {
-				sz, ok := val.(float64)
+				_, ok := val.(float64)
 				if !ok {
 					errs = append(errs, fmt.Errorf("expected type of %s to be float", key))
 					return
 				}
-				if sz <= 0 {
-					errs = append(errs, fmt.Errorf("%q must be greater than 0, got %f", key, sz))
-				}
+
 				return
 			},
 		},
@@ -171,9 +169,14 @@ func resourceMetalVolumeCreate(d *schema.ResourceData, meta interface{}) (err er
 		return fmt.Errorf("unable to locate a volume flavor")
 	}
 
+	capacity, ok := d.Get(vSize).(float64)
+	if !ok || capacity <= 0 {
+		return fmt.Errorf("invalid capacity %v", capacity)
+	}
+
 	volume := rest.NewVolume{
 		Name:        d.Get(vName).(string),
-		Capacity:    int64(d.Get(vSize).(float64)),
+		Capacity:    int64(capacity),
 		Description: d.Get(vDescription).(string),
 		FlavorID:    vfID,
 		Shareable:   d.Get(vShareable).(bool),
@@ -315,6 +318,11 @@ func resourceMetalVolumeUpdate(d *schema.ResourceData, meta interface{}) (err er
 
 	updateVol.Capacity = int64(newSize)
 
+	// add tags
+	if m, ok := d.Get(vLabels).(map[string]interface{}); ok {
+		updateVol.Labels = convertMap(m)
+	}
+
 	_, _, err = c.Client.VolumesApi.Update(ctx, updateVol.ID, updateVol)
 	if err != nil {
 		return
@@ -392,7 +400,7 @@ func deleteVAsForVolume(p *configuration.Config, volID string) error {
 	return nil
 }
 
-//nolint: funlen    // Ignoring function length check on existing function
+//nolint:funlen    // Ignoring function length check on existing function
 func resourceMetalVolumeDelete(d *schema.ResourceData, meta interface{}) (err error) {
 	var volume rest.Volume
 
