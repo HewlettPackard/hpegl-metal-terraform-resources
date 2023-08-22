@@ -14,6 +14,9 @@ LOCAL_LOCATION=~/.local/share/terraform/plugins/terraform.example.com/$(DUMMY_PR
 # Stuff that needs to be installed globally (not in vendor)
 DEPEND=
 
+# Directory for documentation.
+DOCS_DIR="docs"
+
 # Will get the branch name
 SYMBOLIC_REF=$(shell if [ -n "$$CIRCLE_TAG" ] ; then echo $$CIRCLE_TAG; else git symbolic-ref HEAD | cut -d"/" -f 3; fi)
 COMMIT_ID=$(shell git rev-parse --verify HEAD)
@@ -41,7 +44,7 @@ LOCALIZATION_FILES := $(shell find . -name \*.toml | grep -v vendor | grep -v ./
 
 $(NAME): $(shell find . -name \*.go)
 	CGO_ENABLED=0 GOOS=$(GOOS) GOARCH=$(GOARCH) go build $(TAGS) -ldflags "$(VFLAG)" -o build/$@ .
-
+	
 default: all
 .PHONY: default
 
@@ -105,6 +108,7 @@ install: build $(NAME)
 .PHONY: install
 
 docs: vendor
+	mkdir -p $(DOCS_DIR)
 	go generate ./main.go
 .PHONY: docs
 
