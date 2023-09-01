@@ -4,6 +4,12 @@
 
 NAME=$(shell find cmd -name ".gitkeep_provider" -exec dirname {} \; | sort -u | sed -e 's|cmd/||')
 
+# Platform details to build quarform provider
+# Default OS/Platform=Linux/x86_64
+ifeq ("$(GOARCH)","")
+	GOARCH="amd64"
+endif
+
 # version shouldn't have 'v' prefix for >= 0.13
 VERSION=$(shell cat ./version)
 # Change DUMMY_PROVIDER below to reflect the name of the service under development.  The
