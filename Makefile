@@ -4,7 +4,7 @@
 
 NAME=$(shell find cmd -name ".gitkeep_provider" -exec dirname {} \; | sort -u | sed -e 's|cmd/||')
 
-# Platform details to build quarform provider
+# Platform details to build the terraform provider
 # Default OS/Platform=Linux/x86_64
 ifeq ("$(GOARCH)","")
 	GOARCH="amd64"
