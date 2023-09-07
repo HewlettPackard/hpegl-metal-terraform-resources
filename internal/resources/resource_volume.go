@@ -191,7 +191,7 @@ func resourceMetalVolumeCreate(d *schema.ResourceData, meta interface{}) (err er
 
 	if vpID, ok = d.Get(vStoragePoolID).(string); !ok || vpID == "" {
 		// no explicit storage pool ID is set, so try and get one from the storage-pool-name if one was specified.
-		if vpName, ok = d.Get(vStoragePool).(string); ok {
+		if vpName, ok = d.Get(vStoragePool).(string); ok && vpName != "" {
 			vpID, _ = p.GetStoragePoolID(vpName)
 
 			if vpID == "" {
