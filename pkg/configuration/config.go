@@ -103,6 +103,26 @@ func (c *Config) GetVolumeFlavorName(flavorID string) (string, error) {
 	return "", fmt.Errorf("VolumeFalvorID %s not found", flavorID)
 }
 
+func (c *Config) GetStoragePoolName(storagePoolID string) (string, error) {
+	for _, sp := range c.AvailableResources.StoragePools {
+		if storagePoolID == sp.ID {
+			return sp.Name, nil
+		}
+	}
+
+	return "", fmt.Errorf("StoragePoolID %s not found", storagePoolID)
+}
+
+func (c *Config) GetStoragePoolID(storagePoolName string) (string, error) {
+	for _, sp := range c.AvailableResources.StoragePools {
+		if storagePoolName == sp.Name {
+			return sp.ID, nil
+		}
+	}
+
+	return "", fmt.Errorf("StoragePoolName %s not found", storagePoolName)
+}
+
 // GetContext is used to retrieve the context.
 // If the token retrieve function is nil the context in Config is returned
 // If there is a token retrieve function it is executed to retrieve a GL IAM token, which is
