@@ -188,16 +188,11 @@ func resourceMetalVolumeCreate(d *schema.ResourceData, meta interface{}) (err er
 	var (
 		vpID, vpName string
 	)
+
 	if vpID, ok = d.Get(vStoragePoolID).(string); !ok || vpID == "" {
-		// no explicit storage pool ID is set, so go and try and get one
-		// from the storage-pool-name if one was specified.
+		// no explicit storage pool ID is set, so try and get one from the storage-pool-name if one was specified.
 		if vpName, ok = d.Get(vStoragePool).(string); ok {
-			for _, pool := range resources.StoragePools {
-				if pool.Name == vpName {
-					vpID = pool.ID
-					break
-				}
-			}
+			vpID, _ = p.GetStoragePoolID(vpName)
 
 			if vpID == "" {
 				return fmt.Errorf("unable to locate storage pool")
@@ -325,7 +320,7 @@ func resourceMetalVolumeRead(d *schema.ResourceData, meta interface{}) (err erro
 		}
 	}
 
-	d.Set(vStoragePoolID, volume.StoragePoolID)
+	_ = d.Set(vStoragePoolID, volume.StoragePoolID)
 
 	return nil
 }

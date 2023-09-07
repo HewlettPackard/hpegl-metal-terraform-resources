@@ -109,7 +109,18 @@ func (c *Config) GetStoragePoolName(storagePoolID string) (string, error) {
 			return sp.Name, nil
 		}
 	}
+
 	return "", fmt.Errorf("StoragePoolID %s not found", storagePoolID)
+}
+
+func (c *Config) GetStoragePoolID(storagePoolName string) (string, error) {
+	for _, sp := range c.AvailableResources.StoragePools {
+		if storagePoolName == sp.Name {
+			return sp.ID, nil
+		}
+	}
+
+	return "", fmt.Errorf("StoragePoolName %s not found", storagePoolName)
 }
 
 // GetContext is used to retrieve the context.

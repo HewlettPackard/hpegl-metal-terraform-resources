@@ -322,9 +322,11 @@ func dataSourceAvailableResourcesRead(d *schema.ResourceData, meta interface{}) 
 	if err = addVolmeFlavors(p, d, available); err != nil {
 		return err
 	}
+
 	if err = addStoragePools(p, d, available); err != nil {
 		return err
 	}
+
 	d.SetId("resources")
 	return nil
 }
@@ -488,9 +490,8 @@ func addStoragePools(p *configuration.Config, d *schema.ResourceData, available 
 		existingPools = append(existingPools, iData)
 	}
 
-	if err := d.Set(avStoragePools, existingPools); err != nil {
-		return err
-	}
+	err := d.Set(avStoragePools, existingPools)
 
-	return nil
+	//nolint:wrapcheck // caller defer func is wrapping the error.
+	return err
 }
