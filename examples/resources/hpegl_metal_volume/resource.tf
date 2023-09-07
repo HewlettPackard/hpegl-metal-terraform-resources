@@ -11,12 +11,12 @@ variable "location" {
 }
 
 resource "hpegl_metal_volume" "test_vols" {
-  count       = 1
-  name        = "vol-${count.index}"
-  size        = 20
-  shareable   = true
-  flavor      = "Fast"
+  count        = 1
+  name         = "vol-${count.index}"
+  size         = 20
+  shareable    = true
+  flavor       = "Fast"
   storage_pool = "Storage_Pool_NVMe"
-  location    = var.location
-  description = "Terraformed volume"
+  location     = var.location
+  description  = "Terraformed volume"
 }
