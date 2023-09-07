@@ -1,4 +1,4 @@
-# (C) Copyright 2020-2023 Hewlett Packard Enterprise Development LP
+<!-- Copyright 2020-2023 Hewlett Packard Enterprise Development LP -->
 # Example of creating a host
 
 This is an example of creating a host that has ssh-key injection and three IP addresses on three VPNs assigned to it.

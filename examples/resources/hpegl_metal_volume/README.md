@@ -1,4 +1,4 @@
-# (C) Copyright 2020-2023 Hewlett Packard Enterprise Development LP
+<!-- (C) Copyright 2020-2023 Hewlett Packard Enterprise Development LP -->
 # Example of creating an iSCSI volume
 
 An isolated iSCSI volume maybe attached to a host at host-creation time by simply referencing the volume name in the volumes code-block

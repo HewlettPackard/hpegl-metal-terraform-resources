@@ -1,4 +1,4 @@
-# (C) Copyright 2020-2023 Hewlett Packard Enterprise Development LP
+<!-- (C) Copyright 2020-2023 Hewlett Packard Enterprise Development LP -->
 # Obtaining available resources in the physical infrastructure
 
 This is an example of querying the physical infrastructure to obtain information on the available compute,

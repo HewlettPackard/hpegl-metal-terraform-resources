@@ -320,7 +320,9 @@ func resourceMetalVolumeRead(d *schema.ResourceData, meta interface{}) (err erro
 		}
 	}
 
-	_ = d.Set(vStoragePoolID, volume.StoragePoolID)
+	if err = d.Set(vStoragePoolID, volume.StoragePoolID); err != nil {
+		return fmt.Errorf("set storage pool id: %v", err)
+	}
 
 	return nil
 }
