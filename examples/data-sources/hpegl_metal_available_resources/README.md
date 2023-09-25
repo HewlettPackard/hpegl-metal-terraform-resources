@@ -113,6 +113,8 @@ volumes = [
     "size" = 0
     "storage_pool" = "Storage_Pool_NVMe"
     "storage_pool_id" = "8cd530bb-9ac2-4e28-9a6d-b7a695940e46"
+    "volume_collection" = "collection_for_autsin"
+    "volume_collection_id" = "d5a63736-a03f-4779-8a08-0b3763f86704"
   },
 ]
 storage-pools = [
@@ -130,6 +132,20 @@ storage-pools = [
     "location_id" = "b3b64a26-fdb2-4d4d-9f8d-5096cbb662a6"
     "name" = "Storage_Pool_FLASH"
   },
+]
+"VolumeCollections": [
+  {
+    "ID": "d5a63736-a03f-4779-8a08-0b3763f86704",
+    "Name": "abtest",
+    "LocationID": "c8b3c5a7-f81d-453a-af3a-1e6d78291bd5",
+    "Description": ""
+  },
+  {
+    "ID": "dd253c2a-defb-41c7-b23d-f9a937c37da0",
+    "Name": "abose-tf-test",
+    "LocationID": "c8b3c5a7-f81d-453a-af3a-1e6d78291bd5",
+    "Description": ""
+  }
 ]
 ```
 
@@ -167,6 +183,7 @@ In addition to the arguments listed above, the following attributes are returned
   - `flavor` - The flavor of volume.
   - `storage_pool` - The name of the storage pool.
   - `storage_pool_id` - Unique ID of the storage pool.
+  - `volume_collection_id` - Unique ID of the volume collection.
 - `volume_flavors` - List of availale volume flavors.
   - `name` - The name of the volume flavor, e.g. "Default".
   - `description` - (Optional) Some descriptive text that helps describe the volume flavor.
@@ -175,3 +192,8 @@ In addition to the arguments listed above, the following attributes are returned
   - `location` - The location of the storage pool in country:region:data_center format.
   - `location_id` - Unique ID of the location.
   - `capacity` - The available capacity of the pool (GiB).
+- `volume_collections` - List of volume collections.
+  - `name` - The name of the volume collection.
+  - `location_id` - Unique ID of the location.
+  - `description` - The description text that helps describe the volume collection.
+

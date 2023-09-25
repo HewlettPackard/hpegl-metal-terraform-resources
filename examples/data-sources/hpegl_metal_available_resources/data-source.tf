@@ -41,3 +41,7 @@ output "machine-sizes" {
 output "storage-pools" {
   value = data.hpegl_metal_available_resources.physical.storage_pools
 }
+
+output "volume-collections" {
+  value = data.hpegl_metal_available_resources.physical.volume_collections
+}

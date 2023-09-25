@@ -11,12 +11,12 @@ variable "location" {
 }
 
 resource "hpegl_metal_volume" "test_vols" {
-  count        = 1
-  name         = "vol-${count.index}"
-  size         = 20
-  shareable    = true
-  flavor       = "NVMe"
-  location     = var.location
-  volume_collection = "d5a63736-a03f-4779-8a08-0b3763f86704"
-  description  = "Terraformed volume"
+  count            = 1
+  name              = "vol-${count.index}"
+  size              = 20
+  shareable         = true
+  flavor            = "NVMe"
+  location          = var.location
+  volume_collection = "test_collection"
+  description       = "Terraformed volume"
 }
