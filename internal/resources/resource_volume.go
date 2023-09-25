@@ -29,6 +29,7 @@ const (
 	vWWN           = "wwn"
 	vStoragePool   = "storage_pool"
 	vStoragePoolID = "storage_pool_id"
+	vCollectionID  = "volume_collection"
 
 	// volume Info constants.
 	vID          = "id"
@@ -136,6 +137,12 @@ func volumeSchema() map[string]*schema.Schema {
 			Computed:    true,
 			Description: "The storage pool of the volume to be created.",
 		},
+		vCollectionID: {
+			Type:        schema.TypeString,
+			Required:    false,
+			Optional:    true,
+			Description: "The volume collection ID of the volume to be created.",
+		},
 	}
 }
 
@@ -212,6 +219,12 @@ func resourceMetalVolumeCreate(d *schema.ResourceData, meta interface{}) (err er
 		FlavorID:      vfID,
 		Shareable:     d.Get(vShareable).(bool),
 		StoragePoolID: vpID,
+		VolumeCollectionID: func() string {
+			if vcid, ok := d.Get(vCollectionID).(string); ok {
+				return vcid
+			}
+			return ""
+		}(),
 	}
 
 	targetLocation, ok := d.Get(vLocation).(string)

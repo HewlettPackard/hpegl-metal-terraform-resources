@@ -7,7 +7,7 @@ provider "hpegl" {
 }
 
 variable "location" {
-  default = "USA:Central:AFCDCC1"
+  default = "USA:CO:FTC"
 }
 
 resource "hpegl_metal_volume" "test_vols" {
@@ -15,8 +15,8 @@ resource "hpegl_metal_volume" "test_vols" {
   name         = "vol-${count.index}"
   size         = 20
   shareable    = true
-  flavor       = "Fast"
-  storage_pool = "Storage_Pool_NVMe"
+  flavor       = "NVMe"
   location     = var.location
+  volume_collection = "d5a63736-a03f-4779-8a08-0b3763f86704"
   description  = "Terraformed volume"
 }

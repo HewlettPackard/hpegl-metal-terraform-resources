@@ -15,14 +15,15 @@ import (
 const (
 	// The name are the top level arrays that are available in a terraform block
 	// for each time.
-	avImages        = "images"
-	avSSHKeys       = "ssh_keys"
-	avNetworks      = "networks"
-	avMachinesSizes = "machine_sizes"
-	avVolumes       = "volumes"
-	avVolumeFlavors = "volume_flavors"
-	avLocations     = "locations"
-	avStoragePools  = "storage_pools"
+	avImages            = "images"
+	avSSHKeys           = "ssh_keys"
+	avNetworks          = "networks"
+	avMachinesSizes     = "machine_sizes"
+	avVolumes           = "volumes"
+	avVolumeFlavors     = "volume_flavors"
+	avLocations         = "locations"
+	avStoragePools      = "storage_pools"
+	avVolumeCollections = "volume_collections"
 
 	// For avImages each terraform block has these attributes.
 	iCategory = "category"
@@ -61,6 +62,11 @@ const (
 	spLocation   = "location"
 	spLocationID = "location_id"
 	spCapacity   = "capacity"
+
+	// For avVolumeCollections each terraform block has these attributes.
+	vcName        = "name"
+	vcLocationID  = "location_id"
+	vcDescription = "description"
 )
 
 func locationResources() *schema.Resource {
@@ -180,6 +186,33 @@ func machineSizesResource() *schema.Resource {
 	}
 }
 
+func volumeCollectionResource() *schema.Resource {
+	return &schema.Resource{
+		Schema: map[string]*schema.Schema{
+			"id": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "",
+			},
+			vcName: {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The name of the volume collection",
+			},
+			vcLocationID: {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The location ID",
+			},
+			vcDescription: {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Description of the volume collection",
+			},
+		},
+	}
+}
+
 func existingNetworkResource() *schema.Resource {
 	r := &schema.Resource{
 		Schema: networkSchema(),
@@ -291,6 +324,11 @@ func DataSourceAvailableResources() *schema.Resource {
 				Computed: true,
 				Elem:     storagePoolResource(),
 			},
+			avVolumeCollections: {
+				Type:     schema.TypeList,
+				Computed: true,
+				Elem:     volumeCollectionResource(),
+			},
 		},
 	}
 }
@@ -324,6 +362,10 @@ func dataSourceAvailableResourcesRead(d *schema.ResourceData, meta interface{}) 
 	}
 
 	if err = addStoragePools(p, d, available); err != nil {
+		return err
+	}
+
+	if err = addVolumeCollections(p, d, available); err != nil {
 		return err
 	}
 
@@ -491,6 +533,26 @@ func addStoragePools(p *configuration.Config, d *schema.ResourceData, available 
 	}
 
 	err := d.Set(avStoragePools, existingPools)
+
+	//nolint:wrapcheck // caller defer func is wrapping the error.
+	return err
+}
+
+func addVolumeCollections(p *configuration.Config, d *schema.ResourceData, available rest.AvailableResources) error {
+	existingVCollections := make([]map[string]interface{}, 0, len(available.VolumeCollections))
+
+	for _, vcol := range available.VolumeCollections {
+		iData := map[string]interface{}{
+			"id":          vcol.ID,
+			vcName:        vcol.Name,
+			vcLocationID:  vcol.LocationID,
+			vcDescription: vcol.Description,
+		}
+
+		existingVCollections = append(existingVCollections, iData)
+	}
+
+	err := d.Set(avVolumeCollections, existingVCollections)
 
 	//nolint:wrapcheck // caller defer func is wrapping the error.
 	return err
