@@ -288,7 +288,7 @@ func (c *Config) IsHosterContext() bool {
 	return false
 }
 
-// Get volume collection ID from volume collection name
+// Get volume collection ID from volume collection name.
 func (c *Config) GetVolumeCollectionID(vcolName string) (string, error) {
 	for _, vc := range c.AvailableResources.VolumeCollections {
 		if vcolName == vc.Name {
@@ -296,5 +296,5 @@ func (c *Config) GetVolumeCollectionID(vcolName string) (string, error) {
 		}
 	}
 
-	return "", fmt.Errorf("Volume collection  %s not found", vcolName)
+	return "", fmt.Errorf("volume collection  %s not found", vcolName)
 }

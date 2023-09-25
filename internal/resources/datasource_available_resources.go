@@ -549,6 +549,7 @@ func addVolumeCollections(p *configuration.Config, d *schema.ResourceData, avail
 			vcDescription: vcol.Description,
 		}
 
+		iData[vLocation], _ = p.GetLocationName(vcol.LocationID)
 		existingVCollections = append(existingVCollections, iData)
 	}
 
