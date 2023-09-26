@@ -65,6 +65,7 @@ const (
 
 	// For avVolumeCollections each terraform block has these attributes.
 	vcName        = "name"
+	vcLocation    = "location"
 	vcLocationID  = "location_id"
 	vcDescription = "description"
 )
@@ -204,6 +205,12 @@ func volumeCollectionResource() *schema.Resource {
 				Computed:    true,
 				Description: "The location ID",
 			},
+			vcLocation: {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The location in the form of country:region:Center",
+			},
+
 			vcDescription: {
 				Type:        schema.TypeString,
 				Computed:    true,
