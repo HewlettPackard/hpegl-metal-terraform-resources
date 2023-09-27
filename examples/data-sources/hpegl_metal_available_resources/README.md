@@ -113,7 +113,7 @@ volumes = [
     "size" = 0
     "storage_pool" = "Storage_Pool_NVMe"
     "storage_pool_id" = "8cd530bb-9ac2-4e28-9a6d-b7a695940e46"
-    "volume_collection" = "collection_for_autsin"
+    "volume_collection" = "AustinCollection"
     "volume_collection_id" = "d5a63736-a03f-4779-8a08-0b3763f86704"
   },
 ]

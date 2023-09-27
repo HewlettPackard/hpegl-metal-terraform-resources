@@ -352,6 +352,11 @@ func resourceMetalVolumeRead(d *schema.ResourceData, meta interface{}) (err erro
 		return fmt.Errorf("set storage pool id: %v", err)
 	}
 
+	vcname, _ := p.GetStoragePoolName(volume.VolumeCollectionID)
+	if err = d.Set(vCollection, vcname); err != nil {
+		return fmt.Errorf("set volume collection: %v", err)
+	}
+
 	if err = d.Set(vCollectionID, volume.VolumeCollectionID); err != nil {
 		return fmt.Errorf("set volume collection id: %v", err)
 	}
