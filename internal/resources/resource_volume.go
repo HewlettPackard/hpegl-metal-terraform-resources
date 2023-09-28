@@ -150,6 +150,7 @@ func volumeSchema() map[string]*schema.Schema {
 			Type:        schema.TypeString,
 			Required:    false,
 			Optional:    true,
+			Computed:    true,
 			Description: "The volume collection ID of the volume to be created.",
 		},
 	}
@@ -352,7 +353,7 @@ func resourceMetalVolumeRead(d *schema.ResourceData, meta interface{}) (err erro
 		return fmt.Errorf("set storage pool id: %v", err)
 	}
 
-	vcname, _ := p.GetStoragePoolName(volume.VolumeCollectionID)
+	vcname, _ := p.GetVolumeCollectionName(volume.VolumeCollectionID)
 	if err = d.Set(vCollection, vcname); err != nil {
 		return fmt.Errorf("set volume collection: %v", err)
 	}
