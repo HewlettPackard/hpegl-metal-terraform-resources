@@ -304,6 +304,7 @@ func (c *Config) GetVolumeCollectionName(vcolID string) (string, error) {
 	if vcolID == "" {
 		return "", nil
 	}
+
 	for _, vc := range c.AvailableResources.VolumeCollections {
 		if vcolID == vc.ID {
 			return vc.Name, nil
