@@ -287,3 +287,29 @@ func (c *Config) IsHosterContext() bool {
 
 	return false
 }
+
+// GetVolumeCollectionID returns volume collection ID from volume collection name.
+func (c *Config) GetVolumeCollectionID(vcolName string) (string, error) {
+	for _, vc := range c.AvailableResources.VolumeCollections {
+		if vcolName == vc.Name {
+			return vc.ID, nil
+		}
+	}
+
+	return "", fmt.Errorf("volume collection  %s not found", vcolName)
+}
+
+// GetVolumeCollectionName return the ID of the volume collection.
+func (c *Config) GetVolumeCollectionName(vcolID string) (string, error) {
+	if vcolID == "" {
+		return "", nil
+	}
+
+	for _, vc := range c.AvailableResources.VolumeCollections {
+		if vcolID == vc.ID {
+			return vc.Name, nil
+		}
+	}
+
+	return "", fmt.Errorf("volume collection %s not found", vcolID)
+}

@@ -29,6 +29,8 @@ const (
 	vWWN           = "wwn"
 	vStoragePool   = "storage_pool"
 	vStoragePoolID = "storage_pool_id"
+	vCollection    = "volume_collection"
+	vCollectionID  = "volume_collection_id"
 
 	// volume Info constants.
 	vID          = "id"
@@ -136,6 +138,21 @@ func volumeSchema() map[string]*schema.Schema {
 			Computed:    true,
 			Description: "The storage pool of the volume to be created.",
 		},
+
+		vCollection: {
+			Type:        schema.TypeString,
+			Required:    false,
+			Optional:    true,
+			Description: "The volume collection of the volume to be created.",
+		},
+
+		vCollectionID: {
+			Type:        schema.TypeString,
+			Required:    false,
+			Optional:    true,
+			Computed:    true,
+			Description: "The volume collection ID of the volume to be created.",
+		},
 	}
 }
 
@@ -186,7 +203,7 @@ func resourceMetalVolumeCreate(d *schema.ResourceData, meta interface{}) (err er
 
 	// handle storage pool inputs
 	var (
-		vpID, vpName string
+		vpID, vpName, vcID, vcName string
 	)
 
 	if vpID, ok = d.Get(vStoragePoolID).(string); !ok || vpID == "" {
@@ -205,13 +222,25 @@ func resourceMetalVolumeCreate(d *schema.ResourceData, meta interface{}) (err er
 		return fmt.Errorf("invalid capacity %v", capacity)
 	}
 
+	if vcID, ok = d.Get(vCollectionID).(string); !ok || vcID == "" {
+		// if volume collection name is set, then use it
+		if vcName, ok = d.Get(vCollection).(string); ok && vcName != "" {
+			vcID, _ = p.GetVolumeCollectionID(vcName)
+
+			if vcID == "" {
+				return fmt.Errorf("unable to find volume collection")
+			}
+		}
+	}
+
 	volume := rest.NewVolume{
-		Name:          d.Get(vName).(string),
-		Capacity:      int64(capacity),
-		Description:   d.Get(vDescription).(string),
-		FlavorID:      vfID,
-		Shareable:     d.Get(vShareable).(bool),
-		StoragePoolID: vpID,
+		Name:               d.Get(vName).(string),
+		Capacity:           int64(capacity),
+		Description:        d.Get(vDescription).(string),
+		FlavorID:           vfID,
+		Shareable:          d.Get(vShareable).(bool),
+		StoragePoolID:      vpID,
+		VolumeCollectionID: vcID,
 	}
 
 	targetLocation, ok := d.Get(vLocation).(string)
@@ -322,6 +351,15 @@ func resourceMetalVolumeRead(d *schema.ResourceData, meta interface{}) (err erro
 
 	if err = d.Set(vStoragePoolID, volume.StoragePoolID); err != nil {
 		return fmt.Errorf("set storage pool id: %v", err)
+	}
+
+	vcname, _ := p.GetVolumeCollectionName(volume.VolumeCollectionID)
+	if err = d.Set(vCollection, vcname); err != nil {
+		return fmt.Errorf("set volume collection: %v", err)
+	}
+
+	if err = d.Set(vCollectionID, volume.VolumeCollectionID); err != nil {
+		return fmt.Errorf("set volume collection id: %v", err)
 	}
 
 	return nil
