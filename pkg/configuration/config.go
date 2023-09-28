@@ -299,7 +299,7 @@ func (c *Config) GetVolumeCollectionID(vcolName string) (string, error) {
 	return "", fmt.Errorf("volume collection  %s not found", vcolName)
 }
 
-// GetVolumeCollectionName return the ID of the volume collection
+// GetVolumeCollectionName return the ID of the volume collection.
 func (c *Config) GetVolumeCollectionName(vcolID string) (string, error) {
 	if vcolID == "" {
 		return "", nil
