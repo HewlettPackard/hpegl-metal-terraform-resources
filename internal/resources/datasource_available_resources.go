@@ -512,10 +512,12 @@ func addVolmeFlavors(p *configuration.Config, d *schema.ResourceData, available 
 			vLocationID:    vol.LocationID,
 			vFlavorID:      vol.FlavorID,
 			vStoragePoolID: vol.StoragePoolID,
+			vCollectionID:  vol.VolumeCollectionID,
 		}
 		iData[sLocation], _ = p.GetLocationName(vol.LocationID)
 		iData[vFlavor], _ = p.GetVolumeFlavorName(vol.FlavorID)
 		iData[vStoragePool], _ = p.GetStoragePoolName(vol.StoragePoolID)
+		iData[vCollection], _ = p.GetVolumeCollectionID(vol.VolumeCollectionID)
 		existingVols = append(existingVols, iData)
 	}
 	if err := d.Set(avVolumes, existingVols); err != nil {
