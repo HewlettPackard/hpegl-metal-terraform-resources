@@ -1,4 +1,4 @@
-#(C) Copyright 2022 Hewlett Packard Enterprise Development LP
+#(C) Copyright 2022-2023 Hewlett Packard Enterprise Development LP
 
 name: ci
 
@@ -24,7 +24,7 @@ jobs:
 
     services:
       simulator:
-        image: 657273346644.dkr.ecr.us-east-1.amazonaws.com/hpe-hcss/quake:master-simulator
+        image: 463106798219.dkr.ecr.us-east-1.amazonaws.com/hpe-hcss/quake/simulator:master-simulator
         credentials:
           username: AWS
           password: ${{ needs.ecr_login.outputs.ecr_password }}

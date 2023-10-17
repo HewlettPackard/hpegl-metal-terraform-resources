@@ -51,6 +51,7 @@ volumes = [
     "id" = "fdc3cb01-8a7d-453a-a3e5-8d6d96cdcb86"
     "location" = "USA:Texas:AUSL2"
     "location_id" = "b3b64a26-fdb2-4d4d-9f8d-5096cbb662a6"
+    "volume_collection_id" = "d5a63736-a03f-4779-8a08-0b3763f86704"
     "name" = "vol-0"
     "size" = 20
   },
@@ -77,3 +78,4 @@ In addition to the arguments listed above, the following computed attributes are
 - `storage_pool_id` - unique ID of the storage pool.
 - `state` - The provisioning state of the volume.
 - `status` - The provisioning status of the volume.
+- `volume_collection_id` - (optional) unique id of the volume collection
