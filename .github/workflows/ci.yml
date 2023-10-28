@@ -88,7 +88,7 @@ jobs:
       - name: Fetch qctl from Simulator instance
         run: |
           mkdir -p ${BIN_PATH}
-          docker cp SimPortal:/var/local/quake/downloads/qctl/linux/qctl ${BIN_PATH}
+          docker cp SimPortal:/var/local/quattro/downloads/qctl/linux/qctl ${BIN_PATH}
           chmod +x ${BIN_PATH}/qctl
           ${BIN_PATH}/qctl -v
       
