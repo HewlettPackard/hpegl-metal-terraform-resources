@@ -55,7 +55,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: 1.19
+          go-version: 1.21.3
 
       - name: Install tools
         run: make tools
@@ -80,7 +80,7 @@ jobs:
           echo "Running lint on changes from branch ${TARGET_BRANCH} ${TARGET_SHA}"
           golangci-lint run --config golangci-lint-config.yaml --new-from-rev ${TARGET_SHA} --verbose --max-issues-per-linter 0 --max-same-issues 0
 
-      - uses: hashicorp/setup-terraform@v2
+      - uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.1.7
           terraform_wrapper: false
@@ -88,7 +88,7 @@ jobs:
       - name: Fetch qctl from Simulator instance
         run: |
           mkdir -p ${BIN_PATH}
-          docker cp SimPortal:/var/local/quake/downloads/qctl/linux/qctl ${BIN_PATH}
+          docker cp SimPortal:/var/local/quattro/downloads/qctl/linux/qctl ${BIN_PATH}
           chmod +x ${BIN_PATH}/qctl
           ${BIN_PATH}/qctl -v
       
