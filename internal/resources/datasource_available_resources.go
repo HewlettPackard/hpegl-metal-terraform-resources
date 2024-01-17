@@ -64,10 +64,11 @@ const (
 	spCapacity   = "capacity"
 
 	// For avVolumeCollections each terraform block has these attributes.
-	vcName        = "name"
-	vcLocation    = "location"
-	vcLocationID  = "location_id"
-	vcDescription = "description"
+	vcName           = "name"
+	vcLocation       = "location"
+	vcLocationID     = "location_id"
+	vcDescription    = "description"
+	vcStoragePoolIDs = "storage_pool_ids"
 )
 
 func locationResources() *schema.Resource {
@@ -215,6 +216,14 @@ func volumeCollectionResource() *schema.Resource {
 				Type:        schema.TypeString,
 				Computed:    true,
 				Description: "Description of the volume collection",
+			},
+			vcStoragePoolIDs: {
+				Type:     schema.TypeList,
+				Computed: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+				Description: "A list of valid storage pool ids.",
 			},
 		},
 	}
@@ -552,10 +561,11 @@ func addVolumeCollections(p *configuration.Config, d *schema.ResourceData, avail
 
 	for _, vcol := range available.VolumeCollections {
 		iData := map[string]interface{}{
-			"id":          vcol.ID,
-			vcName:        vcol.Name,
-			vcLocationID:  vcol.LocationID,
-			vcDescription: vcol.Description,
+			"id":             vcol.ID,
+			vcName:           vcol.Name,
+			vcLocationID:     vcol.LocationID,
+			vcDescription:    vcol.Description,
+			vcStoragePoolIDs: vcol.StoragePoolIDs,
 		}
 
 		iData[vLocation], _ = p.GetLocationName(vcol.LocationID)
