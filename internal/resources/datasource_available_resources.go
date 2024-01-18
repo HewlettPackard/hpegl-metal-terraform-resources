@@ -223,7 +223,7 @@ func volumeCollectionResource() *schema.Resource {
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
-				Description: "A list of valid storage pool ids.",
+				Description: "A list of storage pool ids",
 			},
 		},
 	}
