@@ -149,7 +149,7 @@ storage-pools = [
     "LocationID": "c8b3c5a7-f81d-453a-af3a-1e6d78291bd5",
     "Description": ""
         "StoragePoolIDs": [
-        "bdbbb385-2ee3-4e71-a60a-ba712cdda37e"
+          "bdbbb385-2ee3-4e71-a60a-ba712cdda37e"
       ]
   }
 ]
