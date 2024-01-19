@@ -815,7 +815,6 @@ func resourceMetalHostDelete(d *schema.ResourceData, meta interface{}) (err erro
 	if err != nil {
 		return err
 	}
-	var host rest.Host
 
 	defer func() {
 		// This is the last in the deferred chain to fire. If there has been no
@@ -828,6 +827,9 @@ func resourceMetalHostDelete(d *schema.ResourceData, meta interface{}) (err erro
 	}()
 
 	ctx := p.GetContext()
+
+	var host rest.Host
+
 	host, _, err = p.Client.HostsApi.GetByID(ctx, d.Id())
 	if err != nil {
 		return err
@@ -837,37 +839,40 @@ func resourceMetalHostDelete(d *schema.ResourceData, meta interface{}) (err erro
 		return nil
 	}
 
-	if host.State != rest.HOSTSTATE_READY {
-		// Hosts that are still prvisioning can be
-		// deleted immediately.
-		_, err = p.Client.HostsApi.Delete(ctx, d.Id())
-
-		return err
-	}
-
-	// Hosts that are powered-on can not be deleted directly, so flip the power.
-	if host.PowerStatus == rest.HOSTPOWERSTATE_ON {
-		ctx = p.GetContext()
+	// Hosts that are in the Ready state and powered-on can not be deleted while the
+	// power is on, so turn off the power.
+	if host.State == rest.HOSTSTATE_READY && host.PowerStatus == rest.HOSTPOWERSTATE_ON {
 		_, _, err = p.Client.HostsApi.PowerOff(ctx, d.Id())
 		if err != nil {
 			return err
 		}
+
 		// The call is asynchronous so wait for Metal svc to complete the request.
-		for host.PowerStatus != rest.HOSTPOWERSTATE_OFF {
-			time.Sleep(pollInterval)
+		powerOffStateConf := &resource.StateChangeConf{
+			Pending: []string{
+				string(rest.HOSTPOWERSTATE_UNKNOWN),
+				string(rest.HOSTPOWERSTATE_ON),
+			},
+			Target: []string{
+				string(rest.HOSTPOWERSTATE_OFF),
+			},
+			Refresh: func() (interface{}, string, error) {
+				host, _, err := p.Client.HostsApi.GetByID(ctx, d.Id())
+				if err != nil {
+					return nil, "", fmt.Errorf("get host %v", d.Id())
+				}
 
-			host, _, err = p.Client.HostsApi.GetByID(ctx, d.Id())
-			if err != nil {
-				return err
-			}
+				return host, string(host.PowerStatus), nil
+			},
+			Timeout:    d.Timeout(schema.TimeoutDefault),
+			Delay:      mediumTimeout,
+			MinTimeout: shortTimeout,
+		}
 
-			if host.State == rest.HOSTSTATE_FAILED {
-				return fmt.Errorf("failed to turn off host power")
-			}
+		if _, err := powerOffStateConf.WaitForStateContext(ctx); err != nil {
+			return fmt.Errorf("waiting for host instance (%s) to be powered off: %s", d.Id(), err)
 		}
 	}
-
-	ctx = p.GetContext()
 
 	if _, err := p.Client.HostsApi.Delete(ctx, d.Id()); err != nil {
 		//nolint:wrapcheck // defer func is wrapping the error.

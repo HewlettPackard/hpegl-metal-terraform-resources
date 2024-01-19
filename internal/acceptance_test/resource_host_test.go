@@ -1,4 +1,4 @@
-// (C) Copyright 2020-2023 Hewlett Packard Enterprise Development LP
+// (C) Copyright 2020-2024 Hewlett Packard Enterprise Development LP
 
 package acceptance_test
 
@@ -18,7 +18,7 @@ import (
 
 const (
 	hostStateReadyWait = 30 * time.Second
-	hostStatePollCount = 4
+	hostStatePollCount = 10
 	isAsync            = true
 	isNotAsync         = false
 )
