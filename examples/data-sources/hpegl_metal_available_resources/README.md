@@ -150,7 +150,7 @@ storage-pools = [
     "Description": ""
     "StoragePoolIDs": [
       "bdbbb385-2ee3-4e71-a60a-ba712cdda37e"
-      ]
+    ]
   }
 ]
 ```
