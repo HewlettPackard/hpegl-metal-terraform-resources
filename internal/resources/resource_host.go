@@ -820,9 +820,7 @@ func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err erro
 }
 
 //nolint:funlen // Ignoring function length check on existing function
-func resourceMetalHostDelete(d *schema.ResourceData, meta interface{}) error {
-	var err error
-
+func resourceMetalHostDelete(d *schema.ResourceData, meta interface{}) (err error) {
 	defer wrapResourceError(&err, "failed to delete host")
 
 	p, err := client.GetClientFromMetaMap(meta)
