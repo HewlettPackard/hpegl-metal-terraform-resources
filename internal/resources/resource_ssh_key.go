@@ -1,4 +1,4 @@
-// (C) Copyright 2020-2022 Hewlett Packard Enterprise Development LP
+// (C) Copyright 2020-2023 Hewlett Packard Enterprise Development LP
 
 package resources
 
@@ -92,23 +92,31 @@ func resourceMetalSSHKeyUpdate(d *schema.ResourceData, meta interface{}) (err er
 	if err != nil {
 		return err
 	}
+
 	// Read existing
 	ctx := p.GetContext()
 	ssh, _, err := p.Client.SshkeysApi.GetByID(ctx, d.Id())
 	if err != nil {
 		return err
 	}
+
+	updateSSH := rest.UpdateSshKey{
+		ID:   ssh.ID,
+		ETag: ssh.ETag,
+	}
+
 	// Modify
 	if name, ok := d.Get(sshKeyName).(string); ok && name != "" {
-		ssh.Name = name
+		updateSSH.Name = name
 	}
+
 	if public, ok := d.Get(sshPublicKey).(string); ok && public != "" {
-		ssh.Key = public
+		updateSSH.Key = public
 	}
+
 	// Update
 	ctx = p.GetContext()
-	_, _, err = p.Client.SshkeysApi.Update(ctx, ssh.ID, ssh)
-	if err != nil {
+	if _, _, err = p.Client.SshkeysApi.Update(ctx, updateSSH.ID, updateSSH); err != nil {
 		return err
 	}
 

@@ -1,4 +1,4 @@
-# (C) Copyright 2020-2022 Hewlett Packard Enterprise Development LP
+<!-- Copyright 2020-2023 Hewlett Packard Enterprise Development LP -->
 # Example of creating a host
 
 This is an example of creating a host that has ssh-key injection and three IP addresses on three VPNs assigned to it.
@@ -9,7 +9,7 @@ To run the example:
 * Run with a command similar to
 ```
 terraform apply -var "location=USA:Central:V2DCC01"
-``` 
+```
 
 ## Example output
 
@@ -64,12 +64,13 @@ The following arguments are supported:
   - `description` - (Optional) Some descriptive text that helps describe the volume and purpose.
   - `size` - The size of the volume (GiB).
   - `flavor` - The flavor of volume to create.
+  - `storage_pool` - (Optional) The storage pool where to create the volume
 - `volume_attachments` - A list of existing volumeIDs or volume-names to attach to the host.
 - `user_data` - Cloud init yaml information for host injection.
 
 ### Attribute Reference
 
-In addition to the arguments listed above, the following attributes are exported:
+In addition to the arguments listed above, the following computed attributes are returned to the user:
 
 - `ssh_ids` - List of SSH key IDs.
 - `location_id` - Unique ID of the location.

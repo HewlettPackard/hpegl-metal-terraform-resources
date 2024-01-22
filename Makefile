@@ -4,15 +4,22 @@
 
 NAME=$(shell find cmd -name ".gitkeep_provider" -exec dirname {} \; | sort -u | sed -e 's|cmd/||')
 
+ifeq ("$(GOARCH)","")
+   GOARCH="amd64"
+endif
+
 # version shouldn't have 'v' prefix for >= 0.13
 VERSION=$(shell cat ./version)
 # Change DUMMY_PROVIDER below to reflect the name of the service under development.  The
 # value of this variable is used in LOCAL_LOCATION, and is also used in the
 DUMMY_PROVIDER=metal
-LOCAL_LOCATION=~/.local/share/terraform/plugins/terraform.example.com/$(DUMMY_PROVIDER)/hpegl/$(VERSION)/linux_amd64/
+LOCAL_LOCATION=~/.local/share/terraform/plugins/terraform.example.com/$(DUMMY_PROVIDER)/hpegl/$(VERSION)/linux_$(GOARCH)
 
 # Stuff that needs to be installed globally (not in vendor)
 DEPEND=
+
+# Directory for documentation.
+DOCS_DIR="docs"
 
 # Will get the branch name
 SYMBOLIC_REF=$(shell if [ -n "$$CIRCLE_TAG" ] ; then echo $$CIRCLE_TAG; else git symbolic-ref HEAD | cut -d"/" -f 3; fi)
@@ -40,8 +47,8 @@ GOOS='$(GOOSALT)'
 LOCALIZATION_FILES := $(shell find . -name \*.toml | grep -v vendor | grep -v ./bin)
 
 $(NAME): $(shell find . -name \*.go)
-	CGO_ENABLED=0 GOOS=$(GOOS) GOARCH=amd64 go build $(TAGS) -ldflags "$(VFLAG)" -o build/$@ .
-	
+	CGO_ENABLED=0 GOOS=$(GOOS) GOARCH=$(GOARCH) go build $(TAGS) -ldflags "$(VFLAG)" -o build/$@ .
+
 default: all
 .PHONY: default
 
@@ -105,6 +112,7 @@ install: build $(NAME)
 .PHONY: install
 
 docs: vendor
+	mkdir -p $(DOCS_DIR)
 	go generate ./main.go
 .PHONY: docs
 

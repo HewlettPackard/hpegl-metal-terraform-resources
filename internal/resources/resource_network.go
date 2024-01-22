@@ -181,13 +181,15 @@ func networkSchema() map[string]*schema.Schema {
 		},
 		nVLAN: {
 			Type:        schema.TypeInt,
+			Optional:    true,
 			Computed:    true,
-			Description: "The VLAN ID of the network",
+			Description: "Optional VLAN ID of the network. If not specified, it is allocated from reserved pool",
 		},
 		nVNI: {
 			Type:        schema.TypeInt,
+			Optional:    true,
 			Computed:    true,
-			Description: "The VNI ID of the network",
+			Description: "Optional VNI ID of the network. If not specified, it is allocated from reserved pool if required",
 		},
 	}
 }
@@ -199,7 +201,7 @@ func ProjectNetworkResource() *schema.Resource {
 		Delete: resourceMetalNetworkDelete,
 		Update: resourceMetalNetworkUpdate,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Schema:      networkSchema(),
 		Description: "Provides Network resource. This allows creation, deletion and update of Metal networks.",
@@ -214,7 +216,7 @@ func resourceMetalNetworkCreate(d *schema.ResourceData, meta interface{}) (err e
 		return err
 	}
 
-	locationID, err := p.GetLocationID(d.Get(nLocation).(string))
+	locationID, err := p.GetLocationID(safeString(d.Get(nLocation)))
 	if err != nil {
 		return err
 	}
@@ -225,10 +227,12 @@ func resourceMetalNetworkCreate(d *schema.ResourceData, meta interface{}) (err e
 	}
 
 	newNetwork := rest.NewNetwork{
-		Name:        d.Get(nName).(string),
-		Description: d.Get(nDescription).(string),
+		Name:        safeString(d.Get(nName)),
+		Description: safeString(d.Get(nDescription)),
 		LocationID:  locationID,
 		NewIPPool:   ippool,
+		VLAN:        int32(safeInt(d.Get(nVLAN))),
+		VNI:         int32(safeInt(d.Get(nVNI))),
 	}
 
 	if hostUse, ok := d.Get(nHostUse).(string); ok {
@@ -383,18 +387,24 @@ func resourceMetalNetworkUpdate(d *schema.ResourceData, meta interface{}) (err e
 	if err != nil {
 		return err
 	}
-	n.Name = d.Get(nName).(string)
-	n.Description = d.Get(nDescription).(string)
+
+	updateNetwork := rest.UpdateNetwork{
+		ID:   n.ID,
+		ETag: n.ETag,
+	}
+
+	updateNetwork.Name = safeString(d.Get(nName))
+	updateNetwork.Description = safeString(d.Get(nDescription))
 
 	if hostUse, ok := d.Get(nHostUse).(string); ok {
-		n.HostUse = rest.NetworkHostUse(hostUse)
+		updateNetwork.HostUse = rest.NetworkHostUse(hostUse)
 	}
 
 	if purpose, ok := d.Get(nPurpose).(string); ok {
-		n.Purpose = rest.NetworkPurpose(purpose)
+		updateNetwork.Purpose = rest.NetworkPurpose(purpose)
 	}
 
-	_, _, err = p.Client.NetworksApi.Update(ctx, n.ID, n)
+	_, _, err = p.Client.NetworksApi.Update(ctx, updateNetwork.ID, updateNetwork)
 	if err != nil {
 		return err
 	}

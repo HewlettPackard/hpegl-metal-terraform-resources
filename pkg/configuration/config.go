@@ -1,4 +1,4 @@
-// (C) Copyright 2020-2022 Hewlett Packard Enterprise Development LP
+// (C) Copyright 2020-2023 Hewlett Packard Enterprise Development LP
 
 package configuration
 
@@ -6,6 +6,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net/url"
 	"os"
 	"strings"
 
@@ -102,6 +103,26 @@ func (c *Config) GetVolumeFlavorName(flavorID string) (string, error) {
 	return "", fmt.Errorf("VolumeFalvorID %s not found", flavorID)
 }
 
+func (c *Config) GetStoragePoolName(storagePoolID string) (string, error) {
+	for _, sp := range c.AvailableResources.StoragePools {
+		if storagePoolID == sp.ID {
+			return sp.Name, nil
+		}
+	}
+
+	return "", fmt.Errorf("StoragePoolID %s not found", storagePoolID)
+}
+
+func (c *Config) GetStoragePoolID(storagePoolName string) (string, error) {
+	for _, sp := range c.AvailableResources.StoragePools {
+		if storagePoolName == sp.Name {
+			return sp.ID, nil
+		}
+	}
+
+	return "", fmt.Errorf("StoragePoolName %s not found", storagePoolName)
+}
+
 // GetContext is used to retrieve the context.
 // If the token retrieve function is nil the context in Config is returned
 // If there is a token retrieve function it is executed to retrieve a GL IAM token, which is
@@ -170,7 +191,13 @@ func NewConfig(portalURL string, opts ...CreateOpt) (*Config, error) {
 
 	// Get a new Client configuration with basepath set to Metal portal URL and add base version path /rest/v1
 	cfg := rest.NewConfiguration()
-	cfg.BasePath = config.restURL + "/rest/v1"
+
+	basePath, err := url.JoinPath(config.restURL, "/rest/v1")
+	if err != nil {
+		return nil, fmt.Errorf("configuration error: %v", err)
+	}
+
+	cfg.BasePath = basePath
 
 	if config.useGLToken || config.trf != nil {
 		if err := validateGLConfig(*config); err != nil {
@@ -259,4 +286,30 @@ func (c *Config) IsHosterContext() bool {
 	}
 
 	return false
+}
+
+// GetVolumeCollectionID returns volume collection ID from volume collection name.
+func (c *Config) GetVolumeCollectionID(vcolName string) (string, error) {
+	for _, vc := range c.AvailableResources.VolumeCollections {
+		if vcolName == vc.Name {
+			return vc.ID, nil
+		}
+	}
+
+	return "", fmt.Errorf("volume collection  %s not found", vcolName)
+}
+
+// GetVolumeCollectionName return the ID of the volume collection.
+func (c *Config) GetVolumeCollectionName(vcolID string) (string, error) {
+	if vcolID == "" {
+		return "", nil
+	}
+
+	for _, vc := range c.AvailableResources.VolumeCollections {
+		if vcolID == vc.ID {
+			return vc.Name, nil
+		}
+	}
+
+	return "", fmt.Errorf("volume collection %s not found", vcolID)
 }

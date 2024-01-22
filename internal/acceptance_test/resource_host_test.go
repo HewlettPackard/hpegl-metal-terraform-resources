@@ -105,15 +105,17 @@ locals  {
 	updated_networks = ([for i, net in local.sorted_networks : net if i < local.updated_networks_length])
 }
 `
-	// description, networks
+	// description, networks, labels
 	desc := `"hello from Terraform"`
 	nets := `local.sorted_networks`
 	untagged := `"Private"`
+	labels := "{\"Sub-Org\" = \"New Deployments\", \"phase\" = \"Stage-2\"}"
 
 	if op == "update" {
 		desc = `"hello from Terraform (updated)"`
 		nets = `local.updated_networks`
 		untagged = `""`
+		labels = "{\"Sub-Org\" = \"New Deployments\", \"new-label\" = \"new-value\"}"
 	}
 
 	name := "testAsync"
@@ -135,8 +137,9 @@ resource "hpegl_metal_host" "test_host" {
 	location           = var.location
 	description        = %s
 	host_action_async  = %s
+	labels             = %s
 }	
-`, name, nets, untagged, desc, strconv.FormatBool(async))
+`, name, nets, untagged, desc, strconv.FormatBool(async), labels)
 
 	return common + host
 }
