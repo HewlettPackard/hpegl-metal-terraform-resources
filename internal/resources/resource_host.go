@@ -898,7 +898,7 @@ func resourceMetalHostDelete(d *schema.ResourceData, meta interface{}) (err erro
 func powerOffHost(ctx context.Context, hostAPI rest.HostsAPI, hostID string, timeout time.Duration) error {
 	_, _, err := hostAPI.PowerOff(ctx, hostID)
 	if err != nil {
-		return err
+		return fmt.Errorf("power off host %v: %v", hostID, err)
 	}
 
 	// The power-off call is asynchronous so wait for Metal svc to complete the request.
