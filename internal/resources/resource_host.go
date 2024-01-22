@@ -3,11 +3,12 @@
 package resources
 
 import (
+	"context"
 	"fmt"
 	"strings"
 	"time"
 
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/retry"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 	rest "github.com/hewlettpackard/hpegl-metal-client/v1/pkg/client"
@@ -494,7 +495,7 @@ func resourceMetalHostCreate(d *schema.ResourceData, meta interface{}) (err erro
 	}
 
 	// host create is asynchronous in Metal svc. Wait until host state is Ready.
-	createStateConf := &resource.StateChangeConf{
+	createStateConf := &retry.StateChangeConf{
 		Pending: []string{
 			string(rest.HOSTSTATE_NEW),
 			string(rest.HOSTSTATE_IMAGING_PREP),
@@ -789,7 +790,7 @@ func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err erro
 	}
 
 	// host update is asynchronous in Metal svc. Wait until host state is Ready.
-	updateStateConf := &resource.StateChangeConf{
+	updateStateConf := &retry.StateChangeConf{
 		Pending: []string{
 			string(rest.HOSTSTATE_UPDATING_CONNECTIONS),
 			string(rest.HOSTSTATE_CONNECTING),
@@ -853,35 +854,8 @@ func resourceMetalHostDelete(d *schema.ResourceData, meta interface{}) (err erro
 	// Hosts that are in the Ready state and powered-on can not be deleted while the
 	// power is on, so turn off the power.
 	if host.State == rest.HOSTSTATE_READY && host.PowerStatus == rest.HOSTPOWERSTATE_ON {
-		_, _, err = p.Client.HostsApi.PowerOff(ctx, d.Id())
-		if err != nil {
+		if err := powerOffHost(ctx, p.Client.HostsApi, d.Id(), d.Timeout(schema.TimeoutDefault)); err != nil {
 			return err
-		}
-
-		// The call is asynchronous so wait for Metal svc to complete the request.
-		powerOffStateConf := &resource.StateChangeConf{
-			Pending: []string{
-				string(rest.HOSTPOWERSTATE_UNKNOWN),
-				string(rest.HOSTPOWERSTATE_ON),
-			},
-			Target: []string{
-				string(rest.HOSTPOWERSTATE_OFF),
-			},
-			Refresh: func() (interface{}, string, error) {
-				host, _, err := p.Client.HostsApi.GetByID(ctx, d.Id())
-				if err != nil {
-					return nil, "", fmt.Errorf("get host %v", d.Id())
-				}
-
-				return host, string(host.PowerStatus), nil
-			},
-			Timeout:    d.Timeout(schema.TimeoutDefault),
-			Delay:      mediumTimeout,
-			MinTimeout: shortTimeout,
-		}
-
-		if _, err := powerOffStateConf.WaitForStateContext(ctx); err != nil {
-			return fmt.Errorf("waiting for host instance (%s) to be powered off: %s", d.Id(), err)
 		}
 	}
 
@@ -894,7 +868,7 @@ func resourceMetalHostDelete(d *schema.ResourceData, meta interface{}) (err erro
 	// reference to the host until it has really gone from Metal svc. If we delete the
 	// reference too early, or in the presence of errors, we will never be able to retry
 	// the delete operation from Terraform (since it has no reference to the resource).
-	deleteStateConf := &resource.StateChangeConf{
+	deleteStateConf := &retry.StateChangeConf{
 		Pending: []string{
 			string(rest.HOSTSTATE_DELETING),
 		},
@@ -916,6 +890,41 @@ func resourceMetalHostDelete(d *schema.ResourceData, meta interface{}) (err erro
 
 	if _, err := deleteStateConf.WaitForStateContext(ctx); err != nil {
 		return fmt.Errorf("waiting for host instance (%s) to be deleted: %s", d.Id(), err)
+	}
+
+	return nil
+}
+
+func powerOffHost(ctx context.Context, hostAPI rest.HostsAPI, hostID string, timeout time.Duration) error {
+	_, _, err := hostAPI.PowerOff(ctx, hostID)
+	if err != nil {
+		return err
+	}
+
+	// The power-off call is asynchronous so wait for Metal svc to complete the request.
+	powerOffStateConf := &retry.StateChangeConf{
+		Pending: []string{
+			string(rest.HOSTPOWERSTATE_UNKNOWN),
+			string(rest.HOSTPOWERSTATE_ON),
+		},
+		Target: []string{
+			string(rest.HOSTPOWERSTATE_OFF),
+		},
+		Refresh: func() (interface{}, string, error) {
+			host, _, err := hostAPI.GetByID(ctx, hostID)
+			if err != nil {
+				return nil, "", fmt.Errorf("get host %v", hostID)
+			}
+
+			return host, string(host.PowerStatus), nil
+		},
+		Timeout:    timeout,
+		Delay:      mediumTimeout,
+		MinTimeout: shortTimeout,
+	}
+
+	if _, err := powerOffStateConf.WaitForStateContext(ctx); err != nil {
+		return fmt.Errorf("waiting for host instance (%s) to be powered off: %s", hostID, err)
 	}
 
 	return nil
