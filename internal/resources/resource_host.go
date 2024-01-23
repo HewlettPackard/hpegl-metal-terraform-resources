@@ -922,7 +922,7 @@ func powerOffHost(ctx context.Context, hostAPI rest.HostsAPI, hostID string, tim
 	}
 
 	if _, err := powerOffStateConf.WaitForStateContext(ctx); err != nil {
-		return fmt.Errorf("waiting for host instance (%s) to be powered off: %s", hostID, err)
+		return fmt.Errorf("waiting for host instance (%v) to be powered off: %v", hostID, err)
 	}
 
 	return nil
