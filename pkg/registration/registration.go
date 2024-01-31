@@ -21,7 +21,6 @@ const (
 
 	qAvailableResource = mPrefix + "_available_resources"
 	qAvailableImages   = mPrefix + "_available_images"
-	qUsage             = mPrefix + "_usage"
 
 	// These constants are used to set the optional hpegl provider "metal" block field-names
 	projectID = "project_id"
@@ -40,7 +39,6 @@ func (r Registration) SupportedDataSources() map[string]*schema.Resource {
 	return map[string]*schema.Resource{
 		qAvailableResource: resources.DataSourceAvailableResources(),
 		qAvailableImages:   resources.DataSourceImage(),
-		qUsage:             resources.DataSourceUsage(),
 	}
 }
 
