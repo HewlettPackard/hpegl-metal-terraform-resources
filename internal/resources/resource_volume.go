@@ -4,7 +4,7 @@ package resources
 
 import (
 	"fmt"
-	math "math"
+	"math"
 	"strings"
 	"time"
 
