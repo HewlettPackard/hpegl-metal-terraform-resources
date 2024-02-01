@@ -319,9 +319,9 @@ func resourceMetalVolumeRead(d *schema.ResourceData, meta interface{}) (err erro
 		return err
 	}
 
-	// convert from KiB to GB
 	d.SetId(volume.ID)
 
+	// convert from KiB to GB
 	if err = d.Set(vSize, math.Round(float64(volume.Capacity)/KiBToGBConversion)); err != nil {
 		return fmt.Errorf("set Size: %v", err)
 	}
