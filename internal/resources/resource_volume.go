@@ -1,9 +1,10 @@
-// (C) Copyright 2020-2023 Hewlett Packard Enterprise Development LP
+// (C) Copyright 2020-2024 Hewlett Packard Enterprise Development LP
 
 package resources
 
 import (
 	"fmt"
+	"math"
 	"strings"
 	"time"
 
@@ -36,6 +37,9 @@ const (
 	vID          = "id"
 	vDiscoveryIP = "discovery_ip"
 	vTargetIQN   = "target_iqn"
+
+	GBToGiBConversion float64 = 0.931323
+	KiBToGBConversion float64 = 976562.5 // 0.931323 *1024 * 1024
 )
 
 func volumeSchema() map[string]*schema.Schema {
@@ -219,7 +223,7 @@ func resourceMetalVolumeCreate(d *schema.ResourceData, meta interface{}) (err er
 
 	capacity, ok := d.Get(vSize).(float64)
 	if !ok || capacity <= 0 {
-		return fmt.Errorf("invalid capacity %v", capacity)
+		return fmt.Errorf("invalid capacity %v GB", capacity)
 	}
 
 	if vcID, ok = d.Get(vCollectionID).(string); !ok || vcID == "" {
@@ -235,7 +239,7 @@ func resourceMetalVolumeCreate(d *schema.ResourceData, meta interface{}) (err er
 
 	volume := rest.NewVolume{
 		Name:               d.Get(vName).(string),
-		Capacity:           int64(capacity),
+		Capacity:           int64(math.Round(capacity * GBToGiBConversion)), // convert from GB to GiB
 		Description:        d.Get(vDescription).(string),
 		FlavorID:           vfID,
 		Shareable:          d.Get(vShareable).(bool),
@@ -316,7 +320,12 @@ func resourceMetalVolumeRead(d *schema.ResourceData, meta interface{}) (err erro
 	}
 
 	d.SetId(volume.ID)
-	d.Set(vSize, float64(volume.Capacity/1024/1024))
+
+	// convert from KiB to GB
+	if err = d.Set(vSize, math.Round(float64(volume.Capacity)/KiBToGBConversion)); err != nil {
+		return fmt.Errorf("set Size: %v", err)
+	}
+
 	d.Set(vName, volume.Name)
 	d.Set(vDescription, volume.Description)
 	flavorName, _ := p.GetVolumeFlavorName(volume.FlavorID)
@@ -390,7 +399,7 @@ func resourceMetalVolumeUpdate(d *schema.ResourceData, meta interface{}) (err er
 		ETag: vol.ETag,
 	}
 
-	updateVol.Capacity = int64(newSize)
+	updateVol.Capacity = int64(math.Round(newSize * GBToGiBConversion)) // convert from GB to GiB
 
 	// add tags
 	if m, ok := d.Get(vLabels).(map[string]interface{}); ok {
