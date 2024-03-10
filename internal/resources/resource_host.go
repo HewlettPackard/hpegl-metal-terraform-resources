@@ -575,7 +575,6 @@ func resourceMetalHostRead(d *schema.ResourceData, meta interface{}) (err error)
 	}
 
 	hostvas, protocol := getVAsForHost(host.ID, varesources)
-	fmt.Println(protocol)
 
 	volumeInfos := make([]map[string]interface{}, 0, len(hostvas))
 	for _, i := range hostvas {
