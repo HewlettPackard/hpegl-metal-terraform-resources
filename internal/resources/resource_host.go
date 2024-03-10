@@ -598,13 +598,13 @@ func resourceMetalHostRead(d *schema.ResourceData, meta interface{}) (err error)
 	}
 
 	if protocol == "iscsi" {
-		d.Set(hCHAPUser, host.ISCSIConfig.CHAPUser)
-		d.Set(hCHAPSecret, host.ISCSIConfig.CHAPSecret)
-		d.Set(hInitiatorName, host.ISCSIConfig.InitiatorName)
+		_ = d.Set(hCHAPUser, host.ISCSIConfig.CHAPUser)
+		_ = d.Set(hCHAPSecret, host.ISCSIConfig.CHAPSecret)
+		_ = d.Set(hInitiatorName, host.ISCSIConfig.InitiatorName)
 	}
 
 	if protocol == "fc" {
-		d.Set(hWWPNS, host.WWPNs)
+		_ = d.Set(hWWPNS, host.WWPNs)
 	}
 
 	if err = d.Set(hNetForDefaultRouteID, host.NetworkForDefaultRoute); err != nil {
@@ -666,7 +666,6 @@ func setConnectionsValues(d *schema.ResourceData, hostConnections []rest.HostCon
 
 func getVAsForHost(hostID string, vas []rest.VolumeAttachment) (hvas []rest.VolumeInfo, protocol string) {
 	hostvas := make([]rest.VolumeInfo, 0, len(vas))
-	//var protocol string
 
 	for _, i := range vas {
 		if i.HostID == hostID {
@@ -677,6 +676,7 @@ func getVAsForHost(hostID string, vas []rest.VolumeAttachment) (hvas []rest.Volu
 			vi.TargetIQN = i.VolumeTargetIQN
 			hostvas = append(hostvas, vi)
 		}
+
 		protocol = string(i.AttachProtocol)
 	}
 
@@ -707,6 +707,7 @@ func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err erro
 	if err != nil {
 		return fmt.Errorf("error reading volume attachment information %v", err)
 	}
+
 	hostvas, _ := getVAsForHost(host.ID, varesources)
 
 	// desired volume IDs
