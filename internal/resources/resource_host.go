@@ -51,6 +51,7 @@ const (
 	hLabels               = "labels"
 	hSummaryStatus        = "summary_status"
 	hHostActionAsync      = "host_action_async"
+	hWWPNS                = "wwpns"
 
 	// allowedImageLength is number of Image related attributes that can be provided in the from of 'image@version'.
 	allowedImageLength = 2
@@ -262,6 +263,14 @@ func hostSchema() map[string]*schema.Schema {
 			Optional:    true,
 			Default:     true,
 			Description: "set true to do host create, update, and delete asynchronously.  The default is true.",
+		},
+		hWWPNS: {
+			Type:     schema.TypeList,
+			Optional: true,
+			Elem: &schema.Schema{
+				Type: schema.TypeString,
+			},
+			Description: "FC HBA world wide port names.",
 		},
 	}
 }
@@ -565,7 +574,9 @@ func resourceMetalHostRead(d *schema.ResourceData, meta interface{}) (err error)
 		return fmt.Errorf("error reading volume attachment information %v", err)
 	}
 
-	hostvas := getVAsForHost(host.ID, varesources)
+	hostvas, protocol := getVAsForHost(host.ID, varesources)
+	fmt.Println(protocol)
+
 	volumeInfos := make([]map[string]interface{}, 0, len(hostvas))
 	for _, i := range hostvas {
 		vi := map[string]interface{}{
@@ -587,9 +598,16 @@ func resourceMetalHostRead(d *schema.ResourceData, meta interface{}) (err error)
 		return err
 	}
 
-	d.Set(hCHAPUser, host.ISCSIConfig.CHAPUser)
-	d.Set(hCHAPSecret, host.ISCSIConfig.CHAPSecret)
-	d.Set(hInitiatorName, host.ISCSIConfig.InitiatorName)
+	if protocol == "iscsi" {
+		d.Set(hCHAPUser, host.ISCSIConfig.CHAPUser)
+		d.Set(hCHAPSecret, host.ISCSIConfig.CHAPSecret)
+		d.Set(hInitiatorName, host.ISCSIConfig.InitiatorName)
+	}
+
+	if protocol == "fc" {
+		d.Set(hWWPNS, host.WWPNs)
+	}
+
 	if err = d.Set(hNetForDefaultRouteID, host.NetworkForDefaultRoute); err != nil {
 		return err
 	}
@@ -647,8 +665,9 @@ func setConnectionsValues(d *schema.ResourceData, hostConnections []rest.HostCon
 	return nil
 }
 
-func getVAsForHost(hostID string, vas []rest.VolumeAttachment) []rest.VolumeInfo {
+func getVAsForHost(hostID string, vas []rest.VolumeAttachment) (hvas []rest.VolumeInfo, protocol string) {
 	hostvas := make([]rest.VolumeInfo, 0, len(vas))
+	//var protocol string
 
 	for _, i := range vas {
 		if i.HostID == hostID {
@@ -659,9 +678,10 @@ func getVAsForHost(hostID string, vas []rest.VolumeAttachment) []rest.VolumeInfo
 			vi.TargetIQN = i.VolumeTargetIQN
 			hostvas = append(hostvas, vi)
 		}
+		protocol = string(i.AttachProtocol)
 	}
 
-	return hostvas
+	return hostvas, protocol
 }
 
 //nolint:funlen // Ignoring function length check on existing function
@@ -688,7 +708,7 @@ func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err erro
 	if err != nil {
 		return fmt.Errorf("error reading volume attachment information %v", err)
 	}
-	hostvas := getVAsForHost(host.ID, varesources)
+	hostvas, _ := getVAsForHost(host.ID, varesources)
 
 	// desired volume IDs
 	desired := make([]string, 0, len(hostvas))

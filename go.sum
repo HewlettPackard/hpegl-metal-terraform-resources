@@ -405,6 +405,8 @@ github.com/hewlettpackard/hpegl-metal-client v1.5.8 h1:2K+S1UxCYOHJDzzhV948UCnoP
 github.com/hewlettpackard/hpegl-metal-client v1.5.8/go.mod h1:5E6K3bq3aoBNuolGpbmeD/JuAarnXS96W/MqiHUTmFQ=
 github.com/hewlettpackard/hpegl-metal-client v1.5.9 h1:vAu6XfT0zfAdYU8487j3WPOWkP1Az0yGG7Mc4yDNvqk=
 github.com/hewlettpackard/hpegl-metal-client v1.5.9/go.mod h1:5E6K3bq3aoBNuolGpbmeD/JuAarnXS96W/MqiHUTmFQ=
+github.com/hewlettpackard/hpegl-metal-client v1.5.10 h1:8E7JWzFrQoVH4x1EKTIG5vrKmWdXhennQquRuBne8hI=
+github.com/hewlettpackard/hpegl-metal-client v1.5.10/go.mod h1:E72/o32a5WwVAUhXvXEUKZOGiSA84hsTS+xezFqtbgU=
 github.com/hewlettpackard/hpegl-provider-lib v0.0.14 h1:fwIXQsdEdeYYvaJQr1vwfPgCGYKgZaP7kL0p8xbBQJ4=
 github.com/hewlettpackard/hpegl-provider-lib v0.0.14/go.mod h1:7StTTobQIl8pZCLcJnZm0/+N4lNE2MO6H/U0LhTfXog=
 github.com/hexops/gotextdiff v1.0.3 h1:gitA9+qJrrTCsiCl7+kh75nPqQt1cx4ZkudSTLoUqJM=
@@ -856,6 +858,8 @@ golang.org/x/net v0.5.0/go.mod h1:DivGGAXEgPSlEBzxGzZI+ZLohi+xUj054jfeKui00ws=
 golang.org/x/net v0.6.0/go.mod h1:2Tu9+aMcznHK/AK1HMvgo6xiTLG5rD5rZLDS+rp2Bjs=
 golang.org/x/net v0.19.0 h1:zTwKpTd2XuCqf8huc7Fo2iSy+4RHPd10s4KzeTnVr1c=
 golang.org/x/net v0.19.0/go.mod h1:CfAk/cbD4CthTvqiEl8NpboMuiuOYsAr/7NOjZJtv1U=
+golang.org/x/net v0.21.0 h1:AQyQV4dYCvJ7vGmJyKki9+PBdyvhkSd8EIx/qb0AYv4=
+golang.org/x/net v0.21.0/go.mod h1:bIjVDfnllIU7BJ2DNgfnXvpSvtn8VRwhlsaeUTyUS44=
 golang.org/x/oauth2 v0.0.0-20180821212333-d2e6202438be/go.mod h1:N/0e6XlmueqKjAGxoOufVs8QHGRruUQn6yWY3a++T0U=
 golang.org/x/oauth2 v0.0.0-20190226205417-e64efc72b421/go.mod h1:gOpvHmFTYa4IltrdGE7lF6nIHvwfUNPOp7c8zoXwtLw=
 golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45/go.mod h1:gOpvHmFTYa4IltrdGE7lF6nIHvwfUNPOp7c8zoXwtLw=
@@ -868,6 +872,8 @@ golang.org/x/oauth2 v0.0.0-20210218202405-ba52d332ba99/go.mod h1:KelEdhl1UZF7XfJ
 golang.org/x/oauth2 v0.0.0-20210514164344-f6687ab2804c/go.mod h1:KelEdhl1UZF7XfJ4dDtk6s++YSgaE7mD/BuKKDLBl4A=
 golang.org/x/oauth2 v0.14.0 h1:P0Vrf/2538nmC0H+pEQ3MNFRRnVR7RlqyVw+bvm26z0=
 golang.org/x/oauth2 v0.14.0/go.mod h1:lAtNWgaWfL4cm7j2OV8TxGi9Qb7ECORx8DktCY74OwM=
+golang.org/x/oauth2 v0.17.0 h1:6m3ZPmLEFdVxKKWnKq4VqZ60gutO35zm+zrAHVmHyDQ=
+golang.org/x/oauth2 v0.17.0/go.mod h1:OzPDGQiuQMguemayvdylqddI7qcD9lnSDb+1FiwQ5HA=
 golang.org/x/sync v0.0.0-20180314180146-1d60e4601c6f/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
 golang.org/x/sync v0.0.0-20181108010431-42b317875d0f/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
 golang.org/x/sync v0.0.0-20181221193216-37e7f081c4d4/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
