@@ -574,7 +574,7 @@ func resourceMetalHostRead(d *schema.ResourceData, meta interface{}) (err error)
 		return fmt.Errorf("error reading volume attachment information %v", err)
 	}
 
-	hostvas, protocol := getVAsForHost(host.ID, varesources)
+	hostvas := getVAsForHost(host.ID, varesources)
 
 	volumeInfos := make([]map[string]interface{}, 0, len(hostvas))
 	for _, i := range hostvas {
@@ -597,13 +597,11 @@ func resourceMetalHostRead(d *schema.ResourceData, meta interface{}) (err error)
 		return err
 	}
 
-	if protocol == "iscsi" {
-		_ = d.Set(hCHAPUser, host.ISCSIConfig.CHAPUser)
-		_ = d.Set(hCHAPSecret, host.ISCSIConfig.CHAPSecret)
-		_ = d.Set(hInitiatorName, host.ISCSIConfig.InitiatorName)
-	}
+	d.Set(hCHAPUser, host.ISCSIConfig.CHAPUser)
+	d.Set(hCHAPSecret, host.ISCSIConfig.CHAPSecret)
+	d.Set(hInitiatorName, host.ISCSIConfig.InitiatorName)
 
-	if protocol == "fc" {
+	if len(host.WWPNs) > 0 {
 		_ = d.Set(hWWPNS, host.WWPNs)
 	}
 
@@ -664,7 +662,7 @@ func setConnectionsValues(d *schema.ResourceData, hostConnections []rest.HostCon
 	return nil
 }
 
-func getVAsForHost(hostID string, vas []rest.VolumeAttachment) (hvas []rest.VolumeInfo, protocol string) {
+func getVAsForHost(hostID string, vas []rest.VolumeAttachment) []rest.VolumeInfo {
 	hostvas := make([]rest.VolumeInfo, 0, len(vas))
 
 	for _, i := range vas {
@@ -676,11 +674,9 @@ func getVAsForHost(hostID string, vas []rest.VolumeAttachment) (hvas []rest.Volu
 			vi.TargetIQN = i.VolumeTargetIQN
 			hostvas = append(hostvas, vi)
 		}
-
-		protocol = string(i.AttachProtocol)
 	}
 
-	return hostvas, protocol
+	return hostvas
 }
 
 //nolint:funlen // Ignoring function length check on existing function
@@ -708,7 +704,7 @@ func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err erro
 		return fmt.Errorf("error reading volume attachment information %v", err)
 	}
 
-	hostvas, _ := getVAsForHost(host.ID, varesources)
+	hostvas := getVAsForHost(host.ID, varesources)
 
 	// desired volume IDs
 	desired := make([]string, 0, len(hostvas))
