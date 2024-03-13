@@ -602,7 +602,9 @@ func resourceMetalHostRead(d *schema.ResourceData, meta interface{}) (err error)
 	d.Set(hInitiatorName, host.ISCSIConfig.InitiatorName)
 
 	if len(host.WWPNs) > 0 {
-		_ = d.Set(hWWPNS, host.WWPNs)
+		if err := d.Set(hWWPNS, host.WWPNs); err != nil {
+		    return fmt.Errorf("set WWPNs: %v", err) 
+		}
 	}
 
 	if err = d.Set(hNetForDefaultRouteID, host.NetworkForDefaultRoute); err != nil {
