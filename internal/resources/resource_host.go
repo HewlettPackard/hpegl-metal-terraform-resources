@@ -603,7 +603,7 @@ func resourceMetalHostRead(d *schema.ResourceData, meta interface{}) (err error)
 
 	if len(host.WWPNs) > 0 {
 		if err := d.Set(hWWPNS, host.WWPNs); err != nil {
-		    return fmt.Errorf("set WWPNs: %v", err) 
+			return fmt.Errorf("set WWPNs: %v", err)
 		}
 	}
 
