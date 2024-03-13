@@ -51,6 +51,7 @@ const (
 	hLabels               = "labels"
 	hSummaryStatus        = "summary_status"
 	hHostActionAsync      = "host_action_async"
+	hWWPNS                = "wwpns"
 
 	// allowedImageLength is number of Image related attributes that can be provided in the from of 'image@version'.
 	allowedImageLength = 2
@@ -262,6 +263,14 @@ func hostSchema() map[string]*schema.Schema {
 			Optional:    true,
 			Default:     true,
 			Description: "set true to do host create, update, and delete asynchronously.  The default is true.",
+		},
+		hWWPNS: {
+			Type:     schema.TypeList,
+			Optional: true,
+			Elem: &schema.Schema{
+				Type: schema.TypeString,
+			},
+			Description: "FC HBA world wide port names.",
 		},
 	}
 }
@@ -566,6 +575,7 @@ func resourceMetalHostRead(d *schema.ResourceData, meta interface{}) (err error)
 	}
 
 	hostvas := getVAsForHost(host.ID, varesources)
+
 	volumeInfos := make([]map[string]interface{}, 0, len(hostvas))
 	for _, i := range hostvas {
 		vi := map[string]interface{}{
@@ -590,6 +600,11 @@ func resourceMetalHostRead(d *schema.ResourceData, meta interface{}) (err error)
 	d.Set(hCHAPUser, host.ISCSIConfig.CHAPUser)
 	d.Set(hCHAPSecret, host.ISCSIConfig.CHAPSecret)
 	d.Set(hInitiatorName, host.ISCSIConfig.InitiatorName)
+
+	if err := d.Set(hWWPNS, host.WWPNs); err != nil {
+		return fmt.Errorf("set WWPNs: %v", err)
+	}
+
 	if err = d.Set(hNetForDefaultRouteID, host.NetworkForDefaultRoute); err != nil {
 		return err
 	}
@@ -688,6 +703,7 @@ func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err erro
 	if err != nil {
 		return fmt.Errorf("error reading volume attachment information %v", err)
 	}
+
 	hostvas := getVAsForHost(host.ID, varesources)
 
 	// desired volume IDs
