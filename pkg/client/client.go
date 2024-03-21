@@ -55,7 +55,7 @@ func (i InitialiseClient) NewClient(r *schema.ResourceData) (interface{}, error)
 			return nil, fmt.Errorf("retrieve service setting: %v", err)
 		}
 
-		return m, fmt.Errorf("retrieve service setting: %v", err)
+		return m, nil
 	}()
 	if err != nil {
 		return nil, nil
