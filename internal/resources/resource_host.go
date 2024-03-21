@@ -253,7 +253,7 @@ func hostSchema() map[string]*schema.Schema {
 			Optional:    true,
 			Description: "map of label name to label value for this host",
 			// suppress differences.
-			DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+			DiffSuppressFunc: func(k, o, n string, d *schema.ResourceData) bool {
 				return true
 			},
 		},
