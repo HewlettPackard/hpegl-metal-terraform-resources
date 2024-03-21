@@ -5,7 +5,6 @@ package acceptance_test
 import (
 	"fmt"
 	"net/http"
-	"os"
 	"strconv"
 	"testing"
 	"time"
@@ -25,7 +24,6 @@ const (
 )
 
 func TestAccResourceHost_Async(t *testing.T) {
-	os.Setenv("TF_ACC", "true")
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
@@ -46,7 +44,6 @@ func TestAccResourceHost_Async(t *testing.T) {
 }
 
 func TestAccResourceHost_Sync(t *testing.T) {
-	os.Setenv("TF_ACC", "true")
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
