@@ -41,7 +41,22 @@ func (i InitialiseClient) NewClient(r *schema.ResourceData) (interface{}, error)
 	// error or is intentional - i.e. if the user has forgotten to add the block or if the
 	// user doesn't intend to use terraform to run against this service.  GetClientFromMetaMap
 	// below will be used to handle the situation where Client is nil.
-	metalMap, err := client.GetServiceSettingsMap(constants.ServiceName, r)
+	metalMap, err := func() (map[string]interface{}, error) {
+		m, err := client.GetServiceSettingsMap(constants.ServiceName, r)
+		if err != nil {
+			if strings.Contains(err.Error(), "service metal block not defined in hpegl stanza") {
+				m := map[string]interface{}{
+					"gl_token": false,
+				}
+
+				return m, nil
+			}
+
+			return nil, err
+		}
+
+		return m, err
+	}()
 	if err != nil {
 		return nil, nil
 	}
