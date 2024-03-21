@@ -46,8 +46,13 @@ func (i InitialiseClient) NewClient(r *schema.ResourceData) (interface{}, error)
 		return nil, nil
 	}
 
+	isGLToken := false
+	if v, ok := metalMap["gl_token"]; ok && v.(bool) == true {
+		isGLToken = true
+	}
+
 	// Initialize the metal client
-	metalConfig, err := configuration.NewConfig("", configuration.WithGLToken(metalMap["gl_token"].(bool)))
+	metalConfig, err := configuration.NewConfig("", configuration.WithGLToken(isGLToken))
 	if err != nil {
 		return nil, fmt.Errorf("error in creating metal client: %s", err)
 	}
