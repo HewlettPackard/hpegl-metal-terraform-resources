@@ -52,18 +52,20 @@ func (i InitialiseClient) NewClient(r *schema.ResourceData) (interface{}, error)
 				return m, nil
 			}
 
-			return nil, err
+			return nil, fmt.Errorf("retrieve service setting: %v", err)
 		}
 
-		return m, err
+		return m, fmt.Errorf("retrieve service setting: %v", err)
 	}()
 	if err != nil {
 		return nil, nil
 	}
 
 	isGLToken := false
-	if v, ok := metalMap["gl_token"]; ok && v.(bool) == true {
-		isGLToken = true
+	if token, ok := metalMap["gl_token"]; ok {
+		if v, ok := token.(bool); ok && v == true {
+			isGLToken = true
+		}
 	}
 
 	// Initialize the metal client
