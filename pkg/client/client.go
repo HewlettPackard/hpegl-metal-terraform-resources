@@ -62,8 +62,9 @@ func (i InitialiseClient) NewClient(r *schema.ResourceData) (interface{}, error)
 	}
 
 	isGLToken := false
+
 	if token, ok := metalMap["gl_token"]; ok {
-		if v, ok := token.(bool); ok && v == true {
+		if v, ok := token.(bool); ok && v {
 			isGLToken = true
 		}
 	}

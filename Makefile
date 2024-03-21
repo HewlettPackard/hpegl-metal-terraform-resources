@@ -12,8 +12,8 @@ endif
 VERSION=$(shell cat ./version)
 # Change DUMMY_PROVIDER below to reflect the name of the service under development.  The
 # value of this variable is used in LOCAL_LOCATION, and is also used in the
-DUMMY_PROVIDER=metal
-LOCAL_LOCATION=~/.local/share/terraform/plugins/terraform.example.com/$(DUMMY_PROVIDER)/hpegl/$(VERSION)/linux_$(GOARCH)
+DUMMY_PROVIDER=hpe
+LOCAL_LOCATION=~/.local/share/terraform/plugins/registry.terraform.io/$(DUMMY_PROVIDER)/hpegl/$(VERSION)/linux_$(GOARCH)
 
 # Stuff that needs to be installed globally (not in vendor)
 DEPEND=
