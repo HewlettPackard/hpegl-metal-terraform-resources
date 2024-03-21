@@ -4,6 +4,7 @@ package acceptance_test
 
 import (
 	"fmt"
+	"os"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
@@ -23,6 +24,8 @@ func metalSSHKeyConfigBasic(name, publicSSHKey string) string {
 }
 
 func TestAccResourceSSHKey_Basic(t *testing.T) {
+	os.Setenv("TF_ACC", "true")
+
 	key := rest.SshKey{}
 
 	keyName := "keySShNameTest"
