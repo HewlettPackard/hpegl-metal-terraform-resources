@@ -14,15 +14,8 @@ import (
 )
 
 func metalSSHKeyConfigBasic(name, publicSSHKey string) string {
-	return fmt.Sprintf(`	
-	provider "hpegl" {
-		metal {
-		}
-		alias = "test"
-	}
-
+	return fmt.Sprintf(`		
 	resource "hpegl_metal_ssh_key" "test" {
-		provider   = hpegl.test
 		name       = %q
 		public_key = %q
 	}

@@ -252,6 +252,10 @@ func hostSchema() map[string]*schema.Schema {
 			Type:        schema.TypeMap,
 			Optional:    true,
 			Description: "map of label name to label value for this host",
+			// suppress differences.
+			DiffSuppressFunc: func(k, o, n string, d *schema.ResourceData) bool {
+				return true
+			},
 		},
 		hSummaryStatus: {
 			Type:        schema.TypeString,
@@ -480,8 +484,9 @@ func resourceMetalHostCreate(d *schema.ResourceData, meta interface{}) (err erro
 	}
 
 	// add tags
-	if m, ok := (d.Get(hLabels).(map[string]interface{})); ok {
-		host.Labels = convertMap(m)
+	if _, ok := (d.Get(hLabels).(map[string]interface{})); ok {
+		// ignoring labels.
+		host.Labels = map[string]string{}
 	}
 
 	// Create it
@@ -783,8 +788,9 @@ func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err erro
 	}
 
 	// add tags
-	if m, ok := (d.Get(hLabels).(map[string]interface{})); ok {
-		updateHost.Labels = convertMap(m)
+	if _, ok := (d.Get(hLabels).(map[string]interface{})); ok {
+		// ignoring labels.
+		updateHost.Labels = map[string]string{}
 	}
 
 	// Update.
