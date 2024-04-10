@@ -1,11 +1,18 @@
 #! /usr/bin/make
-#(C) Copyright 2022-2023 Hewlett Packard Enterprise Development LP
+#(C) Copyright 2022-2024 Hewlett Packard Enterprise Development LP
 # Inspiration from https://github.com/rightscale/go-boilerplate/blob/master/Makefile
 
 NAME=$(shell find cmd -name ".gitkeep_provider" -exec dirname {} \; | sort -u | sed -e 's|cmd/||')
 
 ifeq ("$(GOARCH)","")
    GOARCH="amd64"
+endif
+
+GOFLAGS_OTHER= CGO_ENABLED=0
+
+FIPS_BUILD ?= 0
+ifeq ("$(FIPS_BUILD)","1")
+	GOFLAGS_OTHER= CGO_ENABLED=1 GOLANG_FIPS=1
 endif
 
 # version shouldn't have 'v' prefix for >= 0.13
@@ -47,7 +54,11 @@ GOOS='$(GOOSALT)'
 LOCALIZATION_FILES := $(shell find . -name \*.toml | grep -v vendor | grep -v ./bin)
 
 $(NAME): $(shell find . -name \*.go)
-	CGO_ENABLED=0 GOOS=$(GOOS) GOARCH=$(GOARCH) go build $(TAGS) -ldflags "$(VFLAG)" -o build/$@ .
+	GOOS=$(GOOS) GOARCH=$(GOARCH) $(GOFLAGS_OTHER) go build $(TAGS) -ldflags "$(VFLAG)" -o build/$@ .
+ifeq ("$(FIPS_BUILD)", "1")
+	echo "Verifying if the binary is FIPS capable"
+	go tool nm build/$@ | grep -i strictfips
+endif
 
 default: all
 .PHONY: default
