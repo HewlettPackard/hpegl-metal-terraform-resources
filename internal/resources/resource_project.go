@@ -1,4 +1,4 @@
-// (C) Copyright 2020-2023 Hewlett Packard Enterprise Development LP
+// (C) Copyright 2020-2024 Hewlett Packard Enterprise Development LP
 
 package resources
 
@@ -32,6 +32,8 @@ const (
 	pPrivateNetworks = "private_networks"
 	pInstanceTypes   = "instance_types"
 	pPermittedImages = "permitted_images"
+
+	pVolumeReplicationEnabled = "volume_replication_enabled"
 )
 
 func limitsSchema() map[string]*schema.Schema {
@@ -163,6 +165,14 @@ func projectSchema() map[string]*schema.Schema {
 				Type: schema.TypeString,
 			},
 		},
+
+		pVolumeReplicationEnabled: {
+			Type:        schema.TypeBool,
+			Optional:    true,
+			Default:     false,
+			ForceNew:    true,
+			Description: "Volume replication is enabled for the project if set.",
+		},
 	}
 }
 
@@ -190,6 +200,8 @@ func resourceMetalProjectCreate(d *schema.ResourceData, meta interface{}) (err e
 
 	np := rest.NewProject{
 		Name: d.Get(pName).(string),
+
+		VolumeReplicationEnabled: d.Get(pVolumeReplicationEnabled).(bool),
 	}
 
 	if list, ok := d.Get(pProfile).([]interface{}); ok && len(list) == 1 {
@@ -370,6 +382,10 @@ func resourceMetalProjectRead(d *schema.ResourceData, meta interface{}) (err err
 		if err = d.Set(pPermittedImages, schema.NewSet(schema.HashString, images)); err != nil {
 			return err //nolint:wrapcheck // defer func is wrapping the error.
 		}
+	}
+
+	if err = d.Set(pVolumeReplicationEnabled, project.VolumeReplicationEnabled); err != nil {
+		return err //nolint:wrapcheck // defer func is wrapping the error.
 	}
 
 	return nil
