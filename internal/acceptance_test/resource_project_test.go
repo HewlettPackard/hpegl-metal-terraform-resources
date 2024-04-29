@@ -1,4 +1,4 @@
-// (C) Copyright 2022 Hewlett Packard Enterprise Development LP
+// (C) Copyright 2022,2024 Hewlett Packard Enterprise Development LP
 
 package acceptance_test
 
@@ -88,6 +88,7 @@ func projectBasic(op string) string {
 		private_networks = 30
 		}
 		sites=["1ad98170-993e-4bfc-8b84-e689ea9a429b"]	
+		volume_replication_enabled = false
 	}`, name, company, hosts)
 
 	return common + res
