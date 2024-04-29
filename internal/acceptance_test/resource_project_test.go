@@ -88,7 +88,7 @@ func projectBasic(op string) string {
 		private_networks = 30
 		}
 		sites=["1ad98170-993e-4bfc-8b84-e689ea9a429b"]	
-		volume_replication_enabled = false
+		volume_replication_enabled = true
 	}`, name, company, hosts)
 
 	return common + res
