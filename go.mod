@@ -4,7 +4,7 @@ go 1.21.0
 
 require (
 	github.com/golangci/golangci-lint v1.55.2
-	github.com/hashicorp/terraform-plugin-docs v0.19.1
+	github.com/hashicorp/terraform-plugin-docs v0.19.2
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.33.0
 	github.com/hewlettpackard/hpegl-metal-client v1.5.11
 	github.com/hewlettpackard/hpegl-provider-lib v0.0.14
@@ -212,7 +212,7 @@ require (
 	github.com/yagipy/maintidx v1.0.0 // indirect
 	github.com/yeya24/promlinter v0.2.0 // indirect
 	github.com/ykadowak/zerologlint v0.1.3 // indirect
-	github.com/yuin/goldmark v1.7.0 // indirect
+	github.com/yuin/goldmark v1.7.1 // indirect
 	github.com/yuin/goldmark-meta v1.1.0 // indirect
 	github.com/zclconf/go-cty v1.14.4 // indirect
 	gitlab.com/bosi/decorder v0.4.1 // indirect
