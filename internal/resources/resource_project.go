@@ -3,6 +3,7 @@
 package resources
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -335,7 +336,8 @@ func resourceMetalProjectRead(d *schema.ResourceData, meta interface{}) (err err
 	}
 
 	ctx := p.GetContext()
-	project, _, err := p.Client.ProjectsApi.GetByID(ctx, d.Id())
+	ctx = context.WithValue(ctx, rest.ContextAPIKey, rest.APIKey{Key: d.Id()})
+	project, _, err := p.Client.ProjectsApi.GetByID(ctx, d.Id(), nil)
 	if err != nil {
 		return err
 	}
@@ -400,8 +402,8 @@ func resourceMetalProjectUpdate(d *schema.ResourceData, meta interface{}) (err e
 	}
 
 	ctx := p.GetContext()
-
-	project, _, err := p.Client.ProjectsApi.GetByID(ctx, d.Id())
+	ctx = context.WithValue(ctx, rest.ContextAPIKey, rest.APIKey{Key: d.Id()})
+	project, _, err := p.Client.ProjectsApi.GetByID(ctx, d.Id(), nil)
 	if err != nil {
 		return
 	}
@@ -445,7 +447,7 @@ func resourceMetalProjectUpdate(d *schema.ResourceData, meta interface{}) (err e
 		updateProject.PermittedOSImages = expandStringList(s.List())
 	}
 
-	_, _, err = p.Client.ProjectsApi.Update(ctx, updateProject.ID, updateProject)
+	_, _, err = p.Client.ProjectsApi.Update(ctx, updateProject.ID, updateProject, nil)
 	if err != nil {
 		return
 	}
@@ -462,7 +464,8 @@ func resourceMetalProjectDelete(d *schema.ResourceData, meta interface{}) (err e
 	}
 
 	ctx := p.GetContext()
-	_, err = p.Client.ProjectsApi.Delete(ctx, d.Id())
+	ctx = context.WithValue(ctx, rest.ContextAPIKey, rest.APIKey{Key: d.Id()})
+	_, err = p.Client.ProjectsApi.Delete(ctx, d.Id(), nil)
 	if err != nil {
 		return err
 	}

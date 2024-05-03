@@ -170,7 +170,7 @@ func testWaitUntilHostReady(rsrc string) resource.TestCheckFunc {
 		for i := 0; i < hostStatePollCount && hostState != rest.HOSTSTATE_READY; i++ {
 			time.Sleep(hostStateReadyWait)
 
-			host, resp, err := p.Client.HostsApi.GetByID(ctx, hostID)
+			host, resp, err := p.Client.HostsApi.GetByID(ctx, hostID, nil)
 			if err != nil {
 				return fmt.Errorf("Host: %q not found: %s", hostID, err)
 			}
@@ -210,7 +210,7 @@ func testVerifyHostReady(resourceStateKey string) resource.TestCheckFunc {
 
 		ctx := p.GetContext()
 
-		host, resp, err := p.Client.HostsApi.GetByID(ctx, hostID)
+		host, resp, err := p.Client.HostsApi.GetByID(ctx, hostID, nil)
 		if err != nil {
 			return fmt.Errorf("Host: %q not found: %s", hostID, err)
 		}
@@ -246,7 +246,7 @@ func testAccCheckHostDestroy(t *testing.T, s *terraform.State) error {
 
 		ctx := p.GetContext()
 
-		_, resp, err := p.Client.HostsApi.GetByID(ctx, hostID)
+		_, resp, err := p.Client.HostsApi.GetByID(ctx, hostID, nil)
 		if err != nil {
 			return fmt.Errorf("Error retrieving host %s: %v", hostID, err)
 		}

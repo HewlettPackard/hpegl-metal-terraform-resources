@@ -29,6 +29,8 @@ type Config struct {
 	token      string
 	user       string
 	space      string
+	workspace  string
+	role       string
 	trf        retrieve.TokenRetrieveFuncCtx
 	useGLToken bool
 	context    context.Context
@@ -47,6 +49,18 @@ func WithGLToken(g bool) CreateOpt {
 	}
 }
 
+func WithWorkspace(w string) CreateOpt {
+	return func(c *Config) {
+		c.workspace = w
+	}
+}
+
+func WithRole(r string) CreateOpt {
+	return func(c *Config) {
+		c.role = r
+	}
+}
+
 // WithTRF this create option is for use by the hpegl terraform provider
 // It is used to pass-in a token retrieve function which is used to get
 // a GL IAM token.  Behind the scenes tokens are generated and refreshed
@@ -60,7 +74,7 @@ func WithTRF(trf retrieve.TokenRetrieveFuncCtx) CreateOpt {
 func (c *Config) RefreshAvailableResources() error {
 	ctx := c.GetContext()
 
-	resources, _, err := c.Client.AvailableResourcesApi.List(ctx)
+	resources, _, err := c.Client.AvailableResourcesApi.List(ctx, nil)
 	if err != nil {
 		return err
 	}
@@ -201,7 +215,7 @@ func NewConfig(portalURL string, opts ...CreateOpt) (*Config, error) {
 
 	if config.useGLToken || config.trf != nil {
 		if err := validateGLConfig(*config); err != nil {
-			return config, fmt.Errorf("configuration error: %v", err)
+			return config, fmt.Errorf("configuration error: %+v", config)
 		}
 
 		// Add required headers if GL authentication method
@@ -211,6 +225,14 @@ func NewConfig(portalURL string, opts ...CreateOpt) (*Config, error) {
 
 		if config.space != "" {
 			cfg.AddDefaultHeader("Space", config.space)
+		}
+
+		if config.role != "" {
+			cfg.AddDefaultHeader("X-Role", config.role)
+		}
+
+		if config.workspace != "" {
+			cfg.AddDefaultHeader("X-Workspaceid", config.workspace)
 		}
 	} else {
 		if err := validateMetalConfig(*config); err != nil {

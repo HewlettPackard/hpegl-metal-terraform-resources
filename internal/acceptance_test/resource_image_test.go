@@ -95,7 +95,7 @@ func testAccCheckImageDestroy(t *testing.T, s *terraform.State) error {
 
 		ctx := p.GetContext()
 
-		_, res, err := p.Client.ServicesApi.GetByID(ctx, imageID)
+		_, res, err := p.Client.ServicesApi.GetByID(ctx, imageID, nil)
 		if err == nil {
 			return fmt.Errorf("image %v still exists", imageID)
 		}
@@ -126,7 +126,7 @@ func testAccCheckImageExists(resource string) resource.TestCheckFunc {
 
 		ctx := p.GetContext()
 
-		ret, res, err := p.Client.ServicesApi.GetByID(ctx, imageID)
+		ret, res, err := p.Client.ServicesApi.GetByID(ctx, imageID, nil)
 		if err != nil {
 			return fmt.Errorf("image %v not found: %s", imageID, err)
 		}

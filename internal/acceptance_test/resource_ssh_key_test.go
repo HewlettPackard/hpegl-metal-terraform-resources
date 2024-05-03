@@ -75,7 +75,7 @@ func testAccCheckSSHKeyExists(n string, out *rest.SshKey) resource.TestCheckFunc
 
 		ctx := p.GetContext()
 
-		key, _, err := p.Client.SshkeysApi.GetByID(ctx, rs.Primary.ID)
+		key, _, err := p.Client.SshkeysApi.GetByID(ctx, rs.Primary.ID, nil)
 		if err != nil {
 			return err
 		}
@@ -99,7 +99,7 @@ func testAccCheckSSHKeyDestroy(s *terraform.State) error {
 		}
 
 		ctx := p.GetContext()
-		if _, _, err := p.Client.SshkeysApi.GetByID(ctx, rs.Primary.ID); err == nil {
+		if _, _, err := p.Client.SshkeysApi.GetByID(ctx, rs.Primary.ID, nil); err == nil {
 			return fmt.Errorf("SSHKey still exists")
 		}
 	}

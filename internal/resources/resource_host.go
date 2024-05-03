@@ -487,7 +487,7 @@ func resourceMetalHostCreate(d *schema.ResourceData, meta interface{}) (err erro
 	// Create it
 	ctx := p.GetContext()
 
-	h, _, err := p.Client.HostsApi.Add(ctx, host)
+	h, _, err := p.Client.HostsApi.Add(ctx, host, nil)
 	if err != nil {
 		return err
 	}
@@ -516,7 +516,7 @@ func resourceMetalHostCreate(d *schema.ResourceData, meta interface{}) (err erro
 			string(rest.HOSTSTATE_READY),
 		},
 		Refresh: func() (interface{}, string, error) {
-			host, _, err := p.Client.HostsApi.GetByID(ctx, h.ID)
+			host, _, err := p.Client.HostsApi.GetByID(ctx, h.ID, nil)
 			if err != nil {
 				return nil, "", fmt.Errorf("get host %v", h.ID)
 			}
@@ -545,7 +545,7 @@ func resourceMetalHostRead(d *schema.ResourceData, meta interface{}) (err error)
 	}
 
 	ctx := p.GetContext()
-	host, _, err := p.Client.HostsApi.GetByID(ctx, d.Id())
+	host, _, err := p.Client.HostsApi.GetByID(ctx, d.Id(), nil)
 	if err != nil {
 		return err
 	}
@@ -569,7 +569,7 @@ func resourceMetalHostRead(d *schema.ResourceData, meta interface{}) (err error)
 		return fmt.Errorf("set summary status: %v", err)
 	}
 
-	varesources, _, err := p.Client.VolumeAttachmentsApi.List(ctx)
+	varesources, _, err := p.Client.VolumeAttachmentsApi.List(ctx, nil)
 	if err != nil {
 		return fmt.Errorf("error reading volume attachment information %v", err)
 	}
@@ -690,16 +690,16 @@ func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err erro
 
 	ctx := p.GetContext()
 
-	host, _, err := p.Client.HostsApi.GetByID(ctx, d.Id())
+	host, _, err := p.Client.HostsApi.GetByID(ctx, d.Id(), nil)
 	if err != nil {
 		return err
 	}
 
-	volumes, _, err := p.Client.VolumesApi.List(ctx)
+	volumes, _, err := p.Client.VolumesApi.List(ctx, nil)
 	if err != nil {
 		return fmt.Errorf("error reading volume information %v", err)
 	}
-	varesources, _, err := p.Client.VolumeAttachmentsApi.List(ctx)
+	varesources, _, err := p.Client.VolumeAttachmentsApi.List(ctx, nil)
 	if err != nil {
 		return fmt.Errorf("error reading volume attachment information %v", err)
 	}
@@ -730,7 +730,7 @@ func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err erro
 	// detach
 	vaHostID := rest.VolumeAttachHostUuid{HostID: host.ID}
 	for _, dv := range detachList {
-		_, err = p.Client.VolumesApi.Detach(ctx, dv, vaHostID)
+		_, err = p.Client.VolumesApi.Detach(ctx, dv, vaHostID, nil)
 
 		if err != nil {
 			return err
@@ -739,7 +739,7 @@ func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err erro
 
 	// attach
 	for _, av := range attachList {
-		_, _, err = p.Client.VolumesApi.Attach(ctx, av, vaHostID)
+		_, _, err = p.Client.VolumesApi.Attach(ctx, av, vaHostID, nil)
 
 		if err != nil {
 			return err
@@ -790,7 +790,7 @@ func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err erro
 	// Update.
 	ctx = p.GetContext()
 
-	_, _, err = p.Client.HostsApi.Update(ctx, updateHost.ID, updateHost)
+	_, _, err = p.Client.HostsApi.Update(ctx, updateHost.ID, updateHost, nil)
 	if err != nil {
 		//nolint:wrapcheck // defer func is wrapping the error.
 		return err
@@ -816,7 +816,7 @@ func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err erro
 			string(rest.HOSTSTATE_READY),
 		},
 		Refresh: func() (interface{}, string, error) {
-			h, _, err := p.Client.HostsApi.GetByID(ctx, host.ID)
+			h, _, err := p.Client.HostsApi.GetByID(ctx, host.ID, nil)
 			if err != nil {
 				return nil, "", fmt.Errorf("get host %v", host.ID)
 			}
@@ -856,7 +856,7 @@ func resourceMetalHostDelete(d *schema.ResourceData, meta interface{}) (err erro
 
 	ctx := p.GetContext()
 
-	host, _, err := p.Client.HostsApi.GetByID(ctx, d.Id())
+	host, _, err := p.Client.HostsApi.GetByID(ctx, d.Id(), nil)
 	if err != nil {
 		return err
 	}
@@ -873,7 +873,7 @@ func resourceMetalHostDelete(d *schema.ResourceData, meta interface{}) (err erro
 		}
 	}
 
-	if _, err := p.Client.HostsApi.Delete(ctx, d.Id()); err != nil {
+	if _, err := p.Client.HostsApi.Delete(ctx, d.Id(), nil); err != nil {
 		//nolint:wrapcheck // defer func is wrapping the error.
 		return err
 	}
@@ -890,7 +890,7 @@ func resourceMetalHostDelete(d *schema.ResourceData, meta interface{}) (err erro
 			string(rest.HOSTSTATE_DELETED),
 		},
 		Refresh: func() (interface{}, string, error) {
-			host, _, err := p.Client.HostsApi.GetByID(ctx, d.Id())
+			host, _, err := p.Client.HostsApi.GetByID(ctx, d.Id(), nil)
 			if err != nil {
 				return nil, "", fmt.Errorf("get host %v", d.Id())
 			}
@@ -910,7 +910,7 @@ func resourceMetalHostDelete(d *schema.ResourceData, meta interface{}) (err erro
 }
 
 func powerOffHost(ctx context.Context, hostAPI rest.HostsAPI, hostID string, timeout time.Duration) error {
-	_, _, err := hostAPI.PowerOff(ctx, hostID)
+	_, _, err := hostAPI.PowerOff(ctx, hostID, nil)
 	if err != nil {
 		return fmt.Errorf("power off host %v: %v", hostID, err)
 	}
@@ -925,7 +925,7 @@ func powerOffHost(ctx context.Context, hostAPI rest.HostsAPI, hostID string, tim
 			string(rest.HOSTPOWERSTATE_OFF),
 		},
 		Refresh: func() (interface{}, string, error) {
-			host, _, err := hostAPI.GetByID(ctx, hostID)
+			host, _, err := hostAPI.GetByID(ctx, hostID, nil)
 			if err != nil {
 				return nil, "", fmt.Errorf("get host %v", hostID)
 			}

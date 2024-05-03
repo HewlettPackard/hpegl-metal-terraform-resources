@@ -71,7 +71,7 @@ func resourceIPCreate(d *schema.ResourceData, meta interface{}) (err error) {
 
 	ctx := p.GetContext()
 
-	ipPools, _, err := p.Client.IppoolsApi.List(ctx)
+	ipPools, _, err := p.Client.IppoolsApi.List(ctx, nil)
 	if err != nil {
 		return err
 	}
@@ -83,7 +83,7 @@ func resourceIPCreate(d *schema.ResourceData, meta interface{}) (err error) {
 		}
 	}
 
-	if _, _, err := p.Client.IppoolsApi.AllocateIPs(ctx, poolID, []rest.IpAllocation{allocation}); err != nil {
+	if _, _, err := p.Client.IppoolsApi.AllocateIPs(ctx, poolID, []rest.IpAllocation{allocation}, nil); err != nil {
 		return err
 	}
 
@@ -104,7 +104,7 @@ func resourceIPRead(d *schema.ResourceData, meta interface{}) (err error) {
 	poolID := extractIPPoolID(d.Id())
 	allocIP := extractIP(d.Id())
 
-	ippool, _, err := p.Client.IppoolsApi.GetByID(ctx, poolID)
+	ippool, _, err := p.Client.IppoolsApi.GetByID(ctx, poolID, nil)
 	if err != nil {
 		return err
 	}
@@ -145,7 +145,7 @@ func resourceIPDelete(d *schema.ResourceData, meta interface{}) (err error) {
 	poolID := extractIPPoolID(d.Id())
 	ip := extractIP(d.Id())
 
-	if _, _, err = p.Client.IppoolsApi.ReturnIPs(ctx, poolID, []string{ip}); err != nil {
+	if _, _, err = p.Client.IppoolsApi.ReturnIPs(ctx, poolID, []string{ip}, nil); err != nil {
 		return err
 	}
 
