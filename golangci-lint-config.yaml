@@ -1,8 +1,10 @@
-#(C) Copyright 2022 Hewlett Packard Enterprise Development LP
+#(C) Copyright 2022, 2024 Hewlett Packard Enterprise Development LP
 
 run:
   deadline: 240s
-  skip-dirs:
+
+issues:
+  exclude-dirs:
     - vendor
     - docs
     - build
@@ -45,7 +47,6 @@ linters:
   enable:
     - asciicheck
     - bodyclose
-    - deadcode
     - dogsled
     - dupl
     - durationcheck
@@ -64,15 +65,14 @@ linters:
     - gofmt
     - goheader
     - goimports
-    - gomnd
     - goprintffuncname
     - gosec
     - gosimple
     - govet
-    - ifshort
     - ineffassign
     - lll
     - misspell
+    - mnd
     - nakedret
     - nestif
     - nlreturn
@@ -81,14 +81,12 @@ linters:
     - predeclared
     - revive
     - staticcheck
-    - structcheck
     - stylecheck
     - thelper
     - tparallel
     - typecheck
     - unconvert
     - unused
-    - varcheck
     - wastedassign
     - wrapcheck
     - wsl
