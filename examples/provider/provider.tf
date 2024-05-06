@@ -10,12 +10,23 @@ terraform {
   }
 }
 
-# Example of provider configuration when using GreenLake IAM token
+# Example of provider configuration when using GreenLake Cloud Services (GLCS) IAM token
 provider "hpegl" {
   metal {
     rest_url   = "https://localhost:3002"
     space_name = "space_name"
     project_id = "1d96bfbc-9cf0-4268-aac6-ca1c65aca385"
+    
+  }
+}
+
+# Example of provider configuration when using GreenLake Platform (GLP) IAM token
+provider "hpegl" {
+  metal {
+    rest_url   = "https://localhost:3002"
+    project_id = "1d96bfbc-9cf0-4268-aac6-ca1c65aca385"
+    glp_workspace = "1a2ba81600dd11efa47076a3447ec4eb"
+    glp_role = "service_platform_owner"
   }
 }
 
