@@ -12,7 +12,8 @@ GOFLAGS_OTHER= CGO_ENABLED=0
 
 FIPS_BUILD ?= 0
 ifeq ("$(FIPS_BUILD)","1")
-	GOFLAGS_OTHER= CGO_ENABLED=1 GOLANG_FIPS=1
+	GOFLAGS_OTHER=
+	undefine CGO_ENABLED
 endif
 
 # version shouldn't have 'v' prefix for >= 0.13
@@ -55,10 +56,6 @@ LOCALIZATION_FILES := $(shell find . -name \*.toml | grep -v vendor | grep -v ./
 
 $(NAME): $(shell find . -name \*.go)
 	GOOS=$(GOOS) GOARCH=$(GOARCH) $(GOFLAGS_OTHER) go build $(TAGS) -ldflags "$(VFLAG)" -o build/$@ .
-ifeq ("$(FIPS_BUILD)", "1")
-	echo "Verifying if the binary is FIPS capable"
-	go tool nm build/$@ | grep -i strictfips
-endif
 
 default: all
 .PHONY: default
