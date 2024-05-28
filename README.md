@@ -39,12 +39,12 @@ $ make build
 Note: For debugging the provider please refer to the
 [debugging guide](https://medium.com/@gandharva666/debugging-terraform-using-jetbrains-goland-f9a7e992cb1d)
 
-## Using GreenLake tokens
+## Using GreenLake Cloud Services (GLCS) tokens
 
 **NOTE**: The below steps are applicable only when using stand-alone provider. If you are using [hpegl provider](https://registry.terraform.io/providers/HPE/hpegl/latest/docs),
 then follow the steps explained on that page to specify the parameters.
    
-When using GreenLake tokens, the required parameters is to be provided in a `.gltform` file.  
+When using GLCS tokens, the required parameters is to be provided in a `.gltform` file.  
 This file can be written in home or in the directory from which terraform is run.  
 
 The file contents:
@@ -58,6 +58,22 @@ access_token: <...>
 
 `space_name` is optional, and is only required if the terraform provider is going to be used to create projects.  
 Access token may be obtained by logging into HPE GreenLake Central and then clicking **API Access** on the User menu. 
+
+## Using GreenLake Platform (GLP) tokens
+
+**NOTE**: The below steps are applicable only when using stand-alone provider. If you are using [hpegl provider](https://registry.terraform.io/providers/HPE/hpegl/latest/docs),
+then follow the steps explained on that page to specify the parameters.
+   
+When using GreenLake tokens, the required parameters is to be provided in a `.gltform` file.  
+This file can be written in home or in the directory from which terraform is run.  
+
+The file contents:
+ 
+```yaml
+rest_url: http://localhost:3002
+project_id: 65c82181-fefc-4ea7-870e-628225fe7664
+access_token: <...>
+```
 
 
 ## Using Metal tokens

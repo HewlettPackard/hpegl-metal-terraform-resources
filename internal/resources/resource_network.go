@@ -244,7 +244,7 @@ func resourceMetalNetworkCreate(d *schema.ResourceData, meta interface{}) (err e
 	}
 
 	ctx := p.GetContext()
-	n, _, err := p.Client.NetworksApi.Add(ctx, newNetwork)
+	n, _, err := p.Client.NetworksApi.Add(ctx, newNetwork, nil)
 	if err != nil {
 		return err
 	}
@@ -325,7 +325,7 @@ func resourceMetalNetworkRead(d *schema.ResourceData, meta interface{}) (err err
 	}
 
 	ctx := p.GetContext()
-	n, _, err := p.Client.NetworksApi.GetByID(ctx, d.Id())
+	n, _, err := p.Client.NetworksApi.GetByID(ctx, d.Id(), nil)
 	if err != nil {
 		return err
 	}
@@ -383,7 +383,7 @@ func resourceMetalNetworkUpdate(d *schema.ResourceData, meta interface{}) (err e
 
 	ctx := p.GetContext()
 
-	n, _, err := p.Client.NetworksApi.GetByID(ctx, d.Id())
+	n, _, err := p.Client.NetworksApi.GetByID(ctx, d.Id(), nil)
 	if err != nil {
 		return err
 	}
@@ -404,7 +404,7 @@ func resourceMetalNetworkUpdate(d *schema.ResourceData, meta interface{}) (err e
 		updateNetwork.Purpose = rest.NetworkPurpose(purpose)
 	}
 
-	_, _, err = p.Client.NetworksApi.Update(ctx, updateNetwork.ID, updateNetwork)
+	_, _, err = p.Client.NetworksApi.Update(ctx, updateNetwork.ID, updateNetwork, nil)
 	if err != nil {
 		return err
 	}
@@ -422,7 +422,7 @@ func resourceMetalNetworkDelete(d *schema.ResourceData, meta interface{}) (err e
 	}
 
 	ctx := p.GetContext()
-	_, err = p.Client.NetworksApi.Delete(ctx, d.Id())
+	_, err = p.Client.NetworksApi.Delete(ctx, d.Id(), nil)
 	if err != nil {
 		return err
 	}

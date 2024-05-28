@@ -23,10 +23,12 @@ const (
 	qAvailableImages   = mPrefix + "_available_images"
 
 	// These constants are used to set the optional hpegl provider "metal" block field-names
-	projectID = "project_id"
-	restURL   = "rest_url"
-	spaceName = "space_name"
-	glToken   = "gl_token"
+	projectID    = "project_id"
+	restURL      = "rest_url"
+	spaceName    = "space_name"
+	glToken      = "gl_token"
+	glpRole      = "glp_role"
+	glpWorkspace = "glp_workspace"
 )
 
 type Registration struct{}
@@ -81,8 +83,20 @@ func (r Registration) ProviderSchemaEntry() *schema.Resource {
 				Type:        schema.TypeBool,
 				Optional:    true,
 				DefaultFunc: schema.EnvDefaultFunc("HPEGL_METAL_GL_TOKEN", true),
-				Description: `Field indicating whether the token is GreenLake IAM issued token or Metal Service issued one,
+				Description: `Field indicating whether the token is GreenLake (GLCS or GLP) IAM issued token or Metal Service issued one,
 				can also be set with the HPEGL_METAL_GL_TOKEN env-var`,
+			},
+			glpRole: {
+				Type:        schema.TypeString,
+				Optional:    true,
+				DefaultFunc: schema.EnvDefaultFunc("HPEGL_METAL_GLP_ROLE", true),
+				Description: `Field indicating the GLP role to be used, can also be set with the HPEGL_METAL_GLP_ROLE env-var`,
+			},
+			glpWorkspace: {
+				Type:        schema.TypeString,
+				Optional:    true,
+				DefaultFunc: schema.EnvDefaultFunc("HPEGL_METAL_GLP_WORKSPACE", true),
+				Description: `Field indicating the GLP workspace to be used, can also be set with the HPEGL_METAL_GLP_WORKSPACE env-var`,
 			},
 		},
 	}

@@ -78,7 +78,7 @@ func resourceMetalImageDelete(d *schema.ResourceData, meta interface{}) (err err
 
 	ctx := p.GetContext()
 
-	if _, err = p.Client.ServicesApi.Delete(ctx, d.Id()); err != nil {
+	if _, err = p.Client.ServicesApi.Delete(ctx, d.Id(), nil); err != nil {
 		return err //nolint:wrapcheck // defer func is wrapping the error.
 	}
 
@@ -104,7 +104,7 @@ func resourceMetalImageUpdate(d *schema.ResourceData, meta interface{}) (err err
 
 	ctx := p.GetContext()
 
-	if _, _, err := p.Client.ServicesApi.Update(ctx, d.Id(), file); err != nil {
+	if _, _, err := p.Client.ServicesApi.Update(ctx, d.Id(), file, nil); err != nil {
 		return err //nolint:wrapcheck // defer func is wrapping the error.
 	}
 

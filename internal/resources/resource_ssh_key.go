@@ -54,7 +54,7 @@ func resourceMetalSSHKeyCreate(d *schema.ResourceData, meta interface{}) (err er
 		Key:  d.Get(sshPublicKey).(string),
 	}
 	ctx := p.GetContext()
-	key, _, err := p.Client.SshkeysApi.Add(ctx, r)
+	key, _, err := p.Client.SshkeysApi.Add(ctx, r, nil)
 	if err != nil {
 		return err
 	}
@@ -76,7 +76,7 @@ func resourceMetalSSHKeyRead(d *schema.ResourceData, meta interface{}) (err erro
 	}
 
 	ctx := p.GetContext()
-	ssh, _, err := p.Client.SshkeysApi.GetByID(ctx, d.Id())
+	ssh, _, err := p.Client.SshkeysApi.GetByID(ctx, d.Id(), nil)
 	if err != nil {
 		return err
 	}
@@ -95,7 +95,7 @@ func resourceMetalSSHKeyUpdate(d *schema.ResourceData, meta interface{}) (err er
 
 	// Read existing
 	ctx := p.GetContext()
-	ssh, _, err := p.Client.SshkeysApi.GetByID(ctx, d.Id())
+	ssh, _, err := p.Client.SshkeysApi.GetByID(ctx, d.Id(), nil)
 	if err != nil {
 		return err
 	}
@@ -116,7 +116,7 @@ func resourceMetalSSHKeyUpdate(d *schema.ResourceData, meta interface{}) (err er
 
 	// Update
 	ctx = p.GetContext()
-	if _, _, err = p.Client.SshkeysApi.Update(ctx, updateSSH.ID, updateSSH); err != nil {
+	if _, _, err = p.Client.SshkeysApi.Update(ctx, updateSSH.ID, updateSSH, nil); err != nil {
 		return err
 	}
 
@@ -133,7 +133,7 @@ func resourceMetalSSHKeyDelete(d *schema.ResourceData, meta interface{}) (err er
 	}
 
 	ctx := p.GetContext()
-	_, err = p.Client.SshkeysApi.Delete(ctx, d.Id())
+	_, err = p.Client.SshkeysApi.Delete(ctx, d.Id(), nil)
 	if err != nil {
 		return err
 	}

@@ -279,7 +279,7 @@ func resourceMetalVolumeCreate(d *schema.ResourceData, meta interface{}) (err er
 	}
 
 	ctx := p.GetContext()
-	v, _, err := p.Client.VolumesApi.Add(ctx, volume)
+	v, _, err := p.Client.VolumesApi.Add(ctx, volume, nil)
 	if err != nil {
 		return err
 	}
@@ -288,7 +288,7 @@ func resourceMetalVolumeCreate(d *schema.ResourceData, meta interface{}) (err er
 		time.Sleep(pollInterval)
 
 		ctx = p.GetContext()
-		vol, _, err := p.Client.VolumesApi.GetByID(ctx, v.ID)
+		vol, _, err := p.Client.VolumesApi.GetByID(ctx, v.ID, nil)
 		if err != nil {
 			break
 		}
@@ -314,7 +314,7 @@ func resourceMetalVolumeRead(d *schema.ResourceData, meta interface{}) (err erro
 	}
 
 	ctx := p.GetContext()
-	volume, _, err := p.Client.VolumesApi.GetByID(ctx, d.Id())
+	volume, _, err := p.Client.VolumesApi.GetByID(ctx, d.Id(), nil)
 	if err != nil {
 		return err
 	}
@@ -384,7 +384,7 @@ func resourceMetalVolumeUpdate(d *schema.ResourceData, meta interface{}) (err er
 
 	ctx := c.GetContext()
 
-	vol, _, err := c.Client.VolumesApi.GetByID(ctx, d.Id())
+	vol, _, err := c.Client.VolumesApi.GetByID(ctx, d.Id(), nil)
 	if err != nil {
 		return
 	}
@@ -406,7 +406,7 @@ func resourceMetalVolumeUpdate(d *schema.ResourceData, meta interface{}) (err er
 		updateVol.Labels = convertMap(m)
 	}
 
-	_, _, err = c.Client.VolumesApi.Update(ctx, updateVol.ID, updateVol)
+	_, _, err = c.Client.VolumesApi.Update(ctx, updateVol.ID, updateVol, nil)
 	if err != nil {
 		return
 	}
@@ -416,7 +416,7 @@ func resourceMetalVolumeUpdate(d *schema.ResourceData, meta interface{}) (err er
 	for {
 		time.Sleep(pollInterval)
 
-		vol, _, err := c.Client.VolumesApi.GetByID(ctx, vol.ID)
+		vol, _, err := c.Client.VolumesApi.GetByID(ctx, vol.ID, nil)
 		if err != nil {
 			return fmt.Errorf("get volume %s: %w", vol.ID, err)
 		}
@@ -444,7 +444,7 @@ func deleteVAsForVolume(p *configuration.Config, volID string) error {
 	ctx := p.GetContext()
 
 	// Get all attachments
-	vas, _, err := p.Client.VolumeAttachmentsApi.List(ctx)
+	vas, _, err := p.Client.VolumeAttachmentsApi.List(ctx, nil)
 	if err != nil {
 		return fmt.Errorf("list volume attachments: %w", err)
 	}
@@ -452,7 +452,7 @@ func deleteVAsForVolume(p *configuration.Config, volID string) error {
 	// Initiate attachments deletion for this volume
 	for _, va := range vas {
 		if va.VolumeID == volID {
-			_, err = p.Client.VolumeAttachmentsApi.Delete(ctx, va.ID)
+			_, err = p.Client.VolumeAttachmentsApi.Delete(ctx, va.ID, nil)
 			if err != nil {
 				return fmt.Errorf("delete volume attachment %s: %w", va.ID, err)
 			}
@@ -465,7 +465,7 @@ func deleteVAsForVolume(p *configuration.Config, volID string) error {
 	for {
 		time.Sleep(pollInterval)
 
-		volume, _, err := p.Client.VolumesApi.GetByID(ctx, volID)
+		volume, _, err := p.Client.VolumesApi.GetByID(ctx, volID, nil)
 		if err != nil {
 			return fmt.Errorf("get volume %s: %w", volID, err)
 		}
@@ -514,7 +514,7 @@ func resourceMetalVolumeDelete(d *schema.ResourceData, meta interface{}) (err er
 				time.Sleep(pollInterval)
 
 				ctx := p.GetContext()
-				volume, _, err = p.Client.VolumesApi.GetByID(ctx, d.Id())
+				volume, _, err = p.Client.VolumesApi.GetByID(ctx, d.Id(), nil)
 				if err != nil {
 					return
 				}
@@ -536,7 +536,7 @@ func resourceMetalVolumeDelete(d *schema.ResourceData, meta interface{}) (err er
 	}()
 
 	ctx := p.GetContext()
-	volume, _, err = p.Client.VolumesApi.GetByID(ctx, d.Id())
+	volume, _, err = p.Client.VolumesApi.GetByID(ctx, d.Id(), nil)
 	if err != nil {
 		return err
 	}
@@ -555,7 +555,7 @@ func resourceMetalVolumeDelete(d *schema.ResourceData, meta interface{}) (err er
 		}
 	}
 
-	_, err = p.Client.VolumesApi.Delete(ctx, d.Id())
+	_, err = p.Client.VolumesApi.Delete(ctx, d.Id(), nil)
 	return err
 }
 

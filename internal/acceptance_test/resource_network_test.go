@@ -95,7 +95,8 @@ func testAccCheckNetworkDestroy(t *testing.T, s *terraform.State) error {
 
 		ctx := p.GetContext()
 
-		_, _, err := p.Client.NetworksApi.GetByID(ctx, rs.Primary.ID)
+		//nolint:bodyclose // Response body is closed by metal client.
+		_, _, err := p.Client.NetworksApi.GetByID(ctx, rs.Primary.ID, nil)
 		if err == nil {
 			return fmt.Errorf("Alert pnet still exists")
 		}

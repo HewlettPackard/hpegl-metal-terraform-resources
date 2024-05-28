@@ -113,7 +113,8 @@ func testAccCheckVolumeDestroy(t *testing.T, s *terraform.State) error {
 
 		ctx := p.GetContext()
 
-		volume, _, err := p.Client.VolumesApi.GetByID(ctx, volumeID)
+		//nolint:bodyclose // Response body is closed by metal client.
+		volume, _, err := p.Client.VolumesApi.GetByID(ctx, volumeID, nil)
 		if err == nil && volume.State != rest.VOLUMESTATE_DELETED {
 			return fmt.Errorf("Volume: %v still exists", volume)
 		}
@@ -142,7 +143,8 @@ func testAccCheckVolumeExists(resource string, id *string) resource.TestCheckFun
 
 		ctx := p.GetContext()
 
-		_, _, err = p.Client.VolumesApi.GetByID(ctx, volumeID)
+		//nolint:bodyclose // Response body is closed by metal client.
+		_, _, err = p.Client.VolumesApi.GetByID(ctx, volumeID, nil)
 		if err != nil {
 			return fmt.Errorf("Volume: %q not found: %s", volumeID, err)
 		}

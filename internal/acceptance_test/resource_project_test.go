@@ -115,7 +115,7 @@ func testAccCheckProjectDestroy(t *testing.T, s *terraform.State) error {
 
 		ctx := p.GetContext()
 
-		_, res, err := p.Client.ProjectsApi.GetByID(ctx, ProjectID)
+		_, res, err := p.Client.ProjectsApi.GetByID(ctx, ProjectID, nil)
 		if err == nil {
 			return fmt.Errorf("Project %v still exists", ProjectID)
 		}
@@ -146,7 +146,7 @@ func testAccCheckProjectExists(resource string) resource.TestCheckFunc {
 
 		ctx := p.GetContext()
 
-		ret, res, err := p.Client.ProjectsApi.GetByID(ctx, ProjectID)
+		ret, res, err := p.Client.ProjectsApi.GetByID(ctx, ProjectID, nil)
 		if err != nil {
 			return fmt.Errorf("Project %v not found: %s", ProjectID, err)
 		}

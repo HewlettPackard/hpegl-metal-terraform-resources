@@ -29,6 +29,8 @@ type Config struct {
 	token      string
 	user       string
 	space      string
+	workspace  string
+	role       string
 	trf        retrieve.TokenRetrieveFuncCtx
 	useGLToken bool
 	context    context.Context
@@ -39,11 +41,27 @@ type Config struct {
 	AvailableResources rest.AvailableResources
 }
 
+// CreateOpt defines a create option.
 type CreateOpt func(c *Config)
 
+// WithGLToken returns a create option with the provided GreenLake token.
 func WithGLToken(g bool) CreateOpt {
 	return func(c *Config) {
 		c.useGLToken = g
+	}
+}
+
+// WithWorkspace returns a create option with the provided workspace.
+func WithWorkspace(w string) CreateOpt {
+	return func(c *Config) {
+		c.workspace = w
+	}
+}
+
+// WithRole returns a create option with the provided role.
+func WithRole(r string) CreateOpt {
+	return func(c *Config) {
+		c.role = r
 	}
 }
 
@@ -60,7 +78,7 @@ func WithTRF(trf retrieve.TokenRetrieveFuncCtx) CreateOpt {
 func (c *Config) RefreshAvailableResources() error {
 	ctx := c.GetContext()
 
-	resources, _, err := c.Client.AvailableResourcesApi.List(ctx)
+	resources, _, err := c.Client.AvailableResourcesApi.List(ctx, nil)
 	if err != nil {
 		return err
 	}
@@ -211,6 +229,14 @@ func NewConfig(portalURL string, opts ...CreateOpt) (*Config, error) {
 
 		if config.space != "" {
 			cfg.AddDefaultHeader("Space", config.space)
+		}
+
+		if config.role != "" {
+			cfg.AddDefaultHeader("X-Role", config.role)
+		}
+
+		if config.workspace != "" {
+			cfg.AddDefaultHeader("X-Workspaceid", config.workspace)
 		}
 	} else {
 		if err := validateMetalConfig(*config); err != nil {
