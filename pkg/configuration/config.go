@@ -41,20 +41,24 @@ type Config struct {
 	AvailableResources rest.AvailableResources
 }
 
+// CreateOpt defines a create option.
 type CreateOpt func(c *Config)
 
+// WithGLToken returns a create option with the provided GreenLake token.
 func WithGLToken(g bool) CreateOpt {
 	return func(c *Config) {
 		c.useGLToken = g
 	}
 }
 
+// WithWorkspace returns a create option with the provided workspace.
 func WithWorkspace(w string) CreateOpt {
 	return func(c *Config) {
 		c.workspace = w
 	}
 }
 
+// WithRole returns a create option with the provided role.
 func WithRole(r string) CreateOpt {
 	return func(c *Config) {
 		c.role = r
