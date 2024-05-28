@@ -96,7 +96,7 @@ func (r Registration) ProviderSchemaEntry() *schema.Resource {
 				Type:        schema.TypeString,
 				Optional:    true,
 				DefaultFunc: schema.EnvDefaultFunc("HPEGL_METAL_GLP_WORKSPACE", true),
-				Description: `Field indicating the GLP workspace be used, can also be set with the HPEGL_METAL_GLP_WORKSPACE env-var`,
+				Description: `Field indicating the GLP workspace to be used, can also be set with the HPEGL_METAL_GLP_WORKSPACE env-var`,
 			},
 		},
 	}

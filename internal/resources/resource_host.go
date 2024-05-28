@@ -699,6 +699,7 @@ func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err erro
 	if err != nil {
 		return fmt.Errorf("error reading volume information %v", err)
 	}
+
 	varesources, _, err := p.Client.VolumeAttachmentsApi.List(ctx, nil)
 	if err != nil {
 		return fmt.Errorf("error reading volume attachment information %v", err)

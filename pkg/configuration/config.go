@@ -219,7 +219,7 @@ func NewConfig(portalURL string, opts ...CreateOpt) (*Config, error) {
 
 	if config.useGLToken || config.trf != nil {
 		if err := validateGLConfig(*config); err != nil {
-			return config, fmt.Errorf("configuration error: %+v", config)
+			return config, fmt.Errorf("configuration error: %v", err)
 		}
 
 		// Add required headers if GL authentication method
