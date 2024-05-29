@@ -4,7 +4,7 @@ go 1.21.0
 
 require (
 	github.com/golangci/golangci-lint v1.58.2
-	github.com/hashicorp/terraform-plugin-docs v0.19.2
+	github.com/hashicorp/terraform-plugin-docs v0.19.3
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.34.0
 	github.com/hewlettpackard/hpegl-metal-client v1.5.13
 	github.com/hewlettpackard/hpegl-provider-lib v0.0.15
@@ -104,8 +104,8 @@ require (
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/hashicorp/go-plugin v1.6.0 // indirect
 	github.com/hashicorp/go-uuid v1.0.3 // indirect
-	github.com/hashicorp/go-version v1.6.0 // indirect
-	github.com/hashicorp/hc-install v0.6.4 // indirect
+	github.com/hashicorp/go-version v1.7.0 // indirect
+	github.com/hashicorp/hc-install v0.7.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/hashicorp/hcl/v2 v2.20.1 // indirect
 	github.com/hashicorp/logutils v1.0.0 // indirect
