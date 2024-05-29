@@ -1,4 +1,4 @@
-// (C) Copyright 2020-2023 Hewlett Packard Enterprise Development LP
+// (C) Copyright 2020-2024 Hewlett Packard Enterprise Development LP
 
 package resources
 
@@ -510,6 +510,7 @@ func resourceMetalHostCreate(d *schema.ResourceData, meta interface{}) (err erro
 			string(rest.HOSTSTATE_IMAGING_PREP),
 			string(rest.HOSTSTATE_IMAGING),
 			string(rest.HOSTSTATE_CONNECTING),
+			string(rest.HOSTSTATE_ATTACHING),
 			string(rest.HOSTSTATE_BOOTING),
 		},
 		Target: []string{
@@ -885,6 +886,7 @@ func resourceMetalHostDelete(d *schema.ResourceData, meta interface{}) (err erro
 	// the delete operation from Terraform (since it has no reference to the resource).
 	deleteStateConf := &retry.StateChangeConf{
 		Pending: []string{
+			string(rest.HOSTSTATE_DETACHING),
 			string(rest.HOSTSTATE_DELETING),
 		},
 		Target: []string{
