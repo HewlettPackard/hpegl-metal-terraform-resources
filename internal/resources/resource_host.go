@@ -508,6 +508,7 @@ func resourceMetalHostCreate(d *schema.ResourceData, meta interface{}) (err erro
 		Pending: []string{
 			string(rest.HOSTSTATE_NEW),
 			string(rest.HOSTSTATE_IMAGING_PREP),
+			string(rest.HOSTSTATE_ISCSI_ATTACHING),
 			string(rest.HOSTSTATE_IMAGING),
 			string(rest.HOSTSTATE_CONNECTING),
 			string(rest.HOSTSTATE_ATTACHING),
@@ -749,9 +750,10 @@ func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err erro
 	}
 
 	updateHost := rest.UpdateHost{
-		ID:   host.ID,
-		ETag: host.ETag,
-		Name: host.Name,
+		ID:          host.ID,
+		ETag:        host.ETag,
+		Name:        host.Name,
+		ISCSIConfig: &rest.UpdateHostIscsiConfig{},
 	}
 
 	// description
@@ -886,7 +888,7 @@ func resourceMetalHostDelete(d *schema.ResourceData, meta interface{}) (err erro
 	// the delete operation from Terraform (since it has no reference to the resource).
 	deleteStateConf := &retry.StateChangeConf{
 		Pending: []string{
-			string(rest.HOSTSTATE_DETACHING),
+			string(rest.HOSTSTATE_ALL_DETACHING),
 			string(rest.HOSTSTATE_DELETING),
 		},
 		Target: []string{
