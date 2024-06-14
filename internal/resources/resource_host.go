@@ -508,6 +508,7 @@ func resourceMetalHostCreate(d *schema.ResourceData, meta interface{}) (err erro
 		Pending: []string{
 			string(rest.HOSTSTATE_NEW),
 			string(rest.HOSTSTATE_IMAGING_PREP),
+			string(rest.HOSTSTATE_ISCSI_ATTACHING),
 			string(rest.HOSTSTATE_IMAGING),
 			string(rest.HOSTSTATE_CONNECTING),
 			string(rest.HOSTSTATE_ATTACHING),
@@ -761,8 +762,10 @@ func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err erro
 
 	// initiator name
 	updInitiatorName, ok := d.Get(hInitiatorName).(string)
-	if ok && updInitiatorName != "" && updInitiatorName != host.ISCSIConfig.InitiatorName {
-		updateHost.ISCSIConfig.InitiatorName = updInitiatorName
+	if (ok && updInitiatorName != "") && (updInitiatorName != host.ISCSIConfig.InitiatorName) {
+		updateHost.ISCSIConfig = &rest.UpdateHostIscsiConfig{
+			InitiatorName: updInitiatorName,
+		}
 	}
 
 	// set the network ids
@@ -887,6 +890,7 @@ func resourceMetalHostDelete(d *schema.ResourceData, meta interface{}) (err erro
 	deleteStateConf := &retry.StateChangeConf{
 		Pending: []string{
 			string(rest.HOSTSTATE_DETACHING),
+			string(rest.HOSTSTATE_ALL_DETACHING),
 			string(rest.HOSTSTATE_DELETING),
 		},
 		Target: []string{
