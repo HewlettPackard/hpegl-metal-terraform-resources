@@ -889,6 +889,7 @@ func resourceMetalHostDelete(d *schema.ResourceData, meta interface{}) (err erro
 	// the delete operation from Terraform (since it has no reference to the resource).
 	deleteStateConf := &retry.StateChangeConf{
 		Pending: []string{
+			string(rest.HOSTSTATE_DETACHING),
 			string(rest.HOSTSTATE_ALL_DETACHING),
 			string(rest.HOSTSTATE_DELETING),
 		},
