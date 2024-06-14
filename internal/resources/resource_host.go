@@ -750,10 +750,9 @@ func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err erro
 	}
 
 	updateHost := rest.UpdateHost{
-		ID:          host.ID,
-		ETag:        host.ETag,
-		Name:        host.Name,
-		ISCSIConfig: &rest.UpdateHostIscsiConfig{},
+		ID:   host.ID,
+		ETag: host.ETag,
+		Name: host.Name,
 	}
 
 	// description
@@ -763,8 +762,10 @@ func resourceMetalHostUpdate(d *schema.ResourceData, meta interface{}) (err erro
 
 	// initiator name
 	updInitiatorName, ok := d.Get(hInitiatorName).(string)
-	if ok && updInitiatorName != "" && updInitiatorName != host.ISCSIConfig.InitiatorName {
-		updateHost.ISCSIConfig.InitiatorName = updInitiatorName
+	if (ok && updInitiatorName != "") && (updInitiatorName != host.ISCSIConfig.InitiatorName) {
+		updateHost.ISCSIConfig = &rest.UpdateHostIscsiConfig{
+			InitiatorName: updInitiatorName,
+		}
 	}
 
 	// set the network ids
