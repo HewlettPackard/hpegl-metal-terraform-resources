@@ -371,15 +371,25 @@ func resourceMetalVolumeRead(d *schema.ResourceData, meta interface{}) (err erro
 		return fmt.Errorf("set Size: %v", err)
 	}
 
-	// convert from KiB to GB
 	if err = d.Set(vSizeInUse, math.Round(float64(volume.CapacityUsed)/KiBToGBConversion)); err != nil {
-		return fmt.Errorf("set Capacity In Use: %v", err)
+		return fmt.Errorf("resourceMetalVolumeRead: set %s : %v", vSizeInUse, err)
 	}
 
-	d.Set(vActiveSite, volume.ActiveSite)
-	d.Set(vCreatedSite, volume.CreatedSite)
-	d.Set(vUnManaged, volume.UnmanagedVolume)
-	d.Set(vReplicationEnabled, volume.ReplicationEnabled)
+	if err := d.Set(vActiveSite, volume.ActiveSite); err != nil {
+		return fmt.Errorf("resourceMetalVolumeRead: set %s : %v", vActiveSite, err)
+	}
+
+	if err := d.Set(vCreatedSite, volume.CreatedSite); err != nil {
+		return fmt.Errorf("resourceMetalVolumeRead: set %s : %v", vCreatedSite, err)
+	}
+
+	if err := d.Set(vUnManaged, volume.UnmanagedVolume); err != nil {
+		return fmt.Errorf("resourceMetalVolumeRead: set %s : %v", vUnManaged, err)
+	}
+
+	if err := d.Set(vReplicationEnabled, volume.ReplicationEnabled); err != nil {
+		return fmt.Errorf("resourceMetalVolumeRead: set %s : %v", vReplicationEnabled, err)
+	}
 
 	d.Set(vName, volume.Name)
 	d.Set(vDescription, volume.Description)
