@@ -16,22 +16,27 @@ import (
 )
 
 const (
-	vName          = "name"
-	vDescription   = "description"
-	vLocation      = "location"
-	vLocationID    = "location_id"
-	vFlavorID      = "flavor_id"
-	vFlavor        = "flavor"
-	vSize          = "size"
-	vShareable     = "shareable"
-	vState         = "state"
-	vStatus        = "status"
-	vLabels        = "labels"
-	vWWN           = "wwn"
-	vStoragePool   = "storage_pool"
-	vStoragePoolID = "storage_pool_id"
-	vCollection    = "volume_collection"
-	vCollectionID  = "volume_collection_id"
+	vName               = "name"
+	vDescription        = "description"
+	vLocation           = "location"
+	vLocationID         = "location_id"
+	vFlavorID           = "flavor_id"
+	vFlavor             = "flavor"
+	vSize               = "size"
+	vSizeInUse          = "size_in_use"
+	vShareable          = "shareable"
+	vState              = "state"
+	vStatus             = "status"
+	vLabels             = "labels"
+	vWWN                = "wwn"
+	vStoragePool        = "storage_pool"
+	vStoragePoolID      = "storage_pool_id"
+	vCollection         = "volume_collection"
+	vCollectionID       = "volume_collection_id"
+	vUnManaged          = "unmanaged"
+	vActiveSite         = "active_site"
+	vCreatedSite        = "created_site"
+	vReplicationEnabled = "replication_enabled"
 
 	// volume Info constants.
 	vID          = "id"
@@ -100,6 +105,14 @@ func volumeSchema() map[string]*schema.Schema {
 			},
 		},
 
+		vSizeInUse: {
+			Type:        schema.TypeFloat,
+			Required:    false,
+			Optional:    false,
+			Computed:    true,
+			Description: "The amount of the volume currently used as reported by the array in GBytes.",
+		},
+
 		vShareable: {
 			Type:        schema.TypeBool,
 			Optional:    true,
@@ -156,6 +169,38 @@ func volumeSchema() map[string]*schema.Schema {
 			Optional:    true,
 			Computed:    true,
 			Description: "The volume collection ID of the volume to be created.",
+		},
+
+		vUnManaged: {
+			Type:        schema.TypeBool,
+			Required:    false,
+			Optional:    false,
+			Computed:    true,
+			Description: "Indicates whether the volume is a native Metal created one or an external one.",
+		},
+
+		vReplicationEnabled: {
+			Type:        schema.TypeBool,
+			Required:    false,
+			Optional:    false,
+			Computed:    true,
+			Description: "Indicates whether replication is enabled for this volume.",
+		},
+
+		vActiveSite: {
+			Type:        schema.TypeString,
+			Required:    false,
+			Optional:    false,
+			Computed:    true,
+			Description: "The site where the remote copy role for the volume is Primary at the time of most recent import.",
+		},
+
+		vCreatedSite: {
+			Type:        schema.TypeString,
+			Required:    false,
+			Optional:    false,
+			Computed:    true,
+			Description: "The site where the volume was originally created.",
 		},
 	}
 }
@@ -324,6 +369,26 @@ func resourceMetalVolumeRead(d *schema.ResourceData, meta interface{}) (err erro
 	// convert from KiB to GB
 	if err = d.Set(vSize, math.Round(float64(volume.Capacity)/KiBToGBConversion)); err != nil {
 		return fmt.Errorf("set Size: %v", err)
+	}
+
+	if err = d.Set(vSizeInUse, math.Round(float64(volume.CapacityUsed)/KiBToGBConversion)); err != nil {
+		return fmt.Errorf("set %s : %v", vSizeInUse, err)
+	}
+
+	if err := d.Set(vActiveSite, volume.ActiveSite); err != nil {
+		return fmt.Errorf("set %s : %v", vActiveSite, err)
+	}
+
+	if err := d.Set(vCreatedSite, volume.CreatedSite); err != nil {
+		return fmt.Errorf("set %s : %v", vCreatedSite, err)
+	}
+
+	if err := d.Set(vUnManaged, volume.UnmanagedVolume); err != nil {
+		return fmt.Errorf("set %s : %v", vUnManaged, err)
+	}
+
+	if err := d.Set(vReplicationEnabled, volume.ReplicationEnabled); err != nil {
+		return fmt.Errorf("set %s : %v", vReplicationEnabled, err)
 	}
 
 	d.Set(vName, volume.Name)
