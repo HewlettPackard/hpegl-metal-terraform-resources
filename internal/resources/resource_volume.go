@@ -37,6 +37,7 @@ const (
 	vActiveSite         = "active_site"
 	vCreatedSite        = "created_site"
 	vReplicationEnabled = "replication_enabled"
+	vExportCount        = "export_count"
 
 	// volume Info constants.
 	vID          = "id"
@@ -201,6 +202,14 @@ func volumeSchema() map[string]*schema.Schema {
 			Optional:    false,
 			Computed:    true,
 			Description: "The site where the volume was originally created.",
+		},
+
+		vExportCount: {
+			Type:        schema.TypeInt,
+			Required:    false,
+			Optional:    false,
+			Computed:    true,
+			Description: "The number of active exports for this volume",
 		},
 	}
 }
@@ -389,6 +398,10 @@ func resourceMetalVolumeRead(d *schema.ResourceData, meta interface{}) (err erro
 
 	if err := d.Set(vReplicationEnabled, volume.ReplicationEnabled); err != nil {
 		return fmt.Errorf("set %s : %v", vReplicationEnabled, err)
+	}
+
+	if err = d.Set(vExportCount, volume.ExportCount); err != nil {
+		return fmt.Errorf("set %s: %v", vExportCount, err)
 	}
 
 	d.Set(vName, volume.Name)

@@ -389,6 +389,8 @@ github.com/hashicorp/yamux v0.1.1 h1:yrQxtgseBDrq9Y652vSRDvsKCJKOUD+GzTS4Y0Y8pvE
 github.com/hashicorp/yamux v0.1.1/go.mod h1:CtWFDAQgb7dxtzFs4tWbplKIe2jSi3+5vKbgIO0SLnQ=
 github.com/hewlettpackard/hpegl-metal-client v1.5.22 h1:EW19Adpfroi27jpYYjlNddx/TwGKnTVysd5Lpqoo/ls=
 github.com/hewlettpackard/hpegl-metal-client v1.5.22/go.mod h1:+BO4BfQXf3IWnsxvk2IdE27Ijrm1jDVYIgpebYh1L9M=
+github.com/hewlettpackard/hpegl-metal-client v1.5.23-0.20240923072040-5b07002ffb48 h1:eaHwFgw9BaQn7O7AMchZgOBxfOygrP7lXKoAHUmsWEc=
+github.com/hewlettpackard/hpegl-metal-client v1.5.23-0.20240923072040-5b07002ffb48/go.mod h1:+BO4BfQXf3IWnsxvk2IdE27Ijrm1jDVYIgpebYh1L9M=
 github.com/hewlettpackard/hpegl-provider-lib v0.0.18 h1:87iXgq8Oe2ebBRicL5K+HknQF9e1ce6MHfIHeTVVqlI=
 github.com/hewlettpackard/hpegl-provider-lib v0.0.18/go.mod h1:Bw2DhefBjqXQI6s5vBBGiWUkFz7fx4KkbGfwmo9wv3U=
 github.com/hexops/gotextdiff v1.0.3 h1:gitA9+qJrrTCsiCl7+kh75nPqQt1cx4ZkudSTLoUqJM=
