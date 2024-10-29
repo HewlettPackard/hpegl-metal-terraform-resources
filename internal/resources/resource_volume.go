@@ -38,6 +38,8 @@ const (
 	vCreatedSite        = "created_site"
 	vReplicationEnabled = "replication_enabled"
 	vExportCount        = "export_count"
+	vDataCenterName     = "data_center_name"
+	vStoragePoolName    = "storage_pool_name"
 
 	// volume Info constants.
 	vID          = "id"
@@ -210,6 +212,22 @@ func volumeSchema() map[string]*schema.Schema {
 			Optional:    false,
 			Computed:    true,
 			Description: "The number of active exports for this volume",
+		},
+
+		vDataCenterName: {
+			Type:        schema.TypeString,
+			Required:    false,
+			Optional:    false,
+			Computed:    true,
+			Description: "Name of the data center where the volume is created on the storage array.",
+		},
+
+		vStoragePoolName: {
+			Type:        schema.TypeString,
+			Required:    false,
+			Optional:    false,
+			Computed:    true,
+			Description: "Name of the storage pool from where the volume is allocated.",
 		},
 	}
 }
