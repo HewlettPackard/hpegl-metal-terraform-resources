@@ -216,16 +216,12 @@ func volumeSchema() map[string]*schema.Schema {
 
 		vDataCenterName: {
 			Type:        schema.TypeString,
-			Required:    false,
-			Optional:    false,
 			Computed:    true,
 			Description: "Name of the data center where the volume is created on the storage array.",
 		},
 
 		vStoragePoolName: {
 			Type:        schema.TypeString,
-			Required:    false,
-			Optional:    false,
 			Computed:    true,
 			Description: "Name of the storage pool from where the volume is allocated.",
 		},
@@ -420,6 +416,14 @@ func resourceMetalVolumeRead(d *schema.ResourceData, meta interface{}) (err erro
 
 	if err = d.Set(vExportCount, volume.ExportCount); err != nil {
 		return fmt.Errorf("set %s: %v", vExportCount, err)
+	}
+
+	if err = d.Set(vDataCenterName, volume.DataCenterName); err != nil {
+		return fmt.Errorf("set %s: %v", vDataCenterName, err)
+	}
+
+	if err = d.Set(vStoragePoolName, volume.StoragePoolName); err != nil {
+		return fmt.Errorf("set %s: %v", vStoragePoolName, err)
 	}
 
 	d.Set(vName, volume.Name)

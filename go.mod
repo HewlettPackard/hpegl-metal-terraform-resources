@@ -1,6 +1,6 @@
 module github.com/hewlettpackard/hpegl-metal-terraform-resources
 
-go 1.21.0
+go 1.22.0
 
 toolchain go1.22.5
 
