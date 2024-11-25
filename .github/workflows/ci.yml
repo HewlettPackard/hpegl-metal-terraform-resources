@@ -1,4 +1,4 @@
-#(C) Copyright 2022-2023 Hewlett Packard Enterprise Development LP
+#(C) Copyright 2022-2024 Hewlett Packard Enterprise Development LP
 
 name: ci
 
@@ -55,7 +55,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: 1.21.3
+          go-version: 1.22.7
 
       - name: Install tools
         run: make tools
