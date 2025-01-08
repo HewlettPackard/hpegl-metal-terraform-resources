@@ -152,7 +152,6 @@ func projectSchema() map[string]*schema.Schema {
 		pSites: {
 			Type:        schema.TypeSet,
 			Optional:    true,
-			ForceNew:    true,
 			Description: "List of Permitted Site IDs",
 			Elem: &schema.Schema{
 				Type: schema.TypeString,
