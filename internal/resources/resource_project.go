@@ -1,4 +1,4 @@
-// (C) Copyright 2020-2024 Hewlett Packard Enterprise Development LP
+// (C) Copyright 2020-2025 Hewlett Packard Enterprise Development LP
 
 package resources
 
@@ -434,6 +434,17 @@ func resourceMetalProjectUpdate(d *schema.ResourceData, meta interface{}) (err e
 		}
 	} else {
 		return fmt.Errorf("only 1 limit block is allowed")
+	}
+
+	if f, ok := d.GetOk(pSites); ok {
+		s, ok := f.(*schema.Set)
+		if !ok {
+			err = fmt.Errorf("sites list is not in the expected format")
+
+			return err
+		}
+
+		updateProject.PermittedSites = expandStringList(s.List())
 	}
 
 	if f, ok := d.GetOk(pPermittedImages); ok {
