@@ -1,4 +1,4 @@
-// (C) Copyright 2022,2024 Hewlett Packard Enterprise Development LP
+// (C) Copyright 2022,2024-2025 Hewlett Packard Enterprise Development LP
 
 package acceptance_test
 
@@ -62,11 +62,13 @@ func projectBasic(op string) string {
 	name := `"TestHoster1-SimProject1"`
 	company := `"HPE"`
 	hosts := 10
+	sites := `["1ad98170-993e-4bfc-8b84-e689ea9a429b"]`
 
 	if op == "update" {
 		name = `"TestHoster1-SimProject1-Update"`
 		company = `"HPE-Update"`
 		hosts = 5
+		sites = `["22473578-e18b-4753-a2e6-ba405b8abc32", "1ad98170-993e-4bfc-8b84-e689ea9a429b"]`
 	}
 
 	res := fmt.Sprintf(`
@@ -87,9 +89,9 @@ func projectBasic(op string) string {
 		volume_capacity  = 300
 		private_networks = 30
 		}
-		sites=["1ad98170-993e-4bfc-8b84-e689ea9a429b"]	
+		sites            = %s
 		volume_replication_enabled = true
-	}`, name, company, hosts)
+	}`, name, company, hosts, sites)
 
 	return common + res
 }
