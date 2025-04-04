@@ -508,6 +508,7 @@ func resourceMetalHostCreate(d *schema.ResourceData, meta interface{}) (err erro
 		Pending: []string{
 			string(rest.HOSTSTATE_NEW),
 			string(rest.HOSTSTATE_IMAGING_PREP),
+			string(rest.HOSTSTATE_IMAGING_COMPLETE),
 			string(rest.HOSTSTATE_ISCSI_ATTACHING),
 			string(rest.HOSTSTATE_IMAGING),
 			string(rest.HOSTSTATE_CONNECTING),
