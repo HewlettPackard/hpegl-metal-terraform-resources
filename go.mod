@@ -6,7 +6,7 @@ require (
 	github.com/golangci/golangci-lint v1.60.1
 	github.com/hashicorp/terraform-plugin-docs v0.21.0
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.37.0
-	github.com/hewlettpackard/hpegl-metal-client v1.5.33
+	github.com/hewlettpackard/hpegl-metal-client v1.5.34
 	github.com/hewlettpackard/hpegl-provider-lib v0.0.22
 	github.com/stretchr/testify v1.10.0
 	gopkg.in/yaml.v2 v2.4.0
@@ -231,7 +231,7 @@ require (
 	golang.org/x/exp/typeparams v0.0.0-20240314144324-c7f7c6466f7f // indirect
 	golang.org/x/mod v0.24.0 // indirect
 	golang.org/x/net v0.39.0 // indirect
-	golang.org/x/oauth2 v0.26.0 // indirect
+	golang.org/x/oauth2 v0.30.0 // indirect
 	golang.org/x/sync v0.14.0 // indirect
 	golang.org/x/sys v0.33.0 // indirect
 	golang.org/x/text v0.25.0 // indirect
