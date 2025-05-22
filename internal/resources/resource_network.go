@@ -1,4 +1,4 @@
-// (C) Copyright 2020-2023 Hewlett Packard Enterprise Development LP
+// (C) Copyright 2020-2023, 2025 Hewlett Packard Enterprise Development LP
 
 package resources
 
@@ -179,6 +179,11 @@ func networkSchema() map[string]*schema.Schema {
 			},
 			Description: "Create the specified IP Pool to be used for the network",
 		},
+		nNoIPPool: {
+			Type:        schema.TypeBool,
+			Optional:    true,
+			Description: "True if the Network does not have an associated IP Pool",
+		},
 		nVLAN: {
 			Type:        schema.TypeInt,
 			Optional:    true,
@@ -222,7 +227,17 @@ func resourceMetalNetworkCreate(d *schema.ResourceData, meta interface{}) (err e
 	}
 
 	var ippool *rest.NewIpPool
+
+	noIPPool, ok := d.Get(nNoIPPool).(bool)
+	if !ok {
+		return fmt.Errorf("%v is expected to be a bool", nNoIPPool)
+	}
+
 	if set, ok := d.Get(nIPPool).(*schema.Set); ok && len(set.List()) != 0 {
+		if noIPPool {
+			return fmt.Errorf("IPPool should be blank if NoIPPool is true")
+		}
+
 		ippool = getIPPool(set)
 	}
 
@@ -231,6 +246,7 @@ func resourceMetalNetworkCreate(d *schema.ResourceData, meta interface{}) (err e
 		Description: safeString(d.Get(nDescription)),
 		LocationID:  locationID,
 		NewIPPool:   ippool,
+		NoIPPool:    noIPPool,
 		VLAN:        int32(safeInt(d.Get(nVLAN))),
 		VNI:         int32(safeInt(d.Get(nVNI))),
 	}
@@ -354,11 +370,16 @@ func resourceMetalNetworkRead(d *schema.ResourceData, meta interface{}) (err err
 	}
 
 	if err = d.Set(nPurpose, n.Purpose); err != nil {
-		// nolint:wrapcheck // defer func is wrapping the error.
+		//nolint:wrapcheck // defer func is wrapping the error.
 		return err
 	}
 
 	if err = d.Set(nIPPoolID, n.IPPoolID); err != nil {
+		return err
+	}
+
+	if err = d.Set(nNoIPPool, n.NoIPPool); err != nil {
+		//nolint:wrapcheck // defer func is wrapping the error.
 		return err
 	}
 

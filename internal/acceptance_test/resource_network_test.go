@@ -1,4 +1,4 @@
-// (C) Copyright 2020-2023 Hewlett Packard Enterprise Development LP
+// (C) Copyright 2020-2023, 2025 Hewlett Packard Enterprise Development LP
 
 package acceptance_test
 
@@ -77,6 +77,7 @@ resource "hpegl_metal_network" "pnet" {
   description        = "tf-net description"
   host_use           = "Default"
   purpose            = "Storage"
+  no_ip_pool         = true
 }`
 }
 
