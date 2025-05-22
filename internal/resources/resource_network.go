@@ -228,7 +228,10 @@ func resourceMetalNetworkCreate(d *schema.ResourceData, meta interface{}) (err e
 
 	var ippool *rest.NewIpPool
 
-	noIPPool := d.Get(nNoIPPool).(bool)
+	noIPPool, ok := d.Get(nNoIPPool).(bool)
+	if !ok {
+		return fmt.Errorf("%v is expected to be a bool", nNoIPPool)
+	}
 
 	if set, ok := d.Get(nIPPool).(*schema.Set); ok && len(set.List()) != 0 {
 		if noIPPool {
@@ -367,7 +370,7 @@ func resourceMetalNetworkRead(d *schema.ResourceData, meta interface{}) (err err
 	}
 
 	if err = d.Set(nPurpose, n.Purpose); err != nil {
-		// nolint:wrapcheck // defer func is wrapping the error.
+		//nolint:wrapcheck // defer func is wrapping the error.
 		return err
 	}
 
@@ -376,6 +379,7 @@ func resourceMetalNetworkRead(d *schema.ResourceData, meta interface{}) (err err
 	}
 
 	if err = d.Set(nNoIPPool, n.NoIPPool); err != nil {
+		//nolint:wrapcheck // defer func is wrapping the error.
 		return err
 	}
 
