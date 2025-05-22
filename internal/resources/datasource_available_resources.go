@@ -1,4 +1,4 @@
-// (C) Copyright 2020-2023 Hewlett Packard Enterprise Development LP
+// (C) Copyright 2020-2023, 2025 Hewlett Packard Enterprise Development LP
 
 package resources
 
@@ -38,6 +38,7 @@ const (
 	nLocation    = "location"
 	nLocationID  = "location_id"
 	nIPPoolID    = "ip_pool_id"
+	nNoIPPool    = "no_ip_pool"
 
 	// For avMachineSizes each terraform block has these attributes.
 	sName        = "name"
@@ -451,6 +452,7 @@ func addNetworks(p *configuration.Config, d *schema.ResourceData, available rest
 			nPurpose:     net.Purpose,
 			nLocationID:  net.LocationID,
 			nIPPoolID:    net.IPPoolID,
+			nNoIPPool:    net.NoIPPool,
 			nVLAN:        net.VLAN,
 			nVNI:         net.VNI,
 		}
