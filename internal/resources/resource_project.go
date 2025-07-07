@@ -35,6 +35,7 @@ const (
 	pPermittedImages = "permitted_images"
 
 	pVolumeReplicationEnabled = "volume_replication_enabled"
+	pBootFromSANSupport       = "boot_from_san_support"
 )
 
 func limitsSchema() map[string]*schema.Schema {
@@ -173,6 +174,13 @@ func projectSchema() map[string]*schema.Schema {
 			ForceNew:    true,
 			Description: "Volume replication is enabled for the project if set.",
 		},
+
+		pBootFromSANSupport: {
+			Type:        schema.TypeBool,
+			Optional:    true,
+			Default:     false,
+			Description: "Boot-from-SAN feature is supported for the project if set.",
+		},
 	}
 }
 
@@ -202,6 +210,7 @@ func resourceMetalProjectCreate(d *schema.ResourceData, meta interface{}) (err e
 		Name: d.Get(pName).(string),
 
 		VolumeReplicationEnabled: d.Get(pVolumeReplicationEnabled).(bool),
+		BootFromSANSupport:       d.Get(pBootFromSANSupport).(bool),
 	}
 
 	if list, ok := d.Get(pProfile).([]interface{}); ok && len(list) == 1 {
@@ -386,6 +395,10 @@ func resourceMetalProjectRead(d *schema.ResourceData, meta interface{}) (err err
 	}
 
 	if err = d.Set(pVolumeReplicationEnabled, project.VolumeReplicationEnabled); err != nil {
+		return err //nolint:wrapcheck // defer func is wrapping the error.
+	}
+
+	if err = d.Set(pBootFromSANSupport, project.BootFromSANSupport); err != nil {
 		return err //nolint:wrapcheck // defer func is wrapping the error.
 	}
 
