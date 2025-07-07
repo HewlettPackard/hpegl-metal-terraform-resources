@@ -30,6 +30,7 @@ func TestAccResourceProject_Basic(t *testing.T) {
 				Config: testAccCheckProjectCreateBasic(),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckProjectExists("hpegl_metal_project.project1"),
+					resource.TestCheckResourceAttr("hpegl_metal_project.project1", "boot_from_san_support", "true"),
 				),
 			},
 			{
@@ -69,6 +70,7 @@ func projectBasic(op string) string {
 		company = `"HPE-Update"`
 		hosts = 5
 		sites = `["22473578-e18b-4753-a2e6-ba405b8abc32", "1ad98170-993e-4bfc-8b84-e689ea9a429b"]`
+		// TODO - update boot_from_san_support when backend support is ready
 	}
 
 	res := fmt.Sprintf(`
@@ -91,6 +93,7 @@ func projectBasic(op string) string {
 		}
 		sites            = %s
 		volume_replication_enabled = true
+		boot_from_san_support      = true
 	}`, name, company, hosts, sites)
 
 	return common + res
