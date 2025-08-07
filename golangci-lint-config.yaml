@@ -1,4 +1,4 @@
-#(C) Copyright 2022 Hewlett Packard Enterprise Development LP
+#(C) Copyright 2022, 2025 Hewlett Packard Enterprise Development LP
 
 run:
   deadline: 240s
@@ -47,11 +47,11 @@ linters:
   enable:
     - asciicheck
     - bodyclose
+    - copyloopvar
     - dogsled
     - dupl
     - durationcheck
     - errcheck
-    - exportloopref
     - exhaustive
     - forbidigo
     - forcetypeassert
