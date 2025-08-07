@@ -179,7 +179,7 @@ func projectSchema() map[string]*schema.Schema {
 			Type:        schema.TypeBool,
 			Optional:    true,
 			Default:     false,
-			Description: "Boot-from-SAN feature is supported for the project if set.",
+			Description: "Boot-from-SAN feature is enabled for the project if set.",
 		},
 	}
 }
