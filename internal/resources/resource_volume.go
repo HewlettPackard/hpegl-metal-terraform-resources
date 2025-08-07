@@ -1,4 +1,4 @@
-// (C) Copyright 2020-2024 Hewlett Packard Enterprise Development LP
+// (C) Copyright 2020-2025 Hewlett Packard Enterprise Development LP
 
 package resources
 
@@ -477,7 +477,9 @@ func resourceMetalVolumeUpdate(d *schema.ResourceData, meta interface{}) (err er
 		ETag: vol.ETag,
 	}
 
-	updateVol.Capacity = int64(math.Round(newSize * GBToGiBConversion)) // convert from GB to GiB
+	// Although Project API for Volume create is in units of GiB,
+	// Volume get & update are in units of KiB.
+	updateVol.Capacity = int64(math.Round(newSize * KiBToGBConversion)) // convert from GB to KiB
 
 	// add tags
 	if m, ok := d.Get(vLabels).(map[string]interface{}); ok {
