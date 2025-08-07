@@ -65,14 +65,14 @@ func projectBasic(op string) string {
 	company := `"HPE"`
 	hosts := 10
 	sites := `["1ad98170-993e-4bfc-8b84-e689ea9a429b"]`
-	bfs_support := true
+	bfsSupport := true
 
 	if op == "update" {
 		name = `"TestHoster1-SimProject1-Update"`
 		company = `"HPE-Update"`
 		hosts = 5
 		sites = `["22473578-e18b-4753-a2e6-ba405b8abc32", "1ad98170-993e-4bfc-8b84-e689ea9a429b"]`
-		bfs_support = false
+		bfsSupport = false
 	}
 
 	res := fmt.Sprintf(`
@@ -95,8 +95,8 @@ func projectBasic(op string) string {
 		}
 		sites            = %s
 		volume_replication_enabled = true
-		boot_from_san_support      = %s
-	}`, name, company, hosts, sites, bfs_support)
+		boot_from_san_support      = %v
+	}`, name, company, hosts, sites, bfsSupport)
 
 	return common + res
 }
