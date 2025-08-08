@@ -1,5 +1,7 @@
 # Example of creating OS service image
-**IMPORTANT NOTE**: Images can be created only with an IAM token and a Metal Owner role associated with the token
+**IMPORTANT NOTE**: Images can be created only with a GreenLake Cloud Services (GLCS)
+IAM token and a Metal Owner role, or a GreenLake Platform (GLP) IAM token with BMaaS
+Tenant Owner or BMaaS Contributor roles, associated with the token.
 
 To run the example:
 * Authenticate against a portal using steeld login
