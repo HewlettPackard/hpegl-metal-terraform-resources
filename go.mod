@@ -1,6 +1,6 @@
 module github.com/hewlettpackard/hpegl-metal-terraform-resources
 
-go 1.23.7
+go 1.25.8
 
 require (
 	github.com/golangci/golangci-lint v1.64.8
