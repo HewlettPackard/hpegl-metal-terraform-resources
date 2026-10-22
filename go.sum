@@ -402,8 +402,8 @@ github.com/hashicorp/terraform-svchost v0.1.1 h1:EZZimZ1GxdqFRinZ1tpJwVxxt49xc/S
 github.com/hashicorp/terraform-svchost v0.1.1/go.mod h1:mNsjQfZyf/Jhz35v6/0LWcv26+X7JPS+buii2c9/ctc=
 github.com/hashicorp/yamux v0.1.2 h1:XtB8kyFOyHXYVFnwT5C3+Bdo8gArse7j2AQ0DA0Uey8=
 github.com/hashicorp/yamux v0.1.2/go.mod h1:C+zze2n6e/7wshOZep2A70/aQU6QBRWJO/G6FT1wIns=
-github.com/hewlettpackard/hpegl-metal-client v1.5.36 h1:OhVVSGxbuuQ67Pe+1Av33pzNCQv9LmxrgTJ2Vp9DRGk=
-github.com/hewlettpackard/hpegl-metal-client v1.5.36/go.mod h1:fLL4w7OwUIji6RWIQxqBw07ibC1Al80aD2r/a+h/nEE=
+github.com/hewlettpackard/hpegl-metal-client v1.5.37 h1:7bvOJQ02d7/acezFGrhFiObj/xju00axAOpNCpfmxko=
+github.com/hewlettpackard/hpegl-metal-client v1.5.37/go.mod h1:vZxgGBX7ESJ461tDs3FCqfpEjHM2tO3375GwSqRAa+4=
 github.com/hewlettpackard/hpegl-provider-lib v0.0.22 h1:keW0HjvsMSvIyorqAKc1/XRHkIZqdGn8fqekeuVUSCc=
 github.com/hewlettpackard/hpegl-provider-lib v0.0.22/go.mod h1:/gEz8+22QLJfmsdSpH8VPVgn4SpGxxGp+X1i17GUgFY=
 github.com/hexops/gotextdiff v1.0.3 h1:gitA9+qJrrTCsiCl7+kh75nPqQt1cx4ZkudSTLoUqJM=
