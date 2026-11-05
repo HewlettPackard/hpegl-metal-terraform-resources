@@ -1,5 +1,5 @@
 #! /usr/bin/make
-#(C) Copyright 2022-2024 Hewlett Packard Enterprise Development LP
+#(C) Copyright 2022-2024, 2026 Hewlett Packard Enterprise Development LP
 # Inspiration from https://github.com/rightscale/go-boilerplate/blob/master/Makefile
 
 NAME=$(shell find cmd -name ".gitkeep_provider" -exec dirname {} \; | sort -u | sed -e 's|cmd/||')
@@ -18,6 +18,8 @@ endif
 
 # version shouldn't have 'v' prefix for >= 0.13
 VERSION=$(shell cat ./version)
+# golangci-lint is installed as a pinned binary rather than vendored; keep in sync with .github/workflows/ci.yml
+GOLANGCI_LINT_VERSION=v2.15.0
 # Change DUMMY_PROVIDER below to reflect the name of the service under development.  The
 # value of this variable is used in LOCAL_LOCATION, and is also used in the
 DUMMY_PROVIDER=metal
@@ -90,8 +92,8 @@ tf-lint:
 lint: go-lint tf-lint
 .PHONY: lint
 
-tools: vendor
-	@go install github.com/golangci/golangci-lint/cmd/golangci-lint
+tools:
+	@GOFLAGS= go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@$(GOLANGCI_LINT_VERSION)
 .PHONY: tools
 
 testreport_dir := test-reports
