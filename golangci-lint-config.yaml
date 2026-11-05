@@ -1,49 +1,8 @@
-#(C) Copyright 2022, 2025 Hewlett Packard Enterprise Development LP
+#(C) Copyright 2022, 2025, 2026 Hewlett Packard Enterprise Development LP
 
-run:
-  deadline: 240s
-
-issues:
-  exclude-dirs:
-    - vendor
-    - docs
-    - build
-
-linters-settings:
-  goheader:
-    template: '{{ copy }}'
-    values:
-      regexp: 
-        range: (([0-9]{4}(,\s?|-))*{{ year }})
-        copy: ^\(C\) Copyright {{ range }} Hewlett Packard Enterprise Development LP$
-        
-  exhaustive:
-    default-signifies-exhaustive: true
-
-  wsl:
-    force-case-trailing-whitespace: 1
-
-  dupl:
-    threshold: 110
-
-  lll:
-    line-length: 128
-    # tab width in spaces. Default to 1.
-    tab-width: 1
-
-  gci:
-    # Group all projects under hewlettpackard together and separate from internal and 3rd party
-    sections:
-      - Standard
-      - Default
-      - 'prefix(github.com/hewlettpackard)'
-
-  goimports:
-    local-prefixes: github.com/hewlettpackard
-
+version: "2"
 linters:
-  # please, do not use `enable-all`: it's deprecated and will be removed soon.
-  disable-all: true
+  default: none
   enable:
     - asciicheck
     - bodyclose
@@ -56,18 +15,14 @@ linters:
     - forbidigo
     - forcetypeassert
     - funlen
-    - gci
     - gochecknoglobals
     - gochecknoinits
     - goconst
     - gocritic
     - godot
-    - gofmt
     - goheader
-    - goimports
     - goprintffuncname
     - gosec
-    - gosimple
     - govet
     - ineffassign
     - lll
@@ -81,13 +36,67 @@ linters:
     - predeclared
     - revive
     - staticcheck
-    - stylecheck
     - thelper
     - tparallel
-    - typecheck
     - unconvert
     - unused
     - wastedassign
-    - wrapcheck
-    - wsl
     - whitespace
+    - wrapcheck
+    - wsl_v5
+  settings:
+    dupl:
+      threshold: 110
+    exhaustive:
+      default-signifies-exhaustive: true
+    goheader:
+      values:
+        regexp:
+          copy: ^\(C\) Copyright {{ range }} Hewlett Packard Enterprise Development LP$
+          range: (([0-9]{4}(,\s?|-))*{{ year }})
+      template: '{{ copy }}'
+    lll:
+      line-length: 128
+      tab-width: 1
+    wsl_v5:
+      allow-first-in-block: true
+      allow-whole-block: false
+      branch-max-lines: 2
+      case-max-lines: 1
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    paths:
+      - vendor
+      - docs
+      - build
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  enable:
+    - gci
+    - gofmt
+    - goimports
+  settings:
+    gci:
+      sections:
+        - Standard
+        - Default
+        - prefix(github.com/hewlettpackard)
+    goimports:
+      local-prefixes:
+        - github.com/hewlettpackard
+  exclusions:
+    generated: lax
+    paths:
+      - vendor
+      - docs
+      - build
+      - third_party$
+      - builtin$
+      - examples$

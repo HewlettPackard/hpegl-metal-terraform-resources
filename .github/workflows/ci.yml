@@ -70,15 +70,22 @@ jobs:
         uses: actionshub/terraform-lint@2.0.1
 
       - name: Run GO linter checks
+        id: lint-base
         run: |
-          TARGET_BRANCH=${{ github.base_ref }}        
+          TARGET_BRANCH=${{ github.base_ref }}
           if [[ ${TARGET_BRANCH} == "" ]]; then
             TARGET_BRANCH='master'
           fi
-                
+
           TARGET_SHA=`git merge-base -a HEAD origin/${TARGET_BRANCH}`
           echo "Running lint on changes from branch ${TARGET_BRANCH} ${TARGET_SHA}"
-          golangci-lint run --config golangci-lint-config.yaml --new-from-rev ${TARGET_SHA} --verbose --max-issues-per-linter 0 --max-same-issues 0
+          echo "sha=${TARGET_SHA}" >> "$GITHUB_OUTPUT"
+
+      # golangci-lint is installed as a pinned binary; keep version in sync with GOLANGCI_LINT_VERSION in Makefile
+      - uses: golangci/golangci-lint-action@v8
+        with:
+          version: v2.15.0
+          args: --config golangci-lint-config.yaml --new-from-rev ${{ steps.lint-base.outputs.sha }} --verbose --max-issues-per-linter 0 --max-same-issues 0
 
       - uses: hashicorp/setup-terraform@v4
         with:
